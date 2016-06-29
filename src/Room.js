@@ -2,14 +2,14 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-26 20:07:18
+* @Last Modified time: 2016-06-28 15:16:56
 */
 
 'use strict';
 
 
 Room.prototype.tick = function() {
-  Log.info('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
+  Log.debug('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
   this.refreshData();
   this.tickSpawns();
   this.tickCreeps();
@@ -49,18 +49,20 @@ Room.prototype.reset = function() {
 
 Room.prototype.findSourceSpots = function() {
   var room = this;
-  delete room.memory.sources
-  var sources = room.find(FIND_SOURCES);
-  var count = 0;
-  var out = {}
-  sources.forEach(function(source) {
-      room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
-        if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
-          count += 1;
-          spot['source'] = source;
-          out[count] = spot;
-        }
-      })
-    });
-    room.memory.sources = out;
+  if(!room.memory.sources) {
+    delete room.memory.sources
+    var sources = room.find(FIND_SOURCES);
+    var count = 0;
+    var out = {}
+    sources.forEach(function(source) {
+        room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
+          if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
+            count += 1;
+            spot['source'] = source;
+            out[count] = spot;
+          }
+        })
+      });
+      room.memory.sources = out;
+  }
 }
