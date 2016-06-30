@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-29 18:32:32
+* @Last Modified time: 2016-06-30 06:42:29
 */
 
 'use strict';
@@ -23,13 +23,13 @@ Creep.prototype.assignMinerTasks = function() {
 }
 
 Creep.prototype.doSend = function() {
-  var found = this.room.lookForAtArea(LOOK_CREEPS, this.pos.y - 2, this.pos.x - 2 , this.pos.y + 2, this.pos.x + 2, true);
+  var found = this.room.lookForAtArea(LOOK_CREEPS, this.pos.y - 1, this.pos.x - 1 , this.pos.y + 1, this.pos.x + 1, true);
   Log.debug(JSON.stringify(found));
   var me = this;
   if(found.length > 1) {
     _.filter(found, (f) => f.creep.memory.role != 'miner').some(function(f) {
       me.transfer(f.creep, RESOURCE_ENERGY);
-      me.memory.mode = 'idle'
+      //me.memory.mode = 'idle'
       // f.creep.memory.mode = 'transfer'
       f.creep.memory.mode = 'idle'
     })

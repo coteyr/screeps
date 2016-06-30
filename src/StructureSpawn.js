@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-29 17:37:39
+* @Last Modified time: 2016-06-30 06:51:15
 */
 
 'use strict';
@@ -60,7 +60,7 @@ StructureSpawn.prototype.doWork = function() {
 StructureSpawn.prototype.doWaitEnergy = function() {
   if(this.energy < this.energyCapacity) {
     if (this.memory.call_for_energy) {
-      this.memory.call_for_energy = this.memory.call_for_energy + 1
+      this.memory.call_for_energy = this.memory.call_for_energy + 2
     } else {
       this.memory.call_for_energy = 1
     }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-29 18:00:53
+* @Last Modified time: 2016-06-30 07:46:26
 */
 
 'use strict';
@@ -59,6 +59,12 @@ Creep.prototype.doWork = function() {
     Log.error(this.name + " HAS AN ERROR")
     Log.error(error.message)
     Log.error("Role: " + this.memory.role + " Mode: " + this.memory.mode)
+    var caller_line = error.stack.split("\n")[4];
+    var index = caller_line.indexOf("at ");
+    var clean = caller_line.slice(index+2, caller_line.length);
+    Log.error(error.stack)
+    Log.error(index)
+    Log.error(clean)
   }
 }
 

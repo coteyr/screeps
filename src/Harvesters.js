@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-28 16:00:59
+* @Last Modified time: 2016-06-30 08:05:24
 */
 
 'use strict';
@@ -11,6 +11,8 @@ StructureSpawn.prototype.getHarvesterBody = function(){
   var energy = this.room.energyAvailable;
   if (energy >= 300 && energy < 550) {
     return [WORK, CARRY, CARRY, MOVE, MOVE]
+  } else if(energy >= 550 && energy < 800) {
+    return [WORK, WORK, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY]
   } else {
     return [WORK, CARRY, MOVE]
   }

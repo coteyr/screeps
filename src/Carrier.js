@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-29 17:59:11
+* @Last Modified time: 2016-06-30 08:17:19
 */
 
 'use strict';
@@ -47,10 +47,15 @@ Creep.prototype.doTransfer = function() {
         }
       }
     }, this.memory.my_spawns);
-
-  }
-
-
+  Object.keys(this.room.memory.my_extensions).forEach(function(key, index) {
+      var extension = Game.getObjectById(me.room.memory.my_extensions[key].id);
+      if (extension.memory.call_for_energy) {
+        if (extension.memory.call_for_energy >= biggest) {
+          me.memory.target = extension
+          biggest = extension.memory.call_for_energy
+        }
+      }
+    }, this.memory.my_spawns);
     _.filter(Game.creeps).forEach(function(creep) {
       if(creep.my && creep.memory.call_for_energy) {
         if(creep.memory.call_for_energy >= biggest) {
@@ -59,6 +64,7 @@ Creep.prototype.doTransfer = function() {
         }
       }
     });
+  }
   if (this.memory.target) {
     var target = Game.getObjectById(this.memory.target.id);
     target.memory.call_for_energy = 0
@@ -70,14 +76,14 @@ Creep.prototype.doTransfer = function() {
         // creep
         this.transfer(target, RESOURCE_ENERGY)
       } else if(target && target.energy < target.energyCapacity) {
-        // spawner
+        // spawner or extension
         this.transfer(target, RESOURCE_ENERGY)
       } else {
-        this.memory.mode = 'idle'
+        this.memory.mode = 'transfer'
         delete this.memory.target
       }
       if(this.carry.energy == 0) {
-        target.memory.call_for_energy = true
+        target.memory.call_for_energy = 1
       }
     }
   }
@@ -94,6 +100,7 @@ Creep.prototype.doFill = function() {
   }
   if(this.carry.energy >= this.carryCapacity) {
     this.memory.mode = 'idle'
+    return false
   }
   if(!Game.getObjectById(this.memory.target_miner.id)) {
     Log.warn(this.name + " is missing their miner, reassigning")
@@ -108,7 +115,7 @@ Creep.prototype.doFill = function() {
       delete this.memory.target_miner
       this.memory.mode = 'idle'
     }
-    if(!this.pos.inRangeTo(Game.getObjectById(this.memory.target_miner.id).pos, 1)) {
+    if(this.memory.target_miner && !this.pos.inRangeTo(Game.getObjectById(this.memory.target_miner.id).pos, 1)) {
       Log.warn("No longer in range")
       this.memory.mode = 'idle'
       delete this.memory.target_miner

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-28 15:16:56
+* @Last Modified time: 2016-06-30 07:34:07
 */
 
 'use strict';
@@ -11,10 +11,20 @@
 Room.prototype.tick = function() {
   Log.debug('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
   this.refreshData();
+  this.tickExtensions();
   this.tickSpawns();
   this.tickCreeps();
   return true;
 };
+
+Room.prototype.tickExtensions = function() {
+  if (this.memory.my_extensions) {
+    Object.keys(this.memory.my_extensions).forEach(function(key, index) {
+      var extension = Game.getObjectById(this[key].id);
+      extension.tick();
+    }, this.memory.my_extensions);
+  }
+}
 
 Room.prototype.tickSpawns = function() {
   if (this.memory.my_spawns) {
@@ -38,6 +48,8 @@ Room.prototype.refreshData = function() {
     this.memory.refresh_count = 500;
     var spawns = this.find(FIND_MY_SPAWNS);
     this.memory.my_spawns = spawns;
+    var extensions = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
+    this.memory.my_extensions = extensions
     this.findSourceSpots();
   }
   this.memory.refresh_count -= 1;
