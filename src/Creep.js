@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 07:46:26
+* @Last Modified time: 2016-06-30 14:59:22
 */
 
 'use strict';
@@ -19,6 +19,9 @@ Creep.prototype.tick = function(){
     this.assignUpgraderTasks()
   } else if (this.memory.role == 'builder') {
     this.assignBuilderTasks()
+  }
+  if(this.ticksToLive < 200 && this.room.energyAvailable >= this.room.energyCapacityAvailable && this.memory.mode == 'idle') {
+    this.memory.mode = 'recharge'
   }
   this.doWork();
   if (this.memory.mode != 'goto') {
@@ -98,6 +101,9 @@ Creep.prototype.doRecharge = function() {
         }
       }
     }, this.memory.my_spawns);
+  if (this.room.energyAvailable <= 100) {
+    this.memory.mode = 'idle'
+  }
 }
 
 Creep.prototype.goto = function(x, y, range) {

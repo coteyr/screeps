@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 06:42:29
+* @Last Modified time: 2016-06-30 14:53:05
 */
 
 'use strict';
@@ -12,9 +12,7 @@ Creep.prototype.assignMinerTasks = function() {
     this.memory.mode = 'idle'
   }
   if(this.memory.mode == 'idle') {
-    if(this.ticksToLive < 200) {
-      this.memory.mode = 'recharge'
-    } else if(this.carry.energy < this.carryCapacity || this.pos.x != this.memory.assigned_position.x || this.pos.y != this.memory.assigned_position.y ) {
+    if(this.carry.energy < this.carryCapacity || this.pos.x != this.memory.assigned_position.x || this.pos.y != this.memory.assigned_position.y ) {
       this.memory.mode = 'mine';
     } else {
       this.memory.mode = 'send';

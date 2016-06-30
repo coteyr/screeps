@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-29 18:07:35
+* @Last Modified time: 2016-06-30 14:53:15
 */
 
 'use strict';
@@ -12,9 +12,7 @@ Creep.prototype.assignUpgraderTasks = function() {
     this.memory.mode = 'idle'
   }
   if(this.memory.mode == 'idle') {
-    if(this.ticksToLive < 200) {
-      this.memory.mode = 'recharge'
-    } else if(this.carry.energy < this.carryCapacity) {
+    if(this.carry.energy < this.carryCapacity) {
       this.memory.mode = 'wait-energy'
     } else if(this.carry.energy >= this.carryCapacity) {
       this.memory.mode = 'upgrade'
