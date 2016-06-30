@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:52:49
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-28 15:21:33
+* @Last Modified time: 2016-06-29 16:09:23
 */
 
 'use strict';
@@ -24,7 +24,7 @@ StructureSpawn.prototype.maxMiners = function() {
 }
 
 StructureSpawn.prototype.setMaxMiners = function() {
-  this.memory.max_miners = _.size(this.room.memory.sources) - 2
+  this.memory.max_miners = 2 // _.size(this.room.memory.sources) - 2
 }
 StructureSpawn.prototype.setMiners = function() {
   var count = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner').length;

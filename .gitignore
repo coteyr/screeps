@@ -25,3 +25,4 @@ config/database.yml
 *.psd
 .sass-cache/
 public/assets/
+/main.js

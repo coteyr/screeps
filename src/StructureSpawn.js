@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-28 15:16:47
+* @Last Modified time: 2016-06-29 17:37:39
 */
 
 'use strict';
@@ -21,10 +21,12 @@ StructureSpawn.prototype.refreshData = function() {
     this.setMaxMiners()
     this.setMaxCarriers()
     this.setMaxUpgraders()
+    this.setMaxBuilders()
     this.setHarvesters()
     this.setMiners()
     this.setCarriers()
     this.setUpgraders()
+    this.setBuilders()
   }
   this.memory.refresh_count -= 1;
 }
@@ -51,16 +53,20 @@ StructureSpawn.prototype.doWork = function() {
   if(this.memory.mode == 'spawn') {
     this.spawnCreep();
   } else if (this.memory.mode = 'wait-energy') {
-    this.doWaitEnery();
+    this.doWaitEnergy();
   }
 }
 
-StructureSpawn.prototype.doWaitEnery = function() {
+StructureSpawn.prototype.doWaitEnergy = function() {
   if(this.energy < this.energyCapacity) {
-    this.memory.call_for_energy = true
+    if (this.memory.call_for_energy) {
+      this.memory.call_for_energy = this.memory.call_for_energy + 1
+    } else {
+      this.memory.call_for_energy = 1
+    }
   } else {
-    this.memory.mode = 'idle'
     delete this.memory.call_for_energy
+    this.memory.mode = 'idle'
   }
 }
 
@@ -73,6 +79,8 @@ StructureSpawn.prototype.spawnCreep = function() {
   // What kind of creep
   if (this.harvesters() < this.maxHarvesters()) {
     this.spawnHarvester();
+  } else if (this.builders() < this.maxBuilders()) {
+    this.spawnBuilder();
   } else if (this.miners() < this.maxMiners()) {
     this.spawnMiner();
   } else if (this.carriers() < this.maxCarriers()) {

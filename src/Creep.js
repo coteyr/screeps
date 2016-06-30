@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-28 15:31:34
+* @Last Modified time: 2016-06-29 18:00:53
 */
 
 'use strict';
@@ -17,6 +17,8 @@ Creep.prototype.tick = function(){
     this.assignCarrierTasks()
   } else if (this.memory.role == 'upgrader') {
     this.assignUpgraderTasks()
+  } else if (this.memory.role == 'builder') {
+    this.assignBuilderTasks()
   }
   this.doWork();
   if (this.memory.mode != 'goto') {
@@ -27,6 +29,7 @@ Creep.prototype.tick = function(){
 }
 
 Creep.prototype.doWork = function() {
+  try { // isolate the issue from other creeps
   if(this.memory.mode == "goto") {
     this.goto();
   } else if(this.memory.mode == 'mine') {
@@ -49,6 +52,13 @@ Creep.prototype.doWork = function() {
     this.doUpgrade();
   } else if(this.memory.mode == 'wait-energy') {
     this.doWaitEnergy();
+  } else if(this.memory.mode == 'build') {
+    this.doBuild();
+  }
+  } catch(error) {
+    Log.error(this.name + " HAS AN ERROR")
+    Log.error(error.message)
+    Log.error("Role: " + this.memory.role + " Mode: " + this.memory.mode)
   }
 }
 
@@ -57,7 +67,11 @@ Creep.prototype.doNoop = function() {
   var choice = choices[Math.floor(Math.random()*choices.length)];
   this.move(choice);
   Log.warn(this.name + " has nothing to do. Wiggle!")
-  this.memory.mode = 'idle'
+  if(this.memory.role == 'harvester') {
+    this.memory.mode = 'send'
+  } else {
+    this.memory.mode = 'idle'
+  }
 }
 
 Creep.prototype.doRecharge = function() {
