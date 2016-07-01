@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 14:59:22
+* @Last Modified time: 2016-06-30 15:51:27
 */
 
 'use strict';
@@ -125,6 +125,18 @@ Creep.prototype.goto = function(x, y, range) {
   x = this.memory.goto_x
   y = this.memory.goto_y
   if (this.pos.inRangeTo(x, y, range)) { // == this.pos.x && y == this.pos.y)
+    if(this.room.memory.sources && this.memory.mode != 'harvester' && this.memory.mode != 'miner') {
+      var creep = this
+      Object.keys(this.room.memory.sources).some(function(key, index) {
+        var position = creep.room.memory.sources[key]
+        if(position.x == creep.pos.y && position.y == creep.pos.y) {
+          var choices = [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT];
+          var choice = choices[Math.floor(Math.random()*choices.length)];
+          this.move(choice);
+        }
+      }, creep.room.memory.sources);
+    }
+
     this.memory.mode = this.memory.before_goto_mode || 'idle'
     delete this.memory.before_goto_mode
     delete this.memory.goto_range

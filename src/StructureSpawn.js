@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 15:23:16
+* @Last Modified time: 2016-06-30 15:41:53
 */
 
 'use strict';
@@ -87,6 +87,8 @@ StructureSpawn.prototype.doErSpawn = function() {
     this.spawnCarrier()
   } else if (this.upgraders() == 0) {
     this.spawnUpgrader()
+  } else {
+    this.memory.mode = 'idle'
   }
 
 }
