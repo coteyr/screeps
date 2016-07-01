@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 15:51:27
+* @Last Modified time: 2016-06-30 20:24:37
 */
 
 'use strict';
@@ -68,6 +68,7 @@ Creep.prototype.doWork = function() {
     Log.error(error.stack)
     Log.error(index)
     Log.error(clean)
+    this.room.resetMemory();
   }
 }
 

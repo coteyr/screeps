@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 07:34:07
+* @Last Modified time: 2016-06-30 20:23:31
 */
 
 'use strict';
@@ -43,14 +43,18 @@ Room.prototype.tickCreeps = function() {
   });
 }
 
+Room.prototype.resetMemory = function() {
+  var spawns = this.find(FIND_MY_SPAWNS);
+  this.memory.my_spawns = spawns;
+  var extensions = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
+  this.memory.my_extensions = extensions
+  this.findSourceSpots();
+}
+
 Room.prototype.refreshData = function() {
   if(this.memory.refresh_count <= 0 || !this.memory.refresh_count) {
     this.memory.refresh_count = 500;
-    var spawns = this.find(FIND_MY_SPAWNS);
-    this.memory.my_spawns = spawns;
-    var extensions = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
-    this.memory.my_extensions = extensions
-    this.findSourceSpots();
+    this.resetMemory();
   }
   this.memory.refresh_count -= 1;
 }
