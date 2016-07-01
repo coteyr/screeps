@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 20:15:48
+* @Last Modified time: 2016-06-30 20:19:04
 */
 
 'use strict';
@@ -29,7 +29,7 @@ Creep.prototype.doSend = function() {
       me.transfer(f.creep, RESOURCE_ENERGY);
       me.memory.mode = 'idle'
       // f.creep.memory.mode = 'transfer'
-      //f.creep.memory.mode = 'idle'
+      f.creep.memory.mode = 'idle'
     })
   }
   if(this.carry.energy == 0) {
