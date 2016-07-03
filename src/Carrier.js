@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-03 12:23:23
+* @Last Modified time: 2016-07-03 12:54:18
 */
 
 'use strict';
@@ -11,7 +11,7 @@ Creep.prototype.assignCarrierTasks = function() {
   if(!this.memory.mode) {
     this.memory.mode = 'idle'
   }
-  if(this.memory.mode == 'idle') {
+  if(this.memory.mode === 'idle') {
     if(this.carry.energy < this.carryCapacity) {
       this.memory.mode = 'pickup';
     } else if(this.carry.energy >= this.carryCapacity) {
@@ -73,9 +73,7 @@ Creep.prototype.doFill = function() {
     delete this.memory.target_miner
   } else {
     var miner = Game.getObjectById(this.memory.target_miner.id);
-    if (miner.memory.mode == 'send') {
-
-    } else {
+    if (!miner.memory.mode === 'send') {
       // get more energy from a different miner
       delete this.memory.target_miner
       this.memory.mode = 'idle'
@@ -94,7 +92,7 @@ Creep.prototype.doPickup = function() {
     var me = this
     if(!this.memory.target_miner) {
       _.filter(Game.creeps).forEach(function(creep) {
-        if(creep.my && creep.memory.mode == 'send') {
+        if(creep.my && creep.memory.mode === 'send') {
           me.memory.target_miner = creep
         }
       });
