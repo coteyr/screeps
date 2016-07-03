@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-02 12:13:30
+* @Last Modified time: 2016-07-03 13:04:57
 */
 
 'use strict';
@@ -33,41 +33,47 @@ Creep.prototype.tick = function(){
 
 Creep.prototype.doWork = function() {
   try { // isolate the issue from other creeps
-  if(this.memory.mode == "goto") {
-    this.goto();
-  } else if(this.memory.mode == 'mine') {
-    this.doMine();
-  } else if(this.memory.mode == 'store') {
-    this.doStore();
-  } else if(this.memory.mode == 'recharge') {
-    this.doRecharge();
-  } else if(this.memory.mode == 'send') {
-    this.doSend();
-  } else if(this.memory.mode == 'noop') {
-    this.doNoop();
-  } else if(this.memory.mode == 'pickup') {
-    this.doPickup();
-  } else if(this.memory.mode == 'fill') {
-    this.doFill();
-  } else if(this.memory.mode == 'transfer') {
-    this.doTransfer();
-  } else if(this.memory.mode == 'upgrade') {
-    this.doUpgrade();
-  } else if(this.memory.mode == 'wait-energy') {
-    this.doWaitEnergy();
-  } else if(this.memory.mode == 'build') {
-    this.doBuild();
-  }
+    switch(this.memory.mode) {
+      case 'goto':
+        this.goto();
+        break;
+      case 'mine':
+        this.doMine()
+        break;
+      case 'store':
+        this.doStore()
+        break;
+      case 'recharge':
+        this.doRecharge()
+        break;
+      case 'send':
+        this.doSend()
+        break;
+      case 'noop':
+        this.doNoop()
+        break;
+      case 'pickup':
+        this.doPickup()
+        break;
+      case 'fill':
+        this.doFill()
+        break;
+      case 'transfer':
+        this.doTransfer()
+        break;
+      case 'upgrade':
+        this.doUpgrade()
+        break;
+      case 'wait-energy':
+        this.doWaitEnergy()
+        break;
+      case 'build':
+        this.doBuild();
+    }
   } catch(error) {
     Log.error(this.name + " HAS AN ERROR")
     Log.error(error.message)
     Log.error("Role: " + this.memory.role + " Mode: " + this.memory.mode)
-    var caller_line = error.stack.split("\n")[4];
-    var index = caller_line.indexOf("at ");
-    var clean = caller_line.slice(index+2, caller_line.length);
-    Log.error(error.stack)
-    Log.error(index)
-    Log.error(clean)
     this.room.resetMemory();
   }
 }
