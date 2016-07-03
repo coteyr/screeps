@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 08:05:24
+* @Last Modified time: 2016-07-02 11:23:53
 */
 
 'use strict';
@@ -13,6 +13,8 @@ StructureSpawn.prototype.getHarvesterBody = function(){
     return [WORK, CARRY, CARRY, MOVE, MOVE]
   } else if(energy >= 550 && energy < 800) {
     return [WORK, WORK, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY]
+  } else if(energy >= 800 && energy < 1050) {
+    return [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
   } else {
     return [WORK, CARRY, MOVE]
   }

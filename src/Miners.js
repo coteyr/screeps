@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:52:49
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 13:09:56
+* @Last Modified time: 2016-07-02 11:12:48
 */
 
 'use strict';
@@ -13,6 +13,8 @@ StructureSpawn.prototype.getMinerBody = function(){
     return [WORK, WORK, CARRY, MOVE]
   } else if(energy >= 550 && energy < 800) {
     return [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE]
+  } else if(energy >= 800 && energy < 1050) {
+    return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE]
   } else {
     return [WORK, CARRY, MOVE]
   }
@@ -26,7 +28,7 @@ StructureSpawn.prototype.maxMiners = function() {
 }
 
 StructureSpawn.prototype.setMaxMiners = function() {
-  this.memory.max_miners = _.size(this.room.memory.sources) - 2
+  this.memory.max_miners = _.size(this.room.memory.sources)
 }
 StructureSpawn.prototype.setMiners = function() {
   var count = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner').length;

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 14:52:57
+* @Last Modified time: 2016-07-02 12:25:16
 */
 
 'use strict';
@@ -38,17 +38,33 @@ Creep.prototype.doMine = function() {
 
 Creep.prototype.doStore = function() {
   var creep = this;
+  var target = undefined;
   Object.keys(this.room.memory.my_spawns).forEach(function(key, index) {
       var spawn = Game.getObjectById(creep.room.memory.my_spawns[key].id);
       if(spawn.energy < spawn.energyCapacity) {
-        if(!creep.pos.inRangeTo(spawn.pos.x, spawn.pos.y, 1)) {
-          creep.goto(spawn.pos.x, spawn.pos.y, 1)
-        } else {
-          creep.transfer(spawn, RESOURCE_ENERGY)
-          creep.memory.mode = 'idle'
-        }
+        target = spawn;
       }
     }, this.memory.my_spawns);
+  if(!target) {
+    Object.keys(this.room.memory.my_extensions).forEach(function(key, index) {
+      var extension = Game.getObjectById(creep.room.memory.my_extensions[key].id);
+      if(extension.energy < extension.energyCapacity) {
+        target = extension;
+      }
+    }, this.memory.my_extensions);
+  }
+  if(target) {
+    if(!creep.pos.inRangeTo(target.pos.x, target.pos.y, 1)) {
+        creep.goto(target.pos.x, target.pos.y, 1)
+      } else {
+        creep.transfer(target, RESOURCE_ENERGY)
+        creep.memory.mode = 'idle'
+      }
+  } else {
+    this.memory.mode = 'upgrade'
+  }
+
+
 }
 
 Creep.prototype.findSourcePosition = function() {
@@ -59,6 +75,15 @@ Creep.prototype.findSourcePosition = function() {
       if(!position.taken) {
         creep.room.memory.sources[key].taken = true
         creep.memory.assigned_position = creep.room.memory.sources[key]
+        var look = this.room.lookAt(x, y);
+        var me = this
+        creep.room.look.forEach(function(lookObject) {
+          if(lookObject.type == LOOK_CREEPS) {
+            Log.warn("Spot is taken " + me.name + " can't mine there: " + x + ", " + y)
+           delete creep.memory.assigned_position
+          }
+        });
+
         return true
       }
     }, creep.room.memory.sources);

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 20:24:37
+* @Last Modified time: 2016-07-02 12:13:30
 */
 
 'use strict';
@@ -20,7 +20,7 @@ Creep.prototype.tick = function(){
   } else if (this.memory.role == 'builder') {
     this.assignBuilderTasks()
   }
-  if(this.ticksToLive < 200 && this.room.energyAvailable >= this.room.energyCapacityAvailable && this.memory.mode == 'idle') {
+  if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacityAvailable * 0.25) && this.memory.mode == 'idle') {
     this.memory.mode = 'recharge'
   }
   this.doWork();
@@ -145,7 +145,17 @@ Creep.prototype.goto = function(x, y, range) {
     delete this.memory.goto_y
   } else {
     if (this.memory.mode == 'goto') {
-      Log.debug("Trying to move: " + this.moveTo(x, y))
+      if(range == 0) {
+        var look = this.room.lookAt(x, y);
+        var me = this
+        look.forEach(function(lookObject) {
+          if(lookObject.type == LOOK_CREEPS) {
+            Log.warn("Spot is taken " + me.name + " can't move there: " + x + ", " + y)
+            me.memory.mode = "idle"
+          }
+        });
+      }
+      this.moveTo(x, y)
     } else {
       this.memory.before_goto_mode = this.memory.mode
       this.memory.mode = 'goto'

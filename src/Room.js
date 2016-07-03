@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 20:23:31
+* @Last Modified time: 2016-07-01 22:35:54
 */
 
 'use strict';
@@ -13,6 +13,7 @@ Room.prototype.tick = function() {
   this.refreshData();
   this.tickExtensions();
   this.tickSpawns();
+  this.tickTowers()
   this.tickCreeps();
   return true;
 };
@@ -43,11 +44,22 @@ Room.prototype.tickCreeps = function() {
   });
 }
 
+Room.prototype.tickTowers = function() {
+  if (this.memory.my_towers) {
+    Object.keys(this.memory.my_towers).forEach(function(key, index) {
+      var tower = Game.getObjectById(this[key].id);
+      tower.tick();
+    }, this.memory.my_towers);
+  }
+}
+
 Room.prototype.resetMemory = function() {
   var spawns = this.find(FIND_MY_SPAWNS);
   this.memory.my_spawns = spawns;
   var extensions = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
   this.memory.my_extensions = extensions
+  var towers = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+  this.memory.my_towers = towers
   this.findSourceSpots();
 }
 
@@ -72,10 +84,16 @@ Room.prototype.findSourceSpots = function() {
     var out = {}
     sources.forEach(function(source) {
         room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
+          Log.info(JSON.stringify(spot));
           if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
-            count += 1;
-            spot['source'] = source;
-            out[count] = spot;
+            if(_.size(room.lookForAt(LOOK_STRUCTURES, spot.x, spot.y)) > 0 ) {
+              Log.info("There seems to be a structure blocking at " + spot.x + ", " + spot.y)
+            } else {
+
+              count += 1;
+              spot['source'] = source;
+              out[count] = spot;
+            }
           }
         })
       });

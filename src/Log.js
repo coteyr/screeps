@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:40:25
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-28 10:11:57
+* @Last Modified time: 2016-07-01 20:25:27
 */
 
 'use strict';
@@ -34,6 +34,10 @@ var Log = {
     if (logLevel >= 1) {
       console.log('<span style="color: #FF0000">' + message + '</span>');
     }
+  },
+
+  tick: function() {
+    console.log('<span style="color: #00DD00">TICK</span>');
   }
 }
 module.exports = Log;
