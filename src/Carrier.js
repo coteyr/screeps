@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-02 09:40:08
+* @Last Modified time: 2016-07-03 12:23:23
 */
 
 'use strict';
@@ -35,78 +35,26 @@ Creep.prototype.doWaitEnergy = function() {
 Creep.prototype.doTransfer = function() {
   var me = this;
   if(!this.memory.target){
-    var biggest = 0;
-  Object.keys(this.room.memory.my_spawns).forEach(function(key, index) {
-      var spawn = Game.getObjectById(me.room.memory.my_spawns[key].id);
-      if (spawn.memory.call_for_energy) {
-        if (spawn.memory.call_for_energy >= biggest) {
-          me.memory.target = spawn
-          biggest = spawn.memory.call_for_energy
-        }
-      }
-    }, this.memory.my_spawns);
-  Object.keys(this.room.memory.my_extensions).forEach(function(key, index) {
-      var extension = Game.getObjectById(me.room.memory.my_extensions[key].id);
-      if (extension && extension.memory && extension.memory.call_for_energy) {
-        if (extension.memory.call_for_energy >= biggest) {
-          me.memory.target = extension
-          biggest = extension.memory.call_for_energy
-        }
-      }
-    }, this.memory.my_extensions);
-  if(!me.memory.target) {
-    Object.keys(this.room.memory.my_towers).forEach(function(key, index) {
-        var tower = Game.getObjectById(me.room.memory.my_towers[key].id);
-        if (tower && tower.memory && tower.memory.call_for_energy) {
-          if (tower.memory.call_for_energy >= biggest) {
-            me.memory.target = tower
-            biggest = tower.memory.call_for_energy
-          }
-        }
-      }, this.memory.my_towers);
+    var possibilities = _.merge(this.room.memory.my_spawns, this.room.memory.my_extensions, this.room.memory.my_towers, this.room.myCreeps)
+    this.memory.target = Targeting.getTransferTarget(possibilities);
   }
-
-    _.filter(Game.creeps).forEach(function(creep) {
-      if(creep.my && creep.memory.call_for_energy) {
-        if(creep.memory.call_for_energy >= biggest) {
-          me.memory.target = creep
-          biggest = creep.memory.call_for_energy
-        }
-      }
-    });
-  }
-
   if (this.memory.target) {
     var target = Game.getObjectById(this.memory.target.id);
-    var energy = this.energy;
     if(target && target.memory) {
       target.memory.call_for_energy = 0
       if(!this.pos.inRangeTo(this.memory.target.pos.x, this.memory.target.pos.y, 1)) {
         this.goto(this.memory.target.pos.x, this.memory.target.pos.y, 1)
       } else {
-
-        if(target && target.carry && target.carry.energy < target.carryCapacity && this.carry.energy > 0) {
-          // creep
-          this.transfer(target, RESOURCE_ENERGY)
-        } else if(target && target.energy < target.energyCapacity) {
-          // spawner or extension
+        var energy = this.carry.energy
+        if(this.carry.energy > 0) {
           this.transfer(target, RESOURCE_ENERGY)
         } else {
-          this.memory.mode = 'transfer'
+          this.memory.mode = 'idle'
+          target.memory.call_for_energy = _.max([target.memory.call_for_energy - energy, 0])
           delete this.memory.target
-        }
-        if(this.carry.energy == 0) {
-          target.memory.call_for_energy = target.memory.call_for_energy - energy
-          if (target.memory.call_for_energy <= 0) {
-            target.memory.call_for_energy = 1
-          }
         }
       }
     }
-  }
-  if(this.carry.energy <= 0) {
-    this.memory.mode = 'idle'
-    delete this.memory.target
   }
 }
 
