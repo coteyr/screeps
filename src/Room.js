@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-03 12:12:58
+* @Last Modified time: 2016-07-04 12:27:18
 */
 
 'use strict';
@@ -48,7 +48,9 @@ Room.prototype.tickTowers = function() {
   if (this.memory.my_towers) {
     Object.keys(this.memory.my_towers).forEach(function(key, index) {
       var tower = Game.getObjectById(this[key].id);
-      tower.tick();
+      if(tower) {
+        tower.tick();
+      }
     }, this.memory.my_towers);
   }
 }
@@ -101,6 +103,6 @@ Room.prototype.findSourceSpots = function() {
   }
 }
 
-Room.prototype.myCrepes = function() {
-  return _.filter(Game.creeps, function(c) { c.my && c.room.name == this.name; });
+Room.prototype.myCreeps = function() {
+  return this.find(FIND_MY_CREEPS);
 }

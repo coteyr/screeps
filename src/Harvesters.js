@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-02 11:23:53
+* @Last Modified time: 2016-07-04 09:21:01
 */
 
 'use strict';
@@ -28,7 +28,7 @@ StructureSpawn.prototype.maxHarvesters = function() {
 }
 
 StructureSpawn.prototype.setMaxHarvesters = function() {
-  if (this.memory.current_miners > 2) {
+  if (this.memory.current_miners >= 2) {
     this.memory.max_harvesters = 0
   } else {
     this.memory.max_harvesters = 2

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 14:53:15
+* @Last Modified time: 2016-07-03 16:04:14
 */
 
 'use strict';
@@ -22,9 +22,7 @@ Creep.prototype.assignUpgraderTasks = function() {
 
 Creep.prototype.doUpgrade = function() {
   if(this.carry.energy >= 1) {
-    if(!this.pos.inRangeTo(this.room.controller.pos.x, this.room.controller.pos.y, 3)) {
-      this.goto(this.room.controller.pos.x, this.room.controller.pos.y, 3)
-    } else {
+    if(this.moveCloseTo(this.room.controller.pos.x, this.room.controller.pos.y, 3)) {
       this.upgradeController(this.room.controller)
     }
   } else {

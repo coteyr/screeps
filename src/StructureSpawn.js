@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-02 12:21:15
+* @Last Modified time: 2016-07-04 09:04:10
 */
 
 'use strict';
@@ -89,7 +89,7 @@ StructureSpawn.prototype.doWaitEnergy = function() {
 }
 
 StructureSpawn.prototype.doErSpawn = function() {
-  if (this.harvesters()== 0) {
+  if (this.harvesters() == 0 && this.maxHarvesters > 0) {
     this.spawnHarvester();
   } else if (this.miners() == 0) {
     this.spawnMiner();

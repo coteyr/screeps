@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-01 21:21:05
+* @Last Modified time: 2016-07-04 00:01:06
 */
 
 'use strict';
@@ -30,7 +30,7 @@ StructureTower.prototype.assignMode = function() {
   if(!this.memory.mode) {
     this.memory.mode = 'idle'
   }
-  if(this.memory.mode == 'idle') {
+  if(this.memory.mode === 'idle') {
     if(this.energy < this.energyCapacity) {
       this.memory.mode = 'wait-energy'
     } else {
@@ -40,7 +40,7 @@ StructureTower.prototype.assignMode = function() {
 
 }
 StructureTower.prototype.doWork = function() {
-  if(this.memory.mode == 'wait-energy') {
+  if(this.memory.mode === 'wait-energy') {
     this.doWaitEnergy()
   }
   if(_.size(this.room.find(FIND_HOSTILE_CREEPS)) > 0) {
@@ -54,7 +54,7 @@ StructureTower.prototype.doWork = function() {
 StructureTower.prototype.doWaitEnergy = function() {
   if(this.energy < this.energyCapacity) {
     if (this.memory.call_for_energy) {
-      this.memory.call_for_energy = this.memory.call_for_energy + 2
+      this.memory.call_for_energy = this.memory.call_for_energy + 0.1
     } else {
       this.memory.call_for_energy = 1
     }
@@ -77,7 +77,7 @@ StructureTower.prototype.doRepairs = function() {
   Log.info("Do repairs")
    var target = this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: function(object){
-           return (object.hits < object.hitsMax / 4);
+           return ((object.hits < object.hitsMax / 4 &&  object.structureType != 'constructedWall') || (object.hits < 10000 &&  object.structureType === 'constructedWall'));
         }
     });
    if(this.target) {

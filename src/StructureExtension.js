@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-30 06:23:32
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 12:14:34
+* @Last Modified time: 2016-07-03 13:08:24
 */
 
 'use strict';
@@ -23,7 +23,7 @@ StructureExtension.prototype.assignMode = function() {
 }
 
 StructureExtension.prototype.doWork = function() {
-  if(this.memory.mode == 'wait-energy') {
+  if(this.memory.mode === 'wait-energy') {
     this.doWaitEnergy()
   }
 }

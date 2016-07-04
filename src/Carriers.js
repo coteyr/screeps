@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-02 11:16:03
+* @Last Modified time: 2016-07-04 09:02:12
 */
 
 'use strict';
@@ -28,7 +28,7 @@ StructureSpawn.prototype.maxCarriers = function() {
 }
 
 StructureSpawn.prototype.setMaxCarriers = function() {
-  this.memory.max_carriers = (this.memory.max_miners) * 2
+  this.memory.max_carriers = (this.memory.max_miners) * 1
 }
 StructureSpawn.prototype.setCarriers = function() {
   var count = _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier').length;

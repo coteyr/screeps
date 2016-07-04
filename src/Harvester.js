@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-02 12:25:16
+* @Last Modified time: 2016-07-03 18:40:06
 */
 
 'use strict';
@@ -25,13 +25,12 @@ Creep.prototype.assignHarvesterTasks = function() {
 Creep.prototype.doMine = function() {
   if(!this.memory.assigned_position) {
     this.findSourcePosition()
-  } else if(this.memory.assigned_position.x != this.pos.x || this.memory.assigned_position.y != this.pos.y) {
-    this.goto(this.memory.assigned_position.x, this.memory.assigned_position.y, 0)
-  } else {
+  }
+  if(this.moveCloseTo(this.memory.assigned_position.x, this.memory.assigned_position.y, 0)) {
     var source = Game.getObjectById(this.memory.assigned_position.source.id);
     this.harvest(source)
   }
-  if(this.carry.energy >= this.carryCapacity && this.pos.x == this.memory.assigned_position.x && this.pos.y == this.memory.assigned_position.y ) {
+  if(this.carry.energy >= this.carryCapacity) { // && this.pos.x == this.memory.assigned_position.x && this.pos.y == this.memory.assigned_position.y ) {
     this.memory.mode = 'idle'
   }
 }
@@ -54,17 +53,11 @@ Creep.prototype.doStore = function() {
     }, this.memory.my_extensions);
   }
   if(target) {
-    if(!creep.pos.inRangeTo(target.pos.x, target.pos.y, 1)) {
-        creep.goto(target.pos.x, target.pos.y, 1)
-      } else {
-        creep.transfer(target, RESOURCE_ENERGY)
-        creep.memory.mode = 'idle'
-      }
-  } else {
-    this.memory.mode = 'upgrade'
+    if(creep.moveCloseTo(target.pos.x, target.pos.y, 1)) {
+      creep.transfer(target, RESOURCE_ENERGY)
+      creep.memory.mode = 'idle'
+    }
   }
-
-
 }
 
 Creep.prototype.findSourcePosition = function() {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-29 16:16:15
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-02 09:52:21
+* @Last Modified time: 2016-07-04 09:03:35
 */
 
 'use strict';
@@ -28,7 +28,11 @@ StructureSpawn.prototype.maxBuilders = function() {
 }
 
 StructureSpawn.prototype.setMaxBuilders = function() {
-  this.memory.max_builders = 2
+  if(_.size(this.room.find(FIND_CONSTRUCTION_SITES)) > 0) {
+    this.memory.max_builders = 2
+  } else {
+    this.memory.max_builders = 0
+  }
 }
 StructureSpawn.prototype.setBuilders = function() {
   var count = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder').length;

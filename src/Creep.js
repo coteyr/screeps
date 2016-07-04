@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-03 13:04:57
+* @Last Modified time: 2016-07-04 09:16:47
 */
 
 'use strict';
@@ -35,7 +35,7 @@ Creep.prototype.doWork = function() {
   try { // isolate the issue from other creeps
     switch(this.memory.mode) {
       case 'goto':
-        this.goto();
+        this.moveCloseTo();
         break;
       case 'mine':
         this.doMine()
@@ -113,7 +113,19 @@ Creep.prototype.doRecharge = function() {
   }
 }
 
-Creep.prototype.goto = function(x, y, range) {
+Creep.prototype.moveCloseTo = function(x, y, range) {
+  if(!range) {
+    range = 0
+  }
+  if(this.pos.inRangeTo(x, y, range)) {
+    return true
+  } else {
+    this.moveTo(x, y)
+    return false
+  }
+}
+
+/*Creep.prototype.goto = function(x, y, range) {
  if(x) {
     this.memory.goto_x = x
   }
@@ -167,4 +179,4 @@ Creep.prototype.goto = function(x, y, range) {
       this.memory.mode = 'goto'
     }
   }
-}
+}*/
