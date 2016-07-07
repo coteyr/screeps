@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-30 06:23:32
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-03 13:08:24
+* @Last Modified time: 2016-07-05 20:17:49
 */
 
 'use strict';
@@ -16,9 +16,9 @@ StructureExtension.prototype.tick = function() {
 
 StructureExtension.prototype.assignMode = function() {
   if(this.energy < this.energyCapacity) {
-    this.memory.mode = 'wait-energy'
+    this.setMode('wait-energy')
   } else {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 }
 
@@ -37,7 +37,7 @@ StructureExtension.prototype.doWaitEnergy = function() {
     }
   } else {
     delete this.memory.call_for_energy
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 }
 
@@ -55,12 +55,3 @@ StructureExtension.prototype.setupMemory = function() {
 
 StructureExtension.prototype.memory = undefined;
 
-/*StructureExtension.prototype.memory = function() {
-  if(!this.room.memory.extensions) {
-    this.room.memory.extensions = {};
-  }
-  if (!this.room.memory.extensions[this.id]) {
-    this.room.memory.extensions[this.id] = {};
-  }
-  return this.room.memory.extensions[this.id]
-}*/

@@ -2,22 +2,22 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-03 18:40:06
+* @Last Modified time: 2016-07-05 20:38:19
 */
 
 'use strict';
 
 Creep.prototype.assignHarvesterTasks = function() {
   if(!this.memory.mode) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
   if(this.memory.mode == 'idle') {
     if(this.carry.energy < this.carryCapacity) {
-      this.memory.mode = 'mine';
+      this.setMode('mine')
     } else if(this.room.energyAvailable < this.room.energyCapacityAvailable){
-      this.memory.mode = 'store';
+      this.setMode('store');
     } else {
-      this.memory.mode = 'noop'
+      this.setMode('noop')
     }
   }
 }
@@ -31,7 +31,7 @@ Creep.prototype.doMine = function() {
     this.harvest(source)
   }
   if(this.carry.energy >= this.carryCapacity) { // && this.pos.x == this.memory.assigned_position.x && this.pos.y == this.memory.assigned_position.y ) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 }
 

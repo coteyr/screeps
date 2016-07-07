@@ -2,20 +2,20 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-06-30 20:48:13
+* @Last Modified time: 2016-07-05 20:17:29
 */
 
 'use strict';
 
 Creep.prototype.assignMinerTasks = function() {
   if(!this.memory.mode) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
   if(this.memory.mode == 'idle') {
-    if(this.carry.energy < this.carryCapacity || this.pos.x != this.memory.assigned_position.x || this.pos.y != this.memory.assigned_position.y ) {
-      this.memory.mode = 'mine';
+    if(this.carry.energy < this.carryCapacity) {
+      this.setMode('mine');
     } else {
-      this.memory.mode = 'send';
+      this.setMode('send');
     }
   }
 }
@@ -27,12 +27,12 @@ Creep.prototype.doSend = function() {
   if(found.length > 1) {
     _.filter(found, (f) => f.creep.memory.role != 'miner').some(function(f) {
       me.transfer(f.creep, RESOURCE_ENERGY);
-      me.memory.mode = 'idle'
+      me.setMode('idle')
       // f.creep.memory.mode = 'transfer'
       // f.creep.memory.mode = 'idle'
     })
   }
   if(this.carry.energy == 0) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 }

@@ -2,20 +2,20 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-04 08:55:21
+* @Last Modified time: 2016-07-06 12:13:11
 */
 
 'use strict';
 
 Creep.prototype.assignCarrierTasks = function() {
   if(!this.memory.mode) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
   if(this.memory.mode === 'idle') {
     if(this.carry.energy < this.carryCapacity) {
-      this.memory.mode = 'pickup';
+      this.setMode('pickup');
     } else if(this.carry.energy >= this.carryCapacity) {
-      this.memory.mode = 'transfer';
+      this.setMode('transfer');
     }
   }
 }
@@ -28,7 +28,7 @@ Creep.prototype.doWaitEnergy = function() {
     }
   } else {
     delete this.memory.call_for_energy
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 }
 
@@ -49,7 +49,7 @@ Creep.prototype.doTransfer = function() {
         target.memory.call_for_energy = 0
         delete this.memory.target
         if (this.carry.energy <= 0) {
-          this.memory.mode = 'idle'
+          this.setMode('idle')
         }
       }
     }
@@ -58,37 +58,38 @@ Creep.prototype.doTransfer = function() {
 
 Creep.prototype.doFill = function() {
   if(!this.memory.target_miner) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
     return false;
   }
   if(this.carry.energy >= 0) { //this.carryCapacity) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
     return false
   }
   if(!Game.getObjectById(this.memory.target_miner.id)) {
     Log.warn(this.name + " is missing their miner, reassigning")
-    this.memory.mode = 'idle'
+    this.setMode('idle')
     delete this.memory.target_miner
   } else {
     var miner = Game.getObjectById(this.memory.target_miner.id);
     if (!miner.memory.mode === 'send') {
       // get more energy from a different miner
       delete this.memory.target_miner
-      this.memory.mode = 'idle'
+      this.setMode('idle')
     }
     if(this.memory.target_miner && !this.pos.inRangeTo(Game.getObjectById(this.memory.target_miner.id).pos, 1)) {
       Log.warn("No longer in range")
-      this.memory.mode = 'idle'
+      this.setMode('idle')
       delete this.memory.target_miner
     }
   }
-
+  delete this.memory.target_miner
 }
 
 Creep.prototype.doPickup = function() {
   if(this.carry.energy < this.carryCapacity) {
     var me = this
     if(!this.memory.target_miner) {
+      me.room.cleanCreeps()
       _.filter(Game.creeps).forEach(function(creep) {
         if(creep.my && creep.memory.mode === 'send') {
           me.memory.target_miner = creep
@@ -98,10 +99,10 @@ Creep.prototype.doPickup = function() {
   }
   if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {
     if(this.carry.energy < this.carryCapacity) {
-      this.memory.mode = 'fill'
+      this.setMode('fill')
     }
   }
   if(this.carry.energy >= this.carryCapacity) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 }

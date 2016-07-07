@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-02 10:23:49
+* @Last Modified time: 2016-07-07 00:53:30
 */
 
 'use strict';
@@ -13,14 +13,17 @@ StructureSpawn.prototype.getUpgraderBody = function(){
     return [WORK, WORK, CARRY, MOVE]
   } else if(energy >= 550 && energy < 800) {
     return [WORK, WORK, WORK, MOVE, CARRY, CARRY, CARRY, CARRY]
-  } else if(energy >= 800 && energy < 1050) {
+  } else if(energy >= 800 && energy < 1300) {
     [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE]
+  } else if(energy >= 1300) {
+    [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE]
   } else {
     return [WORK, CARRY, MOVE]
   }
 }
 StructureSpawn.prototype.upgraders = function() {
-  return this.memory.current_upgraders || 0
+  return _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader').length;
+ // return this.memory.current_upgraders || 0
 }
 
 StructureSpawn.prototype.maxUpgraders = function() {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-04 09:04:10
+* @Last Modified time: 2016-07-05 20:15:34
 */
 
 'use strict';
@@ -45,21 +45,21 @@ StructureSpawn.prototype.refreshData = function() {
 StructureSpawn.prototype.assignMode = function() {
   if(!this.memory.mode) {
     Log.warn("No current mode for Spawn " + this.name)
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
   if(!this.memory.mode || this.memory.mode == 'idle') {
     if(this.room.energyAvailable >= this.room.energyCapacityAvailable) {
-      this.memory.mode = 'spawn'
+      this.setMode('spawn')
     } else if (this.energy < this.energyCapacity) {
-      this.memory.mode = 'wait-energy'
+      this.setMode('wait-energy')
     } else {
-      this.memory.mode = 'idle'
+      this.setMode('idle')
     }
   } else if (this.memory.mode == 'spawning' && this.spawning == null ) {
-      this.memory.mode = 'idle'
+      this.setMode('idle')
   }
-  if (this.room.energyAvailable >= 300 && _.size(Game.creeps) == 0) {
-      this.memory.mode = 'er-spawn'
+  if (this.room.energyAvailable >= 300 && (this.miners() <= 0 || this.carriers() <= 0)) {
+    this.setMode('er-spawn')
   }
 }
 
@@ -84,30 +84,29 @@ StructureSpawn.prototype.doWaitEnergy = function() {
     }
   } else {
     delete this.memory.call_for_energy
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 }
 
 StructureSpawn.prototype.doErSpawn = function() {
   if (this.harvesters() == 0 && this.maxHarvesters > 0) {
+    Log.info("ER Spawn Harvester")
     this.spawnHarvester();
   } else if (this.miners() == 0) {
+    Log.info("ER Spawn Miner")
     this.spawnMiner();
   } else if (this.carriers() == 0) {
+    Log.info("ER Spawn Carrier")
     this.spawnCarrier()
   } else {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 
 }
 
 StructureSpawn.prototype.spawnCreep = function() {
   Log.info('Trying to spawn a creep')
-  for(var name in Memory.creeps) {
-    if(!Game.creeps[name]) {
-      delete Memory.creeps[name];
-    }
-  }
+  this.room.cleanCreeps()
   // What kind of creep
   if (this.harvesters() < this.maxHarvesters()) {
     this.spawnHarvester();
@@ -120,5 +119,5 @@ StructureSpawn.prototype.spawnCreep = function() {
   } else if (this.upgraders() < this.maxUpgraders()) {
     this.spawnUpgrader()
   }
-  this.memory.mode = 'spawning'
+  this.setMode('spawning')
 }

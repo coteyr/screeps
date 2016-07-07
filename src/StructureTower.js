@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-04 00:01:06
+* @Last Modified time: 2016-07-06 13:52:08
 */
 
 'use strict';
@@ -28,13 +28,13 @@ StructureTower.prototype.setupMemory = function() {
 
 StructureTower.prototype.assignMode = function() {
   if(!this.memory.mode) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
   if(this.memory.mode === 'idle') {
     if(this.energy < this.energyCapacity) {
-      this.memory.mode = 'wait-energy'
+      this.setMode('wait-energy')
     } else {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
     }
   }
 
@@ -60,7 +60,7 @@ StructureTower.prototype.doWaitEnergy = function() {
     }
   } else {
     delete this.memory.call_for_energy
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 }
 
@@ -68,7 +68,7 @@ StructureTower.prototype.doAttackInvaders = function() {
   var hostiles = this.room.find(FIND_HOSTILE_CREEPS);
     if(hostiles.length > 0) {
         var username = hostiles[0].owner.username;
-        Game.notify(`User ${username} spotted in room ${roomName}`);
+        Game.notify('User ${username} spotted in room ');
         this.attack(hostiles[0]);
     }
 }

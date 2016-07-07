@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-04 12:27:18
+* @Last Modified time: 2016-07-07 09:37:18
 */
 
 'use strict';
@@ -12,12 +12,20 @@ Room.prototype.tick = function() {
   Log.debug('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
   this.refreshData();
   this.tickExtensions();
+  this.tickContainers();
   this.tickSpawns();
   this.tickTowers()
   this.tickCreeps();
   return true;
 };
-
+Room.prototype.tickContainers = function() {
+  if (this.memory.my_containers) {
+    Object.keys(this.memory.my_containers).forEach(function(key, index) {
+      var container = Game.getObjectById(this[key].id);
+      container.tick();
+    }, this.memory.my_containers);
+  }
+}
 Room.prototype.tickExtensions = function() {
   if (this.memory.my_extensions) {
     Object.keys(this.memory.my_extensions).forEach(function(key, index) {
@@ -60,6 +68,8 @@ Room.prototype.resetMemory = function() {
   this.memory.my_spawns = spawns;
   var extensions = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
   this.memory.my_extensions = extensions
+  var containers = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}});
+  this.memory.my_containers = containers
   var towers = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
   this.memory.my_towers = towers
   this.findSourceSpots();
@@ -105,4 +115,12 @@ Room.prototype.findSourceSpots = function() {
 
 Room.prototype.myCreeps = function() {
   return this.find(FIND_MY_CREEPS);
+}
+
+Room.prototype.cleanCreeps = function() {
+  for(var name in Memory.creeps) {
+    if(!Game.creeps[name]) {
+      delete Memory.creeps[name];
+    }
+  }
 }

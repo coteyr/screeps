@@ -2,20 +2,20 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-03 16:04:14
+* @Last Modified time: 2016-07-05 20:15:22
 */
 
 'use strict';
 
 Creep.prototype.assignUpgraderTasks = function() {
   if(!this.memory.mode) {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
   if(this.memory.mode == 'idle') {
     if(this.carry.energy < this.carryCapacity) {
-      this.memory.mode = 'wait-energy'
+      this.setMode('wait-energy')
     } else if(this.carry.energy >= this.carryCapacity) {
-      this.memory.mode = 'upgrade'
+      this.setMode('upgrade')
     }
   }
 }
@@ -26,7 +26,7 @@ Creep.prototype.doUpgrade = function() {
       this.upgradeController(this.room.controller)
     }
   } else {
-    this.memory.mode = 'idle'
+    this.setMode('idle')
   }
 }
 
