@@ -2,43 +2,15 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 14:56:10
+* @Last Modified time: 2016-07-08 23:37:11
 */
 
 'use strict';
 
+_.merge(StructureTower.prototype, EnergyStructure.prototype);
 
-StructureTower.prototype.tick = function() {
-  this.setupMemory();
-  this.assignMode();
-  this.doWork();
-}
+StructureTower.prototype.energyCallModifier = 2 // higher then normal for defense
 
-StructureTower.prototype.setupMemory = function() {
-  if(!this.room.memory.towers) {
-    this.room.memory.towers = {};
-  }
-  if (!this.room.memory.towers[this.id]) {
-    this.room.memory.towers[this.id] = {}
-    this.memory = this.room.memory.towers[this.id]
-  } else {
-    this.memory = this.room.memory.towers[this.id];
-  }
-}
-
-StructureTower.prototype.assignMode = function() {
-  if(!this.memory.mode) {
-    this.setMode('idle')
-  }
-  if(this.memory.mode === 'idle') {
-    if(this.energy < this.energyCapacity) {
-      this.setMode('wait-energy')
-    } else {
-    this.setMode('idle')
-    }
-  }
-
-}
 StructureTower.prototype.doWork = function() {
   if(this.memory.mode === 'wait-energy') {
     this.doWaitEnergy()
@@ -50,18 +22,6 @@ StructureTower.prototype.doWork = function() {
   }
 }
 
-StructureTower.prototype.doWaitEnergy = function() {
-  if(this.energy < this.energyCapacity) {
-    if (this.memory.call_for_energy) {
-      this.memory.call_for_energy = this.memory.call_for_energy + 0.1
-    } else {
-      this.memory.call_for_energy = 1
-    }
-  } else {
-    delete this.memory.call_for_energy
-    this.setMode('idle')
-  }
-}
 
 StructureTower.prototype.doAttackInvaders = function() {
   var hostiles = this.room.find(FIND_HOSTILE_CREEPS);
@@ -83,3 +43,5 @@ StructureTower.prototype.doRepairs = function() {
    }
 
 }
+
+StructureTower.prototype.memory = undefined;
