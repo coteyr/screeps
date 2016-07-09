@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 04:21:46
+* @Last Modified time: 2016-07-09 12:11:42
 */
 
 'use strict';
@@ -11,50 +11,23 @@
 Room.prototype.tick = function() {
   Log.debug('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
   this.refreshData();
-  this.tickExtensions();
+  this.tickStuff();
+  /*this.tickExtensions();
   this.tickContainers();
   this.tickStorages();
   this.tickSpawns();
-  this.tickTowers()
-  this.tickCreeps();
+  this.tickTowers() */
+  this.tickCreeps(); //keep this separate
   this.report();
 
   return true;
 };
-Room.prototype.tickStorages = function() {
-  if (this.memory.my_storages) {
-    Object.keys(this.memory.my_storages).forEach(function(key, index) {
-      var storage = Game.getObjectById(this[key].id);
-      storage.tick();
-    }, this.memory.my_storages);
-  }
-}
-Room.prototype.tickContainers = function() {
-  if (this.memory.my_containers) {
-    Object.keys(this.memory.my_containers).forEach(function(key, index) {
-      var container = Game.getObjectById(this[key].id);
-      container.tick();
-    }, this.memory.my_containers);
-  }
-}
-Room.prototype.tickExtensions = function() {
-  if (this.memory.my_extensions) {
-    Object.keys(this.memory.my_extensions).forEach(function(key, index) {
-      var extension = Game.getObjectById(this[key].id);
-      if(extension && extension.my) {
-        extension.tick();
-      }
-    }, this.memory.my_extensions);
-  }
-}
-
-Room.prototype.tickSpawns = function() {
-  if (this.memory.my_spawns) {
-    Object.keys(this.memory.my_spawns).forEach(function(key, index) {
-      var spawn = Game.getObjectById(this[key].id);
-      spawn.tick();
-    }, this.memory.my_spawns);
-  }
+Room.prototype.tickStuff = function() {
+  var stuff = _.union({}, this.memory.my_storages, this.memory.my_containers, this.memory.my_extensions, this.memory.my_spawns, this.memory.my_towers)
+  Object.keys(stuff).forEach(function(key, index) {
+    var object = Game.getObjectById(this[key].id);
+    object.tick();
+  }, stuff);
 }
 
 Room.prototype.tickCreeps = function() {
@@ -63,17 +36,6 @@ Room.prototype.tickCreeps = function() {
       creep.tick();
     }
   });
-}
-
-Room.prototype.tickTowers = function() {
-  if (this.memory.my_towers) {
-    Object.keys(this.memory.my_towers).forEach(function(key, index) {
-      var tower = Game.getObjectById(this[key].id);
-      if(tower) {
-        tower.tick();
-      }
-    }, this.memory.my_towers);
-  }
 }
 
 Room.prototype.resetMemory = function() {
@@ -112,7 +74,7 @@ Room.prototype.findSourceSpots = function() {
     sources.forEach(function(source) {
         room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
           Log.info(JSON.stringify(spot));
-          if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
+          if (spot.terrain === 'plain' || spot.terrain === 'swamp') {
             if(_.size(room.lookForAt(LOOK_STRUCTURES, spot.x, spot.y)) > 0 ) {
               Log.info("There seems to be a structure blocking at " + spot.x + ", " + spot.y)
             } else {
