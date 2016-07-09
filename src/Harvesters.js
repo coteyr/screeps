@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 05:48:05
+* @Last Modified time: 2016-07-09 14:55:25
 */
 
 'use strict';
@@ -22,7 +22,7 @@ StructureSpawn.prototype.getHarvesterBody = function(){
   }
 }
 StructureSpawn.prototype.harvesters = function() {
-  return _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester').length;
+  return Finder.findCreeps('harvester', this.room.name).length;
   // return this.memory.current_harvesters || 0
 }
 
@@ -38,7 +38,7 @@ StructureSpawn.prototype.setMaxHarvesters = function() {
   }
 }
 StructureSpawn.prototype.setHarvesters = function() {
-  var count = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester').length;
+  var count = Finder.findCreeps('harvester', this.room.name).length;
   this.memory.current_harvesters = count;
 }
 
