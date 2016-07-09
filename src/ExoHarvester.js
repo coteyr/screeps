@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 04:12:59
+* @Last Modified time: 2016-07-09 13:42:35
 */
 
 'use strict';
@@ -36,7 +36,6 @@ Creep.prototype.assignExoHarvesterTasks = function() {
 }
 
 Creep.prototype.assignHomeExoHarvesterTasks = function() {
-  Log.info('here a')
   if(this.carry.energy <= 0) {
     this.setMode('leave');
   } else {
@@ -66,6 +65,7 @@ Creep.prototype.doLeave = function() {
   }
   if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
     this.moveTo(this.memory.exit.x, this.memory.exit.y)
+    this.memory.goto_room = this.memory.harvest
     this.setMode('transition')
     delete this.memory.exit
     delete this.memory.exit_dir
@@ -81,7 +81,8 @@ Creep.prototype.doGoHome = function() {
   }
   if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
     this.moveTo(this.memory.exit.x, this.memory.exit.y)
-    this.setMode('cross')
+    this.memory.goto_room = this.memory.home
+    this.setMode('transition')
     delete this.memory.exit
     delete this.memory.exit_dir
   }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 04:00:36
+* @Last Modified time: 2016-07-09 13:43:13
 */
 
 'use strict';
@@ -76,7 +76,7 @@ Creep.prototype.doWork = function() {
         this.doTransition();
         break;
       case 'cross':
-        this.doCross();
+        this.doTransition();
         break;
       case 'go-home':
         this.doGoHome()
@@ -108,7 +108,7 @@ Creep.prototype.doNoop = function() {
   var choice = choices[Math.floor(Math.random()*choices.length)];
   this.move(choice);
   Log.warn(this.name + " has nothing to do. Wiggle!")
-  if(this.memory.role == 'harvester') {
+  if(this.memory.role === 'harvester') {
     this.setMode('send')
   } else {
     this.setMode('idle')
@@ -116,30 +116,19 @@ Creep.prototype.doNoop = function() {
 }
 
 Creep.prototype.doTransition = function() {
-  if (this.room.name === this.memory.harvest) {
-    if(this.move(this.memory.exit_dir) == 0) {
+  var roomName = this.memory.goto_room
+  if (this.room.name === roomName) {
+    if(this.move(this.memory.exit_dir) === 0) {
       this.setMode('idle');
-    }
-  }
-}
-
-Creep.prototype.doCross = function() {
-  if (this.room.name === this.memory.home) {
-    if(this.move(this.memory.exit_dir) == 0) {
-      this.setMode('idle');
+      delete this.memory.exit_dir
+      delete this.memory.goto_room
     }
   }
 }
 
 
-Creep.prototype.doEnter = function() {
-  if (this.room.name == this.memory.attack) {
-    var choices = [BOTTOM];
-    var choice = choices[Math.floor(Math.random()*choices.length)];
-    this.move(BOTTOM);
-  }
-  this.setMode('idle');
-}
+
+
 
 
 Creep.prototype.doRecharge = function() {
