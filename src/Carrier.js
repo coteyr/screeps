@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 13:28:14
+* @Last Modified time: 2016-07-09 19:13:25
 */
 
 'use strict';
@@ -93,6 +93,7 @@ Creep.prototype.doFill = function() {
 Creep.prototype.doPickup = function() {
   if(this.carry.energy < this.carryCapacity) {
     this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room)
+    Log.info(this.memory.target_miner)
     if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {
       this.setMode('fill')
     }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 11:47:11
+* @Last Modified time: 2016-07-09 19:31:47
 */
 
 'use strict';
@@ -19,7 +19,7 @@ StructureSpawn.prototype.tick = function() {
 StructureSpawn.prototype.promoteCreeps = function() {
   if(this.harvesters >  this.maxHarvesters) {
     Log.warn("Promoting Harvesters to carriers")
-    _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester').forEach(function(harvester) {
+    Finder.findCreeps('harvester', this.room.name).forEach(function(harvester) {
       harvester.memory.mode = 'carrier'
     })
   }
@@ -63,7 +63,7 @@ StructureSpawn.prototype.assignMode = function() {
     Log.warn("No current mode for Spawn " + this.name)
     this.setMode('idle')
   }
-  if(!this.memory.mode || this.memory.mode == 'idle') {
+  if(!this.memory.mode || this.memory.mode === 'idle') {
     if(this.room.energyAvailable >= this.room.energyCapacityAvailable) {
       this.setMode('spawn')
     } else if (this.energy < this.energyCapacity) {
@@ -71,7 +71,7 @@ StructureSpawn.prototype.assignMode = function() {
     } else {
       this.setMode('idle')
     }
-  } else if (this.memory.mode == 'spawning' && this.spawning == null ) {
+  } else if (this.memory.mode === 'spawning' && this.spawning === null ) {
       this.setMode('idle')
   }
   if (this.room.energyAvailable >= 300 && (this.miners() <= 0 || this.carriers() <= 0)) {
@@ -80,11 +80,11 @@ StructureSpawn.prototype.assignMode = function() {
 }
 
 StructureSpawn.prototype.doWork = function() {
-  if(this.memory.mode == 'spawn') {
+  if(this.memory.mode === 'spawn') {
     this.spawnCreep();
-  } else if (this.memory.mode == 'wait-energy') {
+  } else if (this.memory.mode === 'wait-energy') {
     this.doWaitEnergy();
-  } else if (this.memory.mode == 'er-spawn') {
+  } else if (this.memory.mode === 'er-spawn') {
     this.doErSpawn();
   }
 }
@@ -105,13 +105,13 @@ StructureSpawn.prototype.doWaitEnergy = function() {
 }
 
 StructureSpawn.prototype.doErSpawn = function() {
-  if (this.harvesters() == 0 && this.maxHarvesters > 0) {
+  if (this.harvesters() === 0 && this.maxHarvesters > 0) {
     Log.info("ER Spawn Harvester")
     this.spawnHarvester();
-  } else if (this.miners() == 0) {
+  } else if (this.miners() === 0) {
     Log.info("ER Spawn Miner")
     this.spawnMiner();
-  } else if (this.carriers() == 0) {
+  } else if (this.carriers() === 0) {
     Log.info("ER Spawn Carrier")
     this.spawnCarrier()
   } else {
@@ -122,7 +122,7 @@ StructureSpawn.prototype.doErSpawn = function() {
 
 StructureSpawn.prototype.spawnCreep = function() {
   Log.info('Trying to spawn a creep')
-  if(this.memory.mode != 'spawning') {
+  if(this.memory.mode !== 'spawning') {
     this.room.cleanCreeps()
     // What kind of creep
     if (this.harvesters() < this.maxHarvesters()) {

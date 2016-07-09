@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-05 20:38:19
+* @Last Modified time: 2016-07-09 19:32:04
 */
 
 'use strict';
@@ -15,7 +15,7 @@ Creep.prototype.assignHarvesterTasks = function() {
     if(this.carry.energy < this.carryCapacity) {
       this.setMode('mine')
     } else if(this.room.energyAvailable < this.room.energyCapacityAvailable){
-      this.setMode('store');
+      this.setMode('transfer');
     } else {
       this.setMode('noop')
     }

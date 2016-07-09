@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 13:14:07
+* @Last Modified time: 2016-07-09 19:31:12
 */
 
 'use strict';
@@ -85,6 +85,7 @@ var Targeting = {
     var creeps = _.filter(Game.creeps, function(creep) {
       return creep.my && creep.memory.mode === 'send' && creep.room.name === room.name
     })
+    //console.log("g: " + creeps)
     // Log.info(JSON.stringify(creeps))
     return pos.findClosestByRange(creeps)
   },
@@ -106,6 +107,7 @@ var Targeting = {
   },
 
   findEnergySource: function(pos, room) {
+    var miner = Targeting.findFullMiner(pos, room)
     return Targeting.findFullMiner(pos, room) || Targeting.findEnergyBuffer(pos, room)
   }
 
