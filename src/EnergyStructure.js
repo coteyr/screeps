@@ -2,12 +2,14 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-08 22:31:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 22:39:39
+* @Last Modified time: 2016-07-08 23:25:40
 */
 
 'use strict';
 
 let EnergyStructure = function(){};
+
+EnergyStructure.prototype.energyCallModifier = 0.01 // really low by default
 
 EnergyStructure.prototype.tick = function() {
   this.setupMemory();
@@ -33,7 +35,7 @@ EnergyStructure.prototype.doWork = function() {
 EnergyStructure.prototype.doWaitEnergy = function() {
   if(this.store[RESOURCE_ENERGY] < this.storeCapacity) {
     if (this.memory.call_for_energy) {
-      this.memory.call_for_energy += 0.01
+      this.memory.call_for_energy += this.energyCallModifier
     } else {
       this.memory.call_for_energy = 1
     }
