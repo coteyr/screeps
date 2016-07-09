@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 13:53:12
+* @Last Modified time: 2016-07-09 14:51:57
 */
 
 'use strict';
@@ -38,7 +38,6 @@ Creep.prototype.assignHomeExoHarvesterTasks = function() {
 }
 
 Creep.prototype.assignRemoteExoHarvesterTasks = function() {
-  Log.info('here d')
   if(this.memory.mode == 'transition') {
     this.setMode('mine')
   }
@@ -49,35 +48,25 @@ Creep.prototype.assignRemoteExoHarvesterTasks = function() {
   }
 }
 
-Creep.prototype.doLeave = function() {
+Creep.prototype.gotoRoom = function(roomName) {
   if(!this.memory.exit) {
-    var exitDir = this.room.findExitTo(this.memory.harvest);
-    Log.info(exitDir)
+    var exitDir = this.room.findExitTo(roomName);
     var exit = this.pos.findClosestByRange(exitDir);
     this.memory.exit = exit
     this.memory.exit_dir = exitDir
   }
   if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
     this.moveTo(this.memory.exit.x, this.memory.exit.y)
-    this.memory.goto_room = this.memory.harvest
+    this.memory.goto_room = roomName
     this.setMode('transition')
     delete this.memory.exit
     delete this.memory.exit_dir
   }
 }
+Creep.prototype.doLeave = function() {
+  this.gotoRoom(this.memory.harvest)
+}
 
 Creep.prototype.doGoHome = function() {
-  if(!this.memory.exit) {
-    var exitDir = this.room.findExitTo(this.memory.home);
-    var exit = this.pos.findClosestByRange(exitDir);
-    this.memory.exit = exit
-    this.memory.exit_dir = exitDir
-  }
-  if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
-    this.moveTo(this.memory.exit.x, this.memory.exit.y)
-    this.memory.goto_room = this.memory.home
-    this.setMode('transition')
-    delete this.memory.exit
-    delete this.memory.exit_dir
-  }
+  this.gotoRoom(this.memory.home)
 }
