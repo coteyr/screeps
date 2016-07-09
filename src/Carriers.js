@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-07 00:52:33
+* @Last Modified time: 2016-07-09 05:47:31
 */
 
 'use strict';
@@ -39,6 +39,5 @@ StructureSpawn.prototype.setCarriers = function() {
 }
 
 StructureSpawn.prototype.spawnCarrier = function() {
-  Log.debug("Spawning Carrier")
-  this.createCreep(this.getCarrierBody(), null, {role: 'carrier', mode: 'idle'})
+  this.spawnACreep('carrier', this.getCarrierBody())
 }

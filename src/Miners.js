@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:52:49
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-07 00:53:13
+* @Last Modified time: 2016-07-09 05:48:33
 */
 
 'use strict';
@@ -39,5 +39,5 @@ StructureSpawn.prototype.setMiners = function() {
 }
 
 StructureSpawn.prototype.spawnMiner = function() {
-  this.createCreep(this.getMinerBody(), null, {role: 'miner', mode: 'idle'})
+  this.spawnACreep('miner', this.getMinerBody())
 }

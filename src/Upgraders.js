@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-07 00:53:30
+* @Last Modified time: 2016-07-09 05:49:06
 */
 
 'use strict';
@@ -39,5 +39,5 @@ StructureSpawn.prototype.setUpgraders = function() {
 }
 
 StructureSpawn.prototype.spawnUpgrader = function() {
-  this.createCreep(this.getHarvesterBody(), null, {role: 'upgrader', mode: 'idle'})
+  this.spawnACreep('upgrader', this.getUpgraderBody)
 }

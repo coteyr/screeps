@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-07 00:52:53
+* @Last Modified time: 2016-07-09 05:48:05
 */
 
 'use strict';
@@ -43,5 +43,5 @@ StructureSpawn.prototype.setHarvesters = function() {
 }
 
 StructureSpawn.prototype.spawnHarvester = function() {
-  this.createCreep(this.getHarvesterBody(), null, {role: 'harvester', mode: 'idle'})
+  this.spawnACreep('harvester', this.getHarvesterBody())
 }

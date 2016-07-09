@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-29 16:16:15
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-07 00:52:18
+* @Last Modified time: 2016-07-09 05:47:05
 */
 
 'use strict';
@@ -22,7 +22,7 @@ StructureSpawn.prototype.getBuilderBody = function(){
   }
 }
 StructureSpawn.prototype.builders = function() {
-  return _.filter(Game.creeps, (creep) => creep.memory.role == 'builder').length;
+  return Finder.findCreeps('builder', this.room.name).length;
   // return this.memory.current_builders || 0
 }
 
@@ -38,11 +38,10 @@ StructureSpawn.prototype.setMaxBuilders = function() {
   }
 }
 StructureSpawn.prototype.setBuilders = function() {
-  var count = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder').length;
+  var count = Finder.findCreeps('builder', this.room.name).length;
   this.memory.current_builders = count;
 }
 
 StructureSpawn.prototype.spawnBuilder = function() {
-  Log.debug("Spawning Builder")
-  this.createCreep(this.getBuilderBody(), null, {role: 'builder', mode: 'idle'})
+  this.spawnACreep('builder', this.getBuilderBody());
 }
