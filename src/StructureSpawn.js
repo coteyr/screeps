@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 11:19:49
+* @Last Modified time: 2016-07-09 11:47:11
 */
 
 'use strict';
@@ -31,7 +31,11 @@ StructureSpawn.prototype.spawnACreep = function(role, body)  {
   } else {
     this.memory.creeper = 1
   }
-  Log.info(this.createCreep(body, role + "-" + this.memory.creeper, {role: role, mode: 'idle'}))
+  var result = this.createCreep(body, role + "-" + this.memory.creeper, {role: role, mode: 'idle'})
+  if(result !== role + "-" + this.memory.creeper) {
+    Log.error('Problem Spawning Creep: ' + result)
+    Log.info(JSON.stringify(body))
+  }
 }
 StructureSpawn.prototype.refreshData = function() {
   if(!this.memory.refresh_count || this.memory.refresh_count <= 0) {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 05:49:06
+* @Last Modified time: 2016-07-09 11:46:05
 */
 
 'use strict';
@@ -14,9 +14,9 @@ StructureSpawn.prototype.getUpgraderBody = function(){
   } else if(energy >= 550 && energy < 800) {
     return [WORK, WORK, WORK, MOVE, CARRY, CARRY, CARRY, CARRY]
   } else if(energy >= 800 && energy < 1300) {
-    [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE]
+    return [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE]
   } else if(energy >= 1300) {
-    [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE]
+    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE]
   } else {
     return [WORK, CARRY, MOVE]
   }
@@ -39,5 +39,5 @@ StructureSpawn.prototype.setUpgraders = function() {
 }
 
 StructureSpawn.prototype.spawnUpgrader = function() {
-  this.spawnACreep('upgrader', this.getUpgraderBody)
+  this.spawnACreep('upgrader', this.getUpgraderBody())
 }
