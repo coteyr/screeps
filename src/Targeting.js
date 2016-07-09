@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 12:02:42
+* @Last Modified time: 2016-07-09 12:29:57
 */
 
 'use strict';
@@ -79,6 +79,20 @@ var Targeting = {
     if (_.size(pos.findInRange(FIND_STRUCTURES, 1)) > 0) {
       return pos.findClosestByRange(FIND_STRUCTURES)
     }
+  },
+
+  findFullMiner: function(pos) {
+    var creeps = _.filter(Game.creeps, function(creep) {
+      creep.my && creep.memory.mode === 'send'
+    })
+    pos.findClosestByRange(creeps)
+  },
+
+  findEnergyBuffer: function(pos) {
+    var buffers = _.filter(_.union({}, this.room.memory.my_containers, this.room.memory.my_storages), function(object) {
+      object.storedEnergy >= 300;
+    })
+    pos.findClosestByRange(buffers)
   }
 
 }

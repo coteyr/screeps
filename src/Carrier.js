@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 11:13:13
+* @Last Modified time: 2016-07-09 12:30:24
 */
 
 'use strict';
@@ -100,20 +100,10 @@ Creep.prototype.doPickup = function() {
   if(this.carry.energy < this.carryCapacity) {
     var me = this
     if(!this.memory.target_miner) {
-      //me.room.cleanCreeps()
-      _.filter(Game.creeps).forEach(function(creep) {
-        if(creep.my && creep.memory.mode === 'send') {
-          me.memory.target_miner = creep
-        }
-      });
+      this.memory.target_miner = Targeting.findFullMiner(this.pos);
     }
     if(!this.memory.target_miner) {
-      _.union({}, this.room.memory.my_containers, this.room.memory.my_storages).forEach(function(structure) {
-        structure = Game.getObjectById(structure.id)
-        if ((structure.storeCapacity && structure.store[RESOURCE_ENERGY] >= 300)) {
-          me.memory.target_miner = structure;
-        }
-      });
+      this.memory.target_miner = Targeting.findEnergyBuffer(this.pos);
     }
   }
   if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {
