@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-06 13:52:08
+* @Last Modified time: 2016-07-08 14:56:10
 */
 
 'use strict';
@@ -46,7 +46,6 @@ StructureTower.prototype.doWork = function() {
   if(_.size(this.room.find(FIND_HOSTILE_CREEPS)) > 0) {
     this.doAttackInvaders()
   } else {
-    Log.info('here');
     this.doRepairs()
   }
 }
@@ -74,14 +73,13 @@ StructureTower.prototype.doAttackInvaders = function() {
 }
 
 StructureTower.prototype.doRepairs = function() {
-  Log.info("Do repairs")
    var target = this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: function(object){
            return ((object.hits < object.hitsMax / 4 &&  object.structureType != 'constructedWall') || (object.hits < 10000 &&  object.structureType === 'constructedWall'));
         }
     });
-   if(this.target) {
-    Log.info("I have a target")
+   if(target) {
+     this.repair(target)
    }
-   this.repair(target)
+
 }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-07 09:37:18
+* @Last Modified time: 2016-07-08 04:21:46
 */
 
 'use strict';
@@ -13,11 +13,22 @@ Room.prototype.tick = function() {
   this.refreshData();
   this.tickExtensions();
   this.tickContainers();
+  this.tickStorages();
   this.tickSpawns();
   this.tickTowers()
   this.tickCreeps();
+  this.report();
+
   return true;
 };
+Room.prototype.tickStorages = function() {
+  if (this.memory.my_storages) {
+    Object.keys(this.memory.my_storages).forEach(function(key, index) {
+      var storage = Game.getObjectById(this[key].id);
+      storage.tick();
+    }, this.memory.my_storages);
+  }
+}
 Room.prototype.tickContainers = function() {
   if (this.memory.my_containers) {
     Object.keys(this.memory.my_containers).forEach(function(key, index) {
@@ -30,7 +41,9 @@ Room.prototype.tickExtensions = function() {
   if (this.memory.my_extensions) {
     Object.keys(this.memory.my_extensions).forEach(function(key, index) {
       var extension = Game.getObjectById(this[key].id);
-      extension.tick();
+      if(extension && extension.my) {
+        extension.tick();
+      }
     }, this.memory.my_extensions);
   }
 }
@@ -72,6 +85,8 @@ Room.prototype.resetMemory = function() {
   this.memory.my_containers = containers
   var towers = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
   this.memory.my_towers = towers
+  var storages = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_STORAGE}});
+  this.memory.my_storages = storages
   this.findSourceSpots();
 }
 
@@ -123,4 +138,21 @@ Room.prototype.cleanCreeps = function() {
       delete Memory.creeps[name];
     }
   }
+}
+
+Room.prototype.setAttack = function(room_name) {
+  Memory.attack = room_name
+}
+
+Room.prototype.setHarvest = function(room_name) {
+  Memory.harvest = room_name
+}
+Room.prototype.report = function() {
+  if(this.memory.report_count <= 0 || !this.memory.refresh_count) {
+    this.memory.report_count = 10;
+    console.log('<span style="color: #E6DB74;">Report for room: ' + this.name +'</span>')
+    console.log('<span style="color: #E6DB74;">=======================</span>')
+    console.log('<span style="color: #95CA2D;">Primary Energy: ' + this.energyAvailable + " of " + this.energyCapacityAvailable)
+  }
+  this.memory.report_count -= 1;
 }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-05 20:15:34
+* @Last Modified time: 2016-07-08 01:24:13
 */
 
 'use strict';
@@ -34,10 +34,14 @@ StructureSpawn.prototype.refreshData = function() {
     this.setMaxUpgraders()
     this.setMaxBuilders()
     this.setHarvesters()
+    this.setMaxExoHarvesters()
+    this.setMaxExoAttackers()
     this.setMiners()
     this.setCarriers()
     this.setUpgraders()
     this.setBuilders()
+    this.setExoHarvesters()
+    this.setExoAttackers()
   }
   this.memory.refresh_count -= 1;
 }
@@ -106,18 +110,25 @@ StructureSpawn.prototype.doErSpawn = function() {
 
 StructureSpawn.prototype.spawnCreep = function() {
   Log.info('Trying to spawn a creep')
-  this.room.cleanCreeps()
-  // What kind of creep
-  if (this.harvesters() < this.maxHarvesters()) {
-    this.spawnHarvester();
-  } else if (this.builders() < this.maxBuilders()) {
-    this.spawnBuilder();
-  } else if (this.miners() < this.maxMiners()) {
-    this.spawnMiner();
-  } else if (this.carriers() < this.maxCarriers()) {
-    this.spawnCarrier()
-  } else if (this.upgraders() < this.maxUpgraders()) {
-    this.spawnUpgrader()
+  if(this.memory.mode != 'spawning') {
+    this.room.cleanCreeps()
+    // What kind of creep
+    if (this.harvesters() < this.maxHarvesters()) {
+      this.spawnHarvester();
+    } else if (this.builders() < this.maxBuilders()) {
+      this.spawnBuilder();
+    } else if (this.miners() < this.maxMiners()) {
+      this.spawnMiner();
+    } else if (this.carriers() < this.maxCarriers()) {
+      this.spawnCarrier()
+    } else if (this.upgraders() < this.maxUpgraders()) {
+      this.spawnUpgrader()
+    } else if (this.exoHarvesters() < this.maxExoHarvesters()) {
+      this.spawnExoHarvester()
+    } else if (this.exoAttackers() < this.maxExoAttackers()) {
+      this.spawnExoAttacker()
+    }
+
+    this.setMode('spawning')
   }
-  this.setMode('spawning')
 }

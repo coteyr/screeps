@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-07 09:37:47
+* @Last Modified time: 2016-07-08 04:14:22
 */
 
 'use strict';
@@ -19,6 +19,10 @@ Creep.prototype.tick = function(){
     this.assignUpgraderTasks()
   } else if (this.memory.role == 'builder') {
     this.assignBuilderTasks()
+  } else if (this.memory.role == 'exo-harvester') {
+    this.assignExoHarvesterTasks()
+  } else if (this.memory.role == 'exo-attacker') {
+    this.assignExoAttackerTasks()
   }
   /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacityAvailable * 0.25)) {
     this.setMode('recharge')
@@ -64,7 +68,33 @@ Creep.prototype.doWork = function() {
         break;
       case 'build':
         this.doBuild();
+        break;
+      case 'leave':
+        this.doLeave();
+        break;
+      case 'transition':
+        this.doTransition();
+        break;
+      case 'cross':
+        this.doCross();
+        break;
+      case 'go-home':
+        this.doGoHome()
+        break;
+      case 'rally':
+        this.doRally()
+        break;
+      case 'move-out':
+        this.doMoveOut()
+        break;
+      case 'enter':
+        this.doEnter()
+        break;
+      case 'attack':
+        this.doAttack()
+        break;
     }
+
   } catch(error) {
     Log.error(this.name + " HAS AN ERROR")
     Log.error(error.message)
@@ -84,6 +114,33 @@ Creep.prototype.doNoop = function() {
     this.setMode('idle')
   }
 }
+
+Creep.prototype.doTransition = function() {
+  if (this.room.name == this.memory.harvest) {
+    if(this.move(this.memory.exit_dir) == 0) {
+      this.setMode('idle');
+    }
+  }
+}
+
+Creep.prototype.doCross = function() {
+  if (this.room.name == this.memory.home) {
+    if(this.move(this.memory.exit_dir) == 0) {
+      this.setMode('idle');
+    }
+  }
+}
+
+
+Creep.prototype.doEnter = function() {
+  if (this.room.name == this.memory.attack) {
+    var choices = [BOTTOM];
+    var choice = choices[Math.floor(Math.random()*choices.length)];
+    this.move(BOTTOM);
+  }
+  this.setMode('idle');
+}
+
 
 Creep.prototype.doRecharge = function() {
   var creep = this;
@@ -110,10 +167,11 @@ Creep.prototype.moveCloseTo = function(x, y, range) {
   if(!range) {
     range = 0
   }
+  var distance = this.pos.getRangeTo(x, y)
   if(this.pos.inRangeTo(x, y, range)) {
     return true
   } else {
-    this.moveTo(x, y)
+    this.moveTo(x, y, {reusePath: distance})
     return false
   }
 }
