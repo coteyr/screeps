@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 03:53:45
+* @Last Modified time: 2016-07-09 11:38:41
 */
 
 'use strict';
@@ -59,51 +59,19 @@ Creep.prototype.doMoveOut = function() {
 }
 
 Creep.prototype.doAttack = function() {
-var target = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+  var target = Targeting.nearestHostalAnything()
   if(target) {
     if(this.attack(target) == ERR_NOT_IN_RANGE) {
       this.moveTo(target);
-      this.rangedMassAttack()
+      var blocker = Targeting.nearByStructures()
+      if (blocker) {
+        this.attack(blocker)
+      } else {
+        this.rangedMassAttack()
+      }
     }
   } else {
-    var target = this.pos.findClosestByRange(FIND_HOSTILE_SPAWNS)
-    if(target) {
-      if(this.attack(target) == ERR_NOT_IN_RANGE) {
-        this.moveTo(target);
-        if (_.size(this.pos.findInRange(FIND_STRUCTURES, 1)) > 0) {
-          target = this.pos.findClosestByRange(FIND_STRUCTURES)
-          this.attack(target)
-        } else {
-          this.rangedMassAttack()
-        }
-      }
-    } else {
-      var target = this.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
-        filter: function(object) {
-          return object.structureType != 'controller';
-        }
-      });
-      if(target) {
-        if(this.attack(target) == ERR_NOT_IN_RANGE) {
-          this.moveTo(target);
-          this.rangedMassAttack()
-        }
-      } else {
-        var target = this.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: function(object) {
-          return object.structureType != 'controller';
-        }
-      });
-        if(target) {
-          if(this.attack(target) == ERR_NOT_IN_RANGE) {
-            this.moveTo(target);
-            this.rangedMassAttack()
-          }
-        } else {
-          this.suicide()
-          delete Memory.attack
-        }
-      }
-    }
+    this.suicide()
+    delete Memory.attack
   }
 }

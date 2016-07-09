@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 23:36:14
+* @Last Modified time: 2016-07-09 11:38:15
 */
 
 'use strict';
@@ -26,6 +26,48 @@ var Targeting = {
       }
     }, objects);
     return result
+  },
+
+  nearestHostalAnything: function(pos) {
+    var target = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+    if(target) {
+      return target
+    }
+    target = this.pos.findClosestByRange(FIND_HOSTILE_SPAWNS)
+    if(target) {
+      return target
+    }
+    target = this.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
+        filter: function(object) {
+          return object.structureType != 'controller';
+        }
+      });
+    if (target) {
+      return target
+    }
+    target = this.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
+        filter: function(object) {
+          return object.structureType != 'controller';
+        }
+      });
+    if(target) {
+      return target
+    }
+    var target = this.pos.findClosestByRange(FIND_STRUCTURES, {
+        filter: function(object) {
+          return object.structureType != 'controller';
+        }
+      });
+    if (target) {
+      return target
+    }
+  },
+
+  nearByStructures: function(pos) {
+    if (_.size(this.pos.findInRange(FIND_STRUCTURES, 1)) > 0) {
+      return this.pos.findClosestByRange(FIND_STRUCTURES)
+    }
   }
+
 }
 module.exports = Targeting;
