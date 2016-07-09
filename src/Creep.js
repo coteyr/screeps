@@ -2,26 +2,26 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 04:14:22
+* @Last Modified time: 2016-07-09 04:00:36
 */
 
 'use strict';
 
 Creep.prototype.tick = function(){
   Log.debug('Ticking Creep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.memory.mode);
-  if (this.memory.role == 'harvester') {
+  if (this.memory.role === 'harvester') {
     this.assignHarvesterTasks()
-  } else if (this.memory.role == 'miner') {
+  } else if (this.memory.role === 'miner') {
     this.assignMinerTasks()
-  } else if (this.memory.role == 'carrier') {
+  } else if (this.memory.role === 'carrier') {
     this.assignCarrierTasks()
-  } else if (this.memory.role == 'upgrader') {
+  } else if (this.memory.role === 'upgrader') {
     this.assignUpgraderTasks()
-  } else if (this.memory.role == 'builder') {
+  } else if (this.memory.role === 'builder') {
     this.assignBuilderTasks()
-  } else if (this.memory.role == 'exo-harvester') {
+  } else if (this.memory.role === 'exo-harvester') {
     this.assignExoHarvesterTasks()
-  } else if (this.memory.role == 'exo-attacker') {
+  } else if (this.memory.role === 'exo-attacker') {
     this.assignExoAttackerTasks()
   }
   /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacityAvailable * 0.25)) {
@@ -116,7 +116,7 @@ Creep.prototype.doNoop = function() {
 }
 
 Creep.prototype.doTransition = function() {
-  if (this.room.name == this.memory.harvest) {
+  if (this.room.name === this.memory.harvest) {
     if(this.move(this.memory.exit_dir) == 0) {
       this.setMode('idle');
     }
@@ -124,7 +124,7 @@ Creep.prototype.doTransition = function() {
 }
 
 Creep.prototype.doCross = function() {
-  if (this.room.name == this.memory.home) {
+  if (this.room.name === this.memory.home) {
     if(this.move(this.memory.exit_dir) == 0) {
       this.setMode('idle');
     }
@@ -147,7 +147,7 @@ Creep.prototype.doRecharge = function() {
   Object.keys(this.room.memory.my_spawns).forEach(function(key, index) {
       var spawn = Game.getObjectById(creep.room.memory.my_spawns[key].id);
       if(spawn.energy > 0) {
-        spawn.memory.mode == 'recharge'
+        spawn.memory.mode === 'recharge'
         if(creep.moveCloseTo(spawn.pos.x, spawn.pos.y, 1)) {
           creep.transfer(spawn, RESOURCE_ENERGY)
           spawn.renewCreep(creep)

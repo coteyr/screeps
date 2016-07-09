@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 23:37:11
+* @Last Modified time: 2016-07-08 23:59:58
 */
 
 'use strict';
@@ -35,7 +35,7 @@ StructureTower.prototype.doAttackInvaders = function() {
 StructureTower.prototype.doRepairs = function() {
    var target = this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: function(object){
-           return ((object.hits < object.hitsMax / 4 &&  object.structureType != 'constructedWall') || (object.hits < 10000 &&  object.structureType === 'constructedWall'));
+           return ((object.hits < object.hitsMax / 4 &&  object.structureType !== 'constructedWall') || (object.hits < 10000 &&  object.structureType === 'constructedWall'));
         }
     });
    if(target) {
