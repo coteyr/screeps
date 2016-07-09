@@ -2,12 +2,15 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 13:43:13
+* @Last Modified time: 2016-07-09 13:51:17
 */
 
 'use strict';
 
 Creep.prototype.tick = function(){
+  if(!this.memory.mode) {
+    this.setMode('idle')
+  }
   Log.debug('Ticking Creep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.memory.mode);
   if (this.memory.role === 'harvester') {
     this.assignHarvesterTasks()

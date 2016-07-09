@@ -2,35 +2,29 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 13:42:35
+* @Last Modified time: 2016-07-09 13:53:12
 */
 
 'use strict';
 
 Creep.prototype.assignExoHarvesterTasks = function() {
-  if(!this.memory.mode) {
-    this.setMode('idle')
-  }
   if(!this.memory.home) {
     this.memory.home = this.room.name
   }
-  if(this.memory.mode === 'idle') {
-    Log.info("here b : " + this.room.name)
-    if(this.room.name === this.memory.harvest) {
-      // I am in the remote room
-      this.assignRemoteExoHarvesterTasks()
-    } else if (this.room.name === this.memory.home) {
-      this.assignHomeExoHarvesterTasks()
-      // I am home
-    } else {
-      // I have no clue where I am
+  if(this.room.name === this.memory.harvest) {
+    // I am in the remote room
+    this.assignRemoteExoHarvesterTasks()
+  } else if (this.room.name === this.memory.home) {
+    this.assignHomeExoHarvesterTasks()
+    // I am home
+  } else {
+    // I have no clue where I am
 
-    }
   }
   if(this.room.name === this.memory.home && this.carry.energy > 0) {
     this.setMode('transfer')
   }
-  if(this.room.name === this.memory.home && this.memory.mode == 'mine') {
+  if(this.room.name === this.memory.home && this.memory.mode === 'mine') {
     this.setMode('idle')
   }
 }
