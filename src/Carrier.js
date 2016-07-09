@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 12:30:24
+* @Last Modified time: 2016-07-09 13:28:14
 */
 
 'use strict';
@@ -64,12 +64,6 @@ Creep.prototype.doFill = function() {
     this.setMode('idle')
     return false;
   }
-  /*if(this.carry.energy >= 0) { //this.carryCapacity) {
-    Log.info('v7')
-    this.setMode('idle')
-    delete this.memory.target_miner
-    return false
-  }*/
   if(!Game.getObjectById(this.memory.target_miner.id)) {
     Log.warn(this.name + " is missing their miner, reassigning")
     this.setMode('idle')
@@ -98,20 +92,11 @@ Creep.prototype.doFill = function() {
 
 Creep.prototype.doPickup = function() {
   if(this.carry.energy < this.carryCapacity) {
-    var me = this
-    if(!this.memory.target_miner) {
-      this.memory.target_miner = Targeting.findFullMiner(this.pos);
-    }
-    if(!this.memory.target_miner) {
-      this.memory.target_miner = Targeting.findEnergyBuffer(this.pos);
-    }
-  }
-  if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {
-    if(this.carry.energy < this.carryCapacity) {
+    this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room)
+    if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {
       this.setMode('fill')
     }
-  }
-  if(this.carry.energy >= this.carryCapacity) {
+  } else { // this.carry.energy >= this.carryCapacity
     this.setMode('idle')
   }
 }

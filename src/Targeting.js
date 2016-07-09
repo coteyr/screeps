@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 12:29:57
+* @Last Modified time: 2016-07-09 13:14:07
 */
 
 'use strict';
@@ -81,18 +81,32 @@ var Targeting = {
     }
   },
 
-  findFullMiner: function(pos) {
+  findFullMiner: function(pos, room) {
     var creeps = _.filter(Game.creeps, function(creep) {
-      creep.my && creep.memory.mode === 'send'
+      return creep.my && creep.memory.mode === 'send' && creep.room.name === room.name
     })
-    pos.findClosestByRange(creeps)
+    // Log.info(JSON.stringify(creeps))
+    return pos.findClosestByRange(creeps)
   },
 
-  findEnergyBuffer: function(pos) {
-    var buffers = _.filter(_.union({}, this.room.memory.my_containers, this.room.memory.my_storages), function(object) {
-      object.storedEnergy >= 300;
+  findEnergyBuffer: function(pos, room) {
+    var buffers = _.filter(_.union({}, room.memory.my_containers, room.memory.my_storages), function(object) {
+      var structure = Game.getObjectById(object.id)
+      // Log.info(JSON.stringify(structure))
+      return structure.storedEnergy() >= 300;
     })
-    pos.findClosestByRange(buffers)
+    if(_.size(buffers) > 0) {
+      return buffers[0]
+    }
+    /*var objects = []
+    buffers.forEach(function(object){
+      objects.push(Game.getObjectById(object));
+    })
+    return pos.findClosestByRange(objects) */
+  },
+
+  findEnergySource: function(pos, room) {
+    return Targeting.findFullMiner(pos, room) || Targeting.findEnergyBuffer(pos, room)
   }
 
 }
