@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 23:29:30
+* @Last Modified time: 2016-07-09 23:37:48
 */
 
 'use strict';
@@ -16,7 +16,7 @@ StructureSpawn.prototype.getExoHarvesterBody = function(){
   }
 }
 StructureSpawn.prototype.exoHarvesters = function() {
-  return Finder.findCreeps('exo-harvester', this.room.name)
+  return Finder.findCreeps('exo-harvester', this.room.name).length
   // return this.memory.current_harvesters || 0
 }
 
@@ -33,7 +33,7 @@ StructureSpawn.prototype.setMaxExoHarvesters = function() {
 }
 
 StructureSpawn.prototype.setExoHarvesters = function() {
-  this.memory.current_exo_harvesters = Finder.findCreeps('exo-harvester', this.room.name)
+  this.memory.current_exo_harvesters = Finder.findCreeps('exo-harvester', this.room.name).length
 }
 
 StructureSpawn.prototype.spawnExoHarvester = function() {
