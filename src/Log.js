@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:40:25
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-01 20:25:27
+* @Last Modified time: 2016-07-09 23:20:59
 */
 
 'use strict';
@@ -37,7 +37,7 @@ var Log = {
   },
 
   tick: function() {
-    console.log('<span style="color: #00DD00">TICK</span>');
+    console.log('<span style="color: #00DD00">TICK: ' + Game.time + '</span> ' + '<span style="color: #63D9CF">CPU: ' + Game.cpu.getUsed() + ' of ' + Game.cpu.limit + ' Bucket: ' + Game.cpu.bucket + '</span>');
   }
 }
 module.exports = Log;
