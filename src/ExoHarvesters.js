@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 12:33:51
+* @Last Modified time: 2016-07-09 23:29:30
 */
 
 'use strict';
@@ -16,7 +16,7 @@ StructureSpawn.prototype.getExoHarvesterBody = function(){
   }
 }
 StructureSpawn.prototype.exoHarvesters = function() {
-  return _.filter(Game.creeps, (creep) => creep.memory.role == 'exo-harvester').length;
+  return Finder.findCreeps('exo-harvester', this.room.name)
   // return this.memory.current_harvesters || 0
 }
 
@@ -25,16 +25,15 @@ StructureSpawn.prototype.maxExoHarvesters = function() {
 }
 
 StructureSpawn.prototype.setMaxExoHarvesters = function() {
-  if(this.room.energyCapacityAvailable >= 1300 && Memory.harvest) {
-    this.memory.max_exo_harvesters = 5;
+  if(this.room.exoOperations() && Memory.harvest) {
+    this.memory.max_exo_harvesters = 7;
   } else {
     this.memory.max_exo_harvesters = 0;
   }
 }
 
 StructureSpawn.prototype.setExoHarvesters = function() {
-  var count = _.filter(Game.creeps, (creep) => creep.memory.role == 'exo-harvester').length;
-  this.memory.current_exo_harvesters = count;
+  this.memory.current_exo_harvesters = Finder.findCreeps('exo-harvester', this.room.name)
 }
 
 StructureSpawn.prototype.spawnExoHarvester = function() {

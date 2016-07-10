@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 12:11:42
+* @Last Modified time: 2016-07-09 23:28:32
 */
 
 'use strict';
@@ -36,6 +36,10 @@ Room.prototype.tickCreeps = function() {
       creep.tick();
     }
   });
+}
+
+Room.prototype.exoOperaitons = function() {
+  return this.energyCapacityAvailable >= 1300
 }
 
 Room.prototype.resetMemory = function() {

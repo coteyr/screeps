@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 14:26:05
+* @Last Modified time: 2016-07-09 23:29:26
 */
 
 'use strict';
@@ -25,7 +25,7 @@ StructureSpawn.prototype.maxExoAttackers = function() {
 }
 
 StructureSpawn.prototype.setMaxExoAttackers = function() {
-  if(this.room.energyCapacityAvailable >= 1300 && Memory.attack) {
+  if(this.room.exoOperations() && Memory.attack) {
     this.memory.max_exo_attackers = 10;
   } else {
     this.memory.max_exo_attackers = 0;
