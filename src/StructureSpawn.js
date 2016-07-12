@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 23:36:38
+* @Last Modified time: 2016-07-12 00:08:46
 */
 
 'use strict';
@@ -174,8 +174,8 @@ StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {
     var array = this.memory.spawn_queue
     array.push({role: role, body: body, priority: priority})
     this.memory.spawn_queue = array
-    Log.info("Spawn Queue is now " + _.size(array) + " long")
-    Log.info("Added a " + role)
+    Log.warn("Spawn Queue is now " + _.size(array) + " long")
+    Log.warn("Added a " + role)
   }
 }
 
@@ -186,7 +186,7 @@ StructureSpawn.prototype.spawnFromQueue = function() {
     if(array.length > 0) {
       var creep = array[0] //shift()
       if (this.canCreateCreep(creep.body) === 0 && !this.spawning){ // && this.canCreateCreep(creep.body)){
-        array.shift
+        array.shift()
         this.spawnACreep(creep.role, creep.body)
 
       }

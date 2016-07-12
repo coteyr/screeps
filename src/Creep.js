@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 23:34:58
+* @Last Modified time: 2016-07-12 00:12:11
 */
 
 'use strict';
@@ -29,7 +29,7 @@ Creep.prototype.tick = function(){
   } else if (this.memory.role === 'exo-reserver') {
     this.assignExoReserverTasks()
   } else if (this.memory.role === 'exo-cliamer') {
-    this.assignExoClaimerTasks()
+    this.assignExoReserverTasks()
   } else if (this.memory.role === 'exo-builder') {
     this.assignExoBuilderTasks()
   }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 22:05:47
+* @Last Modified time: 2016-07-12 00:02:28
 */
 
 'use strict';
@@ -100,7 +100,6 @@ var Targeting = {
       // Log.info(JSON.stringify(structure))
       return structure.storedEnergy() >= 300 && structure.room.name === room.name;
     })
-    Log.info(buffers)
     if(_.size(buffers) > 0) {
       return buffers[0]
     }
