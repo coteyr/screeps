@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 19:32:04
+* @Last Modified time: 2016-07-10 23:37:27
 */
 
 'use strict';
@@ -12,7 +12,9 @@ Creep.prototype.assignHarvesterTasks = function() {
     this.setMode('idle')
   }
   if(this.memory.mode == 'idle') {
-    if(this.carry.energy < this.carryCapacity) {
+    if (_.size(Finder.findCreeps('miner', this.room.name)) >= 2){
+      this.setMode('recycle')
+    } else if(this.carry.energy < this.carryCapacity) {
       this.setMode('mine')
     } else if(this.room.energyAvailable < this.room.energyCapacityAvailable){
       this.setMode('transfer');
@@ -26,8 +28,8 @@ Creep.prototype.doMine = function() {
   if(!this.memory.assigned_position) {
     this.findSourcePosition()
   }
-  if(this.moveCloseTo(this.memory.assigned_position.x, this.memory.assigned_position.y, 0)) {
-    var source = Game.getObjectById(this.memory.assigned_position.source.id);
+  if(this.moveCloseTo(this.memory.assigned_position.pos.x, this.memory.assigned_position.pos.y, 1)) {
+    var source = Game.getObjectById(this.memory.assigned_position.id);
     this.harvest(source)
   }
   if(this.carry.energy >= this.carryCapacity) { // && this.pos.x == this.memory.assigned_position.x && this.pos.y == this.memory.assigned_position.y ) {
@@ -68,6 +70,9 @@ Creep.prototype.findSourcePosition = function() {
       if(!position.taken) {
         creep.room.memory.sources[key].taken = true
         creep.memory.assigned_position = creep.room.memory.sources[key]
+
+        //
+        /*
         var look = this.room.lookAt(x, y);
         var me = this
         creep.room.look.forEach(function(lookObject) {
@@ -75,7 +80,7 @@ Creep.prototype.findSourcePosition = function() {
             Log.warn("Spot is taken " + me.name + " can't mine there: " + x + ", " + y)
            delete creep.memory.assigned_position
           }
-        });
+        }); */
 
         return true
       }

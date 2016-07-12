@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 19:13:25
+* @Last Modified time: 2016-07-11 14:19:19
 */
 
 'use strict';
@@ -42,7 +42,18 @@ Creep.prototype.doTransfer = function() {
     var target = Game.getObjectById(this.memory.target.id);
     if(target && target.memory) {
       target.memory.call_for_energy = 0
-      if(this.moveCloseTo(this.memory.target.pos.x, this.memory.target.pos.y, 1)) {
+      var did = false;
+       this.pos.findInRange(FIND_STRUCTURES, 1, {filter: {structureType: STRUCTURE_EXTENSION}}).forEach(function(ext){
+        if(ext.storedEnergy() <= ext.possibleEnergy()) {
+          if(me.transfer(ext, RESOURCE_ENERGY) === 0) {
+            did = true
+            ext.memory.call_for_energy = 0
+          }
+
+
+        }
+       })
+      if(this.moveCloseTo(this.memory.target.pos.x, this.memory.target.pos.y, 1) && !did) {
         var energy = this.carry.energy
         this.transfer(target, RESOURCE_ENERGY)
 
@@ -56,6 +67,9 @@ Creep.prototype.doTransfer = function() {
         delete this.memory.target
       }
     }
+  }
+  if(this.carry.energy <= 0) {
+    this.setMode('idle')
   }
 }
 
@@ -92,8 +106,10 @@ Creep.prototype.doFill = function() {
 
 Creep.prototype.doPickup = function() {
   if(this.carry.energy < this.carryCapacity) {
-    this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room)
-    Log.info(this.memory.target_miner)
+    if(!this.memory.target_miner) {
+      this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room)
+    }
+    // Log.info(this.memory.target_miner)
     if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {
       this.setMode('fill')
     }

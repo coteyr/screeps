@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 11:38:41
+* @Last Modified time: 2016-07-11 21:30:16
 */
 
 'use strict';
@@ -11,8 +11,8 @@ Creep.prototype.assignExoAttackerTasks = function() {
   if(!this.memory.mode) {
     this.setMode('idle')
   }
-  if(!this.memory.home) {
-    this.memory.home = this.room.name
+  if(!this.memory.attack) {
+    this.memory.attack = this.room.memory.attack
   }
     if(this.room.name === this.memory.attack) {
       // I am in the remote room
@@ -27,7 +27,7 @@ Creep.prototype.assignExoAttackerTasks = function() {
 }
 
 Creep.prototype.assignHomeExoAttackerTasks = function() {
-  if (_.filter(Game.creeps, (creep) => creep.memory.role == 'exo-attacker').length < 5) {
+  if (_.filter(Game.creeps, (creep) => creep.memory.role == 'exo-attacker').length < 4) {
     this.setMode('rally')
   } else {
     this.setMode('move-out')
@@ -46,20 +46,11 @@ Creep.prototype.doRally = function() {
 }
 
 Creep.prototype.doMoveOut = function() {
-  if(!this.memory.exit) {
-    var exitDir = this.room.findExitTo(this.memory.attack);
-    var exit = this.pos.findClosestByRange(exitDir);
-    this.memory.exit = exit
-  }
-  if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
-    this.moveTo(this.memory.exit.x, this.memory.exit.y)
-    this.setMode('enter')
-    delete this.memory.exit
-  }
+  this.gotoRoom(this.memory.attack)
 }
 
 Creep.prototype.doAttack = function() {
-  var target = Targeting.nearestHostalAnything()
+  var target = Targeting.nearestHostalAnything(this.pos)
   if(target) {
     if(this.attack(target) == ERR_NOT_IN_RANGE) {
       this.moveTo(target);

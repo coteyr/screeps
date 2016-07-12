@@ -2,21 +2,21 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 23:38:11
+* @Last Modified time: 2016-07-11 21:20:12
 */
 
 'use strict';
 
 StructureSpawn.prototype.getExoAttackerBody = function(){
-  var energy = this.room.energyAvailable;
+  var energy = this.room.energyCapacityAvailable;
   if (energy >= 1300) {
-    return [ATTACK, RANGED_ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH]
+    return [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE]
   } else {
     return []
   }
 }
 StructureSpawn.prototype.exoAttackers = function() {
-  return Finder.findCreeps('exo-attacker', this.room.name).length;
+  return Finder.findAllCreeps('exo-attacker').length + _.filter(this.memory.spawn_queue, {'role': 'exo-attacker'}).length;
   // return this.memory.current_harvesters || 0
 }
 
@@ -25,7 +25,7 @@ StructureSpawn.prototype.maxExoAttackers = function() {
 }
 
 StructureSpawn.prototype.setMaxExoAttackers = function() {
-  if(this.room.exoOperations() && Memory.attack) {
+  if(this.room.exoOperations() && this.room.memory.attack) {
     this.memory.max_exo_attackers = 10;
   } else {
     this.memory.max_exo_attackers = 0;
@@ -37,5 +37,6 @@ StructureSpawn.prototype.setExoAttackers = function() {
 }
 
 StructureSpawn.prototype.spawnExoAttacker = function() {
-  this.createCreep(this.getExoAttackerBody(), null, {role: 'exo-attacker', mode: 'idle', home: this.room.roomName, attack: Memory.attack })
+  this.addToSpawnQueue('exo-attacker', this.getExoAttackerBody(), 10)
+  //this.createCreep(this.getExoAttackerBody(), null, {role: 'exo-attacker', mode: 'idle', home: this.room.roomName, attack: Memory.attack })
 }

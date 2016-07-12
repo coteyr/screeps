@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 19:31:47
+* @Last Modified time: 2016-07-11 23:36:38
 */
 
 'use strict';
@@ -11,30 +11,42 @@ StructureSpawn.prototype.tick = function() {
   Log.debug('Ticking Spawn: ' + this.name + ' Mode: ' + this.memory.mode + " - " + this.memory.refresh_count);
   this.promoteCreeps();
   this.assignMode();
+  this.spawnCreeps();
   this.doWork();
   this.refreshData();
 
+
+}
+StructureSpawn.prototype.promote = function(from, to) {
+  Log.warn("Promoting " +  from + " to " + to)
+    Finder.findCreeps(from, this.room.name).forEach(function(creep) {
+      creep.memory.role = to
+      creep.setMode('idle')
+    })
 }
 
+
 StructureSpawn.prototype.promoteCreeps = function() {
-  if(this.harvesters >  this.maxHarvesters) {
-    Log.warn("Promoting Harvesters to carriers")
-    Finder.findCreeps('harvester', this.room.name).forEach(function(harvester) {
-      harvester.memory.mode = 'carrier'
-    })
+  if(this.harvesters() >  this.maxHarvesters()) {
+    this.promote('harvester', 'carrier')
+  }
+
+  if(this.builders() > this.maxBuilders()) {
+    this.promote('builder', 'harvester')
   }
 }
 StructureSpawn.prototype.spawnACreep = function(role, body)  {
-  Log.info("Spawning A " + role)
+  this.room.cleanCreeps()
+  Log.info("Spawning A " + role + " in " + this.room.name)
   if(this.memory.creeper) {
-    this.memory.creeper += 1
+    Memory.creeper += 1
   } else {
-    this.memory.creeper = 1
+    Memory.creeper = 1
   }
-  var result = this.createCreep(body, role + "-" + this.memory.creeper, {role: role, mode: 'idle'})
-  if(result !== role + "-" + this.memory.creeper) {
+  var result = this.createCreep(body, role + "_" + Memory.creeper, {role: role, mode: 'idle', home: this.room.name})
+  if(result !== role + "_" + Memory.creeper) {
     Log.error('Problem Spawning Creep: ' + result)
-    Log.info(JSON.stringify(body))
+    Log.error(role + ": " + JSON.stringify(body))
   }
 }
 StructureSpawn.prototype.refreshData = function() {
@@ -48,12 +60,14 @@ StructureSpawn.prototype.refreshData = function() {
     this.setHarvesters()
     this.setMaxExoHarvesters()
     this.setMaxExoAttackers()
+    this.setMaxExoReservers()
     this.setMiners()
     this.setCarriers()
     this.setUpgraders()
     this.setBuilders()
     this.setExoHarvesters()
     this.setExoAttackers()
+    this.setExoReservers()
   }
   this.memory.refresh_count -= 1;
 }
@@ -64,9 +78,7 @@ StructureSpawn.prototype.assignMode = function() {
     this.setMode('idle')
   }
   if(!this.memory.mode || this.memory.mode === 'idle') {
-    if(this.room.energyAvailable >= this.room.energyCapacityAvailable) {
-      this.setMode('spawn')
-    } else if (this.energy < this.energyCapacity) {
+    if (this.energy < this.energyCapacity) {
       this.setMode('wait-energy')
     } else {
       this.setMode('idle')
@@ -74,19 +86,21 @@ StructureSpawn.prototype.assignMode = function() {
   } else if (this.memory.mode === 'spawning' && this.spawning === null ) {
       this.setMode('idle')
   }
-  if (this.room.energyAvailable >= 300 && (this.miners() <= 0 || this.carriers() <= 0)) {
+  /*if (this.room.energyAvailable >= 300 && (this.miners() <= 0 || this.carriers() <= 0)) {
     this.setMode('er-spawn')
-  }
+  }*/
 }
 
 StructureSpawn.prototype.doWork = function() {
-  if(this.memory.mode === 'spawn') {
-    this.spawnCreep();
-  } else if (this.memory.mode === 'wait-energy') {
-    this.doWaitEnergy();
-  } else if (this.memory.mode === 'er-spawn') {
-    this.doErSpawn();
+  if(this.memory.mode === 'idle' || this.memory.mode === 'wait-energy') {
+    this.spawnFromQueue()
   }
+  if (this.memory.mode === 'wait-energy') {
+    this.doWaitEnergy();
+  }
+  /* if (this.memory.mode === 'er-spawn') {
+    this.doErSpawn();
+  }*/
 }
 
 
@@ -94,18 +108,15 @@ StructureSpawn.prototype.doWork = function() {
 StructureSpawn.prototype.doWaitEnergy = function() {
   if(this.energy < this.energyCapacity) {
     if (this.memory.call_for_energy) {
-      this.memory.call_for_energy = this.memory.call_for_energy + 5
+      this.memory.call_for_energy = this.memory.call_for_energy + 25
     } else {
       this.memory.call_for_energy = 1
     }
-  } else {
-    delete this.memory.call_for_energy
-    this.setMode('idle')
   }
 }
 
 StructureSpawn.prototype.doErSpawn = function() {
-  if (this.harvesters() === 0 && this.maxHarvesters > 0) {
+  /*if (this.harvesters() === 0 && this.maxHarvesters > 0) {
     Log.info("ER Spawn Harvester")
     this.spawnHarvester();
   } else if (this.miners() === 0) {
@@ -116,31 +127,70 @@ StructureSpawn.prototype.doErSpawn = function() {
     this.spawnCarrier()
   } else {
     this.setMode('idle')
-  }
+  }*/
 
 }
 
-StructureSpawn.prototype.spawnCreep = function() {
-  Log.info('Trying to spawn a creep')
-  if(this.memory.mode !== 'spawning') {
-    this.room.cleanCreeps()
+StructureSpawn.prototype.spawnCreeps = function() {
+
     // What kind of creep
     if (this.harvesters() < this.maxHarvesters()) {
       this.spawnHarvester();
-    } else if (this.builders() < this.maxBuilders()) {
+    }
+    if (this.builders() < this.maxBuilders()) {
       this.spawnBuilder();
-    } else if (this.miners() < this.maxMiners()) {
+    }
+    if (this.miners() < this.maxMiners()) {
       this.spawnMiner();
-    } else if (this.carriers() < this.maxCarriers()) {
+    }
+    if (this.carriers() < this.maxCarriers()) {
       this.spawnCarrier()
-    } else if (this.upgraders() < this.maxUpgraders()) {
+    }
+    if (this.exoBuilders() < this.maxExoBuilders()) {
+      this.spawnExoBuilder()
+    }
+    if (this.upgraders() < this.maxUpgraders()) {
       this.spawnUpgrader()
-    } else if (this.exoHarvesters() < this.maxExoHarvesters()) {
+    }
+    if (this.exoClaimers() < this.maxExoClaimers()) {
+      this.spawnExoClaimer()
+    }
+    if (this.exoReservers() < this.maxExoReservers()) {
+      this.spawnExoReserver()
+    }
+    if (this.exoHarvesters() < this.maxExoHarvesters()) {
       this.spawnExoHarvester()
-    } else if (this.exoAttackers() < this.maxExoAttackers()) {
+    }
+    if (this.exoAttackers() < this.maxExoAttackers()) {
       this.spawnExoAttacker()
     }
+}
 
-    this.setMode('spawning')
+StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {
+  if(!this.memory.spawn_queue) {
+    this.memory.spawn_queue = []
+  }
+  if(!this.spawning) {
+    var array = this.memory.spawn_queue
+    array.push({role: role, body: body, priority: priority})
+    this.memory.spawn_queue = array
+    Log.info("Spawn Queue is now " + _.size(array) + " long")
+    Log.info("Added a " + role)
+  }
+}
+
+StructureSpawn.prototype.spawnFromQueue = function() {
+  var array = this.memory.spawn_queue
+  if (array) {
+    array = _.sortBy(array, ['priority'])
+    if(array.length > 0) {
+      var creep = array[0] //shift()
+      if (this.canCreateCreep(creep.body) === 0 && !this.spawning){ // && this.canCreateCreep(creep.body)){
+        array.shift
+        this.spawnACreep(creep.role, creep.body)
+
+      }
+    }
+    this.memory.spawn_queue = array
   }
 }

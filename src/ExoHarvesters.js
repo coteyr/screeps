@@ -2,21 +2,24 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 23:37:48
+* @Last Modified time: 2016-07-11 21:21:32
 */
 
 'use strict';
 
 StructureSpawn.prototype.getExoHarvesterBody = function(){
-  var energy = this.room.energyAvailable;
-  if (energy >= 1300) {
+  var energy = this.room.energyCapacityAvailable;
+  if (energy >= 1300 && energy < 1800) {
     return [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+  } else if (energy >= 1800) {
+    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+
   } else {
     return []
   }
 }
 StructureSpawn.prototype.exoHarvesters = function() {
-  return Finder.findCreeps('exo-harvester', this.room.name).length
+  return Finder.findAllCreepCount('exo-harvester', this)
   // return this.memory.current_harvesters || 0
 }
 
@@ -26,7 +29,7 @@ StructureSpawn.prototype.maxExoHarvesters = function() {
 
 StructureSpawn.prototype.setMaxExoHarvesters = function() {
   if(this.room.exoOperations() && Memory.harvest) {
-    this.memory.max_exo_harvesters = 7;
+    this.memory.max_exo_harvesters = _.size(Memory.harvest) * 4;
   } else {
     this.memory.max_exo_harvesters = 0;
   }
@@ -37,5 +40,12 @@ StructureSpawn.prototype.setExoHarvesters = function() {
 }
 
 StructureSpawn.prototype.spawnExoHarvester = function() {
-  this.createCreep(this.getExoHarvesterBody(), null, {role: 'exo-harvester', mode: 'idle', home: this.room.roomName, harvest: Memory.harvest })
+  /*var choice = Memory.last_harvest_choice || 0;
+  this.createCreep(this.getExoHarvesterBody(), null, {role: 'exo-harvester', mode: 'idle', home: this.room.roomName, harvest: Memory.harvest[choice] })
+  choice += 1
+  if (choice > _.size(Memory.harvest) - 1) {
+    choice = 0
+  }
+  Memory.last_harvest_choice = choice*/
+  this.addToSpawnQueue('exo-harvester', this.getExoBuilderBody(), 10)
 }

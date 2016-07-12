@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 23:28:32
+* @Last Modified time: 2016-07-11 20:04:34
 */
 
 'use strict';
@@ -31,27 +31,28 @@ Room.prototype.tickStuff = function() {
 }
 
 Room.prototype.tickCreeps = function() {
+  var me = this;
   _.filter(Game.creeps).forEach(function(creep) {
-    if(creep.my) {
+    if(creep.my && creep.room.name == me.name) {
       creep.tick();
     }
   });
 }
 
-Room.prototype.exoOperaitons = function() {
+Room.prototype.exoOperations = function() {
   return this.energyCapacityAvailable >= 1300
 }
 
 Room.prototype.resetMemory = function() {
   var spawns = this.find(FIND_MY_SPAWNS);
   this.memory.my_spawns = spawns;
-  var extensions = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
+  var extensions = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}})
   this.memory.my_extensions = extensions
-  var containers = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}});
+  var containers = this.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})
   this.memory.my_containers = containers
-  var towers = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+  var towers = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}})
   this.memory.my_towers = towers
-  var storages = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_STORAGE}});
+  var storages = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_STORAGE}})
   this.memory.my_storages = storages
   this.findSourceSpots();
 }
@@ -76,6 +77,13 @@ Room.prototype.findSourceSpots = function() {
     var count = 0;
     var out = {}
     sources.forEach(function(source) {
+      count += 1
+      source['taken'] = false
+      out[count] = source
+    });
+    room.memory.sources = out
+
+    /*sources.forEach(function(source) {
         room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
           Log.info(JSON.stringify(spot));
           if (spot.terrain === 'plain' || spot.terrain === 'swamp') {
@@ -90,7 +98,7 @@ Room.prototype.findSourceSpots = function() {
           }
         })
       });
-      room.memory.sources = out;
+      room.memory.sources = out;*/
   }
 }
 
@@ -107,12 +115,30 @@ Room.prototype.cleanCreeps = function() {
 }
 
 Room.prototype.setAttack = function(room_name) {
-  Memory.attack = room_name
+  this.memory.attack = room_name
 }
 
 Room.prototype.setHarvest = function(room_name) {
-  Memory.harvest = room_name
+  Memory.harvest = [room_name]
 }
+
+Room.prototype.addHarvest = function(room_name) {
+  var array = Memory.harvest || []
+  array.push(room_name)
+  Memory.harvest = array
+}
+Room.prototype.addReserve = function(room_name) {
+  var array = Memory.reserve || []
+  array.push(room_name)
+  Memory.reserve = array
+}
+
+Room.prototype.addBuild = function(room_name) {
+  var array = Memory.build || []
+  array.push(room_name)
+  Memory.build = array
+}
+
 Room.prototype.report = function() {
   if(this.memory.report_count <= 0 || !this.memory.refresh_count) {
     this.memory.report_count = 10;

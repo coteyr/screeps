@@ -2,27 +2,29 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 05:47:31
+* @Last Modified time: 2016-07-11 21:05:00
 */
 
 'use strict';
 
 StructureSpawn.prototype.getCarrierBody = function(){
-  var energy = this.room.energyAvailable;
+  var energy = this.room.energyCapacityAvailable;
   if (energy >= 300 && energy < 550) {
     return [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
   } else if(energy >= 550 && energy < 800) {
     return [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
   } else if(energy >= 800 && energy < 1300) {
     return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
-  } else if(energy >= 1300) {
+  } else if(energy >= 1300 && energy < 1800) {
     return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+  } else if(energy >= 1800) {
+    return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   } else {
     return [WORK, CARRY, MOVE]
   }
 }
 StructureSpawn.prototype.carriers = function() {
-    return _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier').length;
+    return Finder.findCreepCount('carrier', this)
    //return this.memory.current_carriers || 0
 }
 
@@ -34,10 +36,11 @@ StructureSpawn.prototype.setMaxCarriers = function() {
   this.memory.max_carriers = (this.memory.max_miners) * 1
 }
 StructureSpawn.prototype.setCarriers = function() {
-  var count = _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier').length;
+  var count = Finder.findCreeps('carrier', this.room.name).length;
   this.memory.current_carriers = count;
 }
 
 StructureSpawn.prototype.spawnCarrier = function() {
-  this.spawnACreep('carrier', this.getCarrierBody())
+  this.addToSpawnQueue('carrier', this.getCarrierBody(), 10)
+  // this.spawnACreep('carrier', this.getCarrierBody())
 }

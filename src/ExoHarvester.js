@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 14:51:57
+* @Last Modified time: 2016-07-11 10:24:08
 */
 
 'use strict';
@@ -21,7 +21,7 @@ Creep.prototype.assignExoHarvesterTasks = function() {
     // I have no clue where I am
 
   }
-  if(this.room.name === this.memory.home && this.carry.energy > 0) {
+  if(this.room.name === this.memory.home && this.carry.energy > 0 && this.memory.mode !== 'transition') {
     this.setMode('transfer')
   }
   if(this.room.name === this.memory.home && this.memory.mode === 'mine') {
@@ -30,21 +30,24 @@ Creep.prototype.assignExoHarvesterTasks = function() {
 }
 
 Creep.prototype.assignHomeExoHarvesterTasks = function() {
-  if(this.carry.energy <= 0) {
-    this.setMode('leave');
-  } else {
-    this.setMode('transfer');
+  if(this.memory.mode !== 'transition') {
+    if(this.carry.energy <= 0) {
+      this.setMode('leave');
+    } else {
+      this.setMode('transfer');
+    }
   }
 }
 
 Creep.prototype.assignRemoteExoHarvesterTasks = function() {
-  if(this.memory.mode == 'transition') {
-    this.setMode('mine')
-  }
-  if (this.carry.energy < this.carryCapacity) {
-    this.setMode('mine')
-  } else if (this.carry.energy >= this.carryCapacity) {
-    this.setMode('go-home')
+  if(this.memory.mode === 'transition') {
+    // this.setMode('mine')
+  } else {
+    if (this.carry.energy < this.carryCapacity) {
+      this.setMode('mine')
+    } else if (this.carry.energy >= this.carryCapacity) {
+      this.setMode('go-home')
+    }
   }
 }
 
@@ -60,7 +63,7 @@ Creep.prototype.gotoRoom = function(roomName) {
     this.memory.goto_room = roomName
     this.setMode('transition')
     delete this.memory.exit
-    delete this.memory.exit_dir
+    // delete this.memory.exit_dir
   }
 }
 Creep.prototype.doLeave = function() {

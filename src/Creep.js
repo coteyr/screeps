@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 13:51:17
+* @Last Modified time: 2016-07-11 23:34:58
 */
 
 'use strict';
@@ -26,10 +26,19 @@ Creep.prototype.tick = function(){
     this.assignExoHarvesterTasks()
   } else if (this.memory.role === 'exo-attacker') {
     this.assignExoAttackerTasks()
+  } else if (this.memory.role === 'exo-reserver') {
+    this.assignExoReserverTasks()
+  } else if (this.memory.role === 'exo-cliamer') {
+    this.assignExoClaimerTasks()
+  } else if (this.memory.role === 'exo-builder') {
+    this.assignExoBuilderTasks()
   }
   /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacityAvailable * 0.25)) {
     this.setMode('recharge')
   }*/
+  if(this.ticksToLive < 200 && (this.room.name === this.memory.home || !this.memory.home) && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
+    this.memory.mode = 'recycle'
+  }
   this.doWork();
 }
 
@@ -49,6 +58,9 @@ Creep.prototype.doWork = function() {
         this.doRecharge()
         break;
       case 'send':
+        this.doSend()
+        break;
+      case 'broadcast':
         this.doSend()
         break;
       case 'noop':
@@ -96,6 +108,21 @@ Creep.prototype.doWork = function() {
       case 'attack':
         this.doAttack()
         break;
+      case 'recycle':
+        this.doRecycle()
+        break;
+      case 'exop':
+        this.doExOp()
+        break;
+      case 'reserve':
+        this.doReserve()
+        break;
+      case 'claim':
+        this.doClaim()
+        break;
+      case 'exop-build':
+        this.doExOpBuild()
+        break;
     }
 
   } catch(error) {
@@ -124,6 +151,7 @@ Creep.prototype.doTransition = function() {
     if(this.move(this.memory.exit_dir) === 0) {
       this.setMode('idle');
       delete this.memory.exit_dir
+      delete this.memory.exit
       delete this.memory.goto_room
     }
   }
@@ -167,3 +195,25 @@ Creep.prototype.moveCloseTo = function(x, y, range) {
     return false
   }
 }
+
+Creep.prototype.doRecycle = function() {
+  var me = this;
+  var spots = _.filter(this.room.memory.my_containers, function(object) {
+      var structure = Game.getObjectById(object.id)
+      // Log.info(JSON.stringify(structure))
+      return structure.storedEnergy() < structure.possibleEnergy() - me.carry.energy;
+  })
+  if (_.size(spots) >= 1) {
+    if (this.moveCloseTo(spots[0].pos.x, spots[0].pos.y , 0)) {
+       this.suicide()
+    }
+  } else {
+    Log.warn(this.name + " has no where to die. Idling")
+    this.setMode('idle')
+  }
+}
+
+Creep.prototype.recycle = function() {
+  this.setMode('recycle')
+}
+
