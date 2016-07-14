@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-14 18:54:50
+* @Last Modified time: 2016-07-14 19:15:09
 */
 
 'use strict';
@@ -34,7 +34,7 @@ Room.prototype.tickStuff = function() {
 Room.prototype.tickCreeps = function() {
   var me = this;
   _.filter(Game.creeps).forEach(function(creep) {
-    if(creep.my && creep.room.name == me.name) {
+    if(creep.my && creep.room.name === me.name) {
       creep.tick();
     }
   });
@@ -73,7 +73,7 @@ Room.prototype.reset = function() {
 
 Room.prototype.findSourceSpots = function() {
   var room = this;
-  if(!room.memory.sources || _.size(room.memory.sources) == 0) {
+  if(!room.memory.sources || _.size(room.memory.sources) === 0) {
     delete room.memory.sources
     var sources = room.find(FIND_SOURCES);
     var count = 0;
@@ -138,21 +138,18 @@ Room.prototype.addAttack = function(room_name) {
 }
 
 Room.prototype.report = function() {
-  var array = Memory.stats || {};
-  array["room." + this.name + ".energyAvailable"] = this.energyAvailable;
-  array["room." + this.name + ".energyCapacityAvailable"] = this.energyCapacity;
-  array["room." + this.name + ".harvesterCount"] = Finder.findCreeps('harvester', this.name).length
-  array["room." + this.name + ".builderCount"] = Finder.findCreeps('builder', this.name).length
-  array["room." + this.name + ".carrierCount"] = Finder.findCreeps('carrier', this.name).length
-  array["room." + this.name + ".minerCount"] = Finder.findCreeps('miner', this.name).length
-  array["room." + this.name + ".upgraderCount"] = Finder.findCreeps('upgrader', this.name).length
+  var roomName = this.name
+  Report.addRoomValue(this.name, 'energyAvailable', this.energyAvailable)
+  Report.addRoomValue(this.name, 'energyCapacityAvailable', this.energyCapacity)
+  var array =['harvester', 'builder', 'carrier', 'miner', 'upgrader']
+  array.forEach(function(role){
+    Report.addRoomValue(roomName, role + 'Count', Finder.findCreeps(role, roomName).length)
+  })
   if (this.controller && this.controller.my) {
-    array["room." + this.name + ".level"] = this.controller.level
-    array["room." + this.name + ".progress"] = this.controller.progress
-    array["room." + this.name + ".progressTotal"] = this.controller.progressTotal
+    Report.addRoomValue(this.name, 'level', this.controller.level)
+    Report.addRoomValue(this.name, 'progress', this.controller.progress)
+    Report.addRoomValue(this.name, 'progressTotal', this.controller.progressTotal)
   }
-
-  Memory.stats = array
   if(this.memory.report_count <= 0 || !this.memory.refresh_count) {
     this.memory.report_count = 10;
     console.log('<span style="color: #E6DB74;">Report for room: ' + this.name +'</span>')
