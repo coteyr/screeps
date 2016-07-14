@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-13 19:56:45
+* @Last Modified time: 2016-07-14 02:09:28
 */
 
 'use strict';
@@ -28,7 +28,7 @@ Creep.prototype.doMine = function() {
   if(!this.memory.assigned_position) {
     this.findSourcePosition()
   }
-  if(this.moveCloseTo(this.memory.assigned_position.pos.x, this.memory.assigned_position.pos.y, 1)) {
+  if(this.memory.assigned_position && this.moveCloseTo(this.memory.assigned_position.pos.x, this.memory.assigned_position.pos.y, 1)) {
     var source = Game.getObjectById(this.memory.assigned_position.id);
     this.harvest(source)
   }
@@ -66,22 +66,10 @@ Creep.prototype.findSourcePosition = function() {
   var creep = this
   if(this.room.memory.sources) {
     Object.keys(this.room.memory.sources).some(function(key, index) {
-      var position = creep.room.memory.sources[key]
-      if(!position.taken) {
+      var position = Game.getObjectById(creep.room.memory.sources[key].id)
+      if(!position.taken && _.size(position.pos.findInRange(FIND_MY_CREEPS, 3)) == 0) {
         creep.room.memory.sources[key].taken = true
         creep.memory.assigned_position = creep.room.memory.sources[key]
-
-        //
-        /*
-        var look = this.room.lookAt(x, y);
-        var me = this
-        creep.room.look.forEach(function(lookObject) {
-          if(lookObject.type == LOOK_CREEPS) {
-            Log.warn("Spot is taken " + me.name + " can't mine there: " + x + ", " + y)
-           delete creep.memory.assigned_position
-          }
-        }); */
-
         return true
       }
     }, creep.room.memory.sources);

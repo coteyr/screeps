@@ -2,24 +2,29 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-13 20:00:23
+* @Last Modified time: 2016-07-14 18:46:39
 */
 
 'use strict';
 
+Creep.prototype.chooseExoTarget = function(arrayName) {
+  if(!this.memory[arrayName]) {
+    var choice = this.room.memory["last_" + arrayName + "_choice"] || 0
+    this.memory[arrayName] = this.room.memory[arrayName][choice]
+    choice += 1
+    if(choice > _.size(this.room.memory[arrayName]) - 1) {
+      choice = 0
+    }
+    this.room.memory["last_" + arrayName + "_choice"] = choice
+  }
+}
+
+Creep.prototype.setupExoReserverMemory = function() {
+  this.chooseExoTarget()
+}
+
 Creep.prototype.assignExoReserverTasks = function() {
-  if(!this.memory.home) {
-    this.memory.home = this.room.name
-  }
-  if(!this.memory.reserve) {
-    var choice = Memory.last_reserve_choice || 0;
-  this.memory.reserve = Memory.reserve[choice]
-  choice += 1
-  if (choice > _.size(Memory.reserve) - 1) {
-    choice = 0
-  }
-  Memory.last_reserve_choice = choice
-  }
+  this.setupExoReserverMemory()
   if(this.room.name === this.memory.reserve) {
     // I am in the remote room
     this.assignRemoteExoReserverTasks()

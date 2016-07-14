@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-14 01:39:05
+* @Last Modified time: 2016-07-14 01:52:17
 */
 
 'use strict';
@@ -27,7 +27,7 @@ StructureSpawn.prototype.promote = function(from, to) {
     })
 }
 
-StructureSpawn.setMaximums = function() {
+StructureSpawn.prototype.setMaximums = function() {
   if(_.size(this.room.find(FIND_CONSTRUCTION_SITES)) > 0) {
     this.memory.max_builders = 1
     this.memory.max_upgraders = 0
