@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-12 04:42:26
+* @Last Modified time: 2016-07-14 18:55:58
 */
 
 'use strict';
@@ -25,8 +25,8 @@ StructureSpawn.prototype.maxExoBuilders = function() {
 }
 
 StructureSpawn.prototype.setMaxExoBuilders = function() {
-  if(this.room.exoOperations() && Memory.build) {
-    this.memory.max_exo_builders = _.size(Memory.build) * 4;
+  if(this.room.exoOperations() && this.room.memory.build) {
+    this.memory.max_exo_builders = _.size(this.room.memory.build) * 4;
   } else {
     this.memory.max_exo_builders = 0;
   }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-13 08:24:10
+* @Last Modified time: 2016-07-14 18:56:48
 */
 
 'use strict';
@@ -28,8 +28,8 @@ StructureSpawn.prototype.maxExoHarvesters = function() {
 }
 
 StructureSpawn.prototype.setMaxExoHarvesters = function() {
-  if(this.room.exoOperations() && Memory.harvest) {
-    this.memory.max_exo_harvesters = _.size(Memory.harvest) * 4;
+  if(this.room.exoOperations() && this.room.memory.harvest) {
+    this.memory.max_exo_harvesters = _.size(this.room.memory.harvest) * 4;
   } else {
     this.memory.max_exo_harvesters = 0;
   }

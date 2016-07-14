@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-14 18:46:39
+* @Last Modified time: 2016-07-14 18:49:47
 */
 
 'use strict';
@@ -10,7 +10,9 @@
 Creep.prototype.chooseExoTarget = function(arrayName) {
   if(!this.memory[arrayName]) {
     var choice = this.room.memory["last_" + arrayName + "_choice"] || 0
-    this.memory[arrayName] = this.room.memory[arrayName][choice]
+    if (_.size(this.room.memory[arrayName]) > 0) {
+      this.memory[arrayName] = this.room.memory[arrayName][choice]
+    }
     choice += 1
     if(choice > _.size(this.room.memory[arrayName]) - 1) {
       choice = 0
@@ -20,7 +22,7 @@ Creep.prototype.chooseExoTarget = function(arrayName) {
 }
 
 Creep.prototype.setupExoReserverMemory = function() {
-  this.chooseExoTarget()
+  this.chooseExoTarget('reserve')
 }
 
 Creep.prototype.assignExoReserverTasks = function() {

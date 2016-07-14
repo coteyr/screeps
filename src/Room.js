@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-13 19:52:51
+* @Last Modified time: 2016-07-14 18:54:50
 */
 
 'use strict';
@@ -116,29 +116,25 @@ Room.prototype.cleanCreeps = function() {
   }
 }
 
-Room.prototype.setAttack = function(room_name) {
-  this.memory.attack = room_name
-}
-
-Room.prototype.setHarvest = function(room_name) {
-  Memory.harvest = [room_name]
+Room.prototype.addExoTarget = function(arrayName, target) {
+  var array = this.memory[arrayName] || []
+  array.push(target)
+  this.memory[arrayName] = array
 }
 
 Room.prototype.addHarvest = function(room_name) {
-  var array = Memory.harvest || []
-  array.push(room_name)
-  Memory.harvest = array
+  this.addExoTarget('harvest', room_name)
 }
 Room.prototype.addReserve = function(room_name) {
-  var array = Memory.reserve || []
-  array.push(room_name)
-  Memory.reserve = array
+  this.addExoTarget('reserve', room_name)
 }
 
 Room.prototype.addBuild = function(room_name) {
-  var array = Memory.build || []
-  array.push(room_name)
-  Memory.build = array
+  this.addExoTarget('build', room_name)
+}
+
+Room.prototype.addAttack = function(room_name) {
+  this.addExoTarget('attack', room_name)
 }
 
 Room.prototype.report = function() {
