@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-13 23:55:45
+* @Last Modified time: 2016-07-14 01:35:06
 */
 
 'use strict';
@@ -32,9 +32,6 @@ StructureSpawn.prototype.maxUpgraders = function() {
   return this.memory.max_upgraders || 0
 }
 
-StructureSpawn.prototype.setMaxUpgraders = function() {
-  this.memory.max_upgraders = 1
-}
 StructureSpawn.prototype.setUpgraders = function() {
   var count = Finder.findCreeps('upgrader', this.room.name).length;
   this.memory.current_upgraders = count;

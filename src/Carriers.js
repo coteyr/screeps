@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-14 00:01:43
+* @Last Modified time: 2016-07-14 01:33:33
 */
 
 'use strict';
@@ -32,9 +32,7 @@ StructureSpawn.prototype.maxCarriers = function() {
   return this.memory.max_carriers || 0
 }
 
-StructureSpawn.prototype.setMaxCarriers = function() {
-  this.memory.max_carriers = (this.memory.max_miners) * 1
-}
+
 StructureSpawn.prototype.setCarriers = function() {
   var count = Finder.findCreeps('carrier', this.room.name).length;
   this.memory.current_carriers = count;

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-29 16:16:15
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-13 05:10:05
+* @Last Modified time: 2016-07-14 01:33:03
 */
 
 'use strict';
@@ -32,13 +32,7 @@ StructureSpawn.prototype.maxBuilders = function() {
   return this.memory.max_builders || 0
 }
 
-StructureSpawn.prototype.setMaxBuilders = function() {
-  if(_.size(this.room.find(FIND_CONSTRUCTION_SITES)) > 0) {
-    this.memory.max_builders = 2
-  } else {
-    this.memory.max_builders = 0
-  }
-}
+
 StructureSpawn.prototype.setBuilders = function() {
   var count = Finder.findCreeps('builder', this.room.name).length;
   this.memory.current_builders = count;

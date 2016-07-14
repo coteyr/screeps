@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-13 20:04:22
+* @Last Modified time: 2016-07-14 01:39:05
 */
 
 'use strict';
@@ -27,6 +27,24 @@ StructureSpawn.prototype.promote = function(from, to) {
     })
 }
 
+StructureSpawn.setMaximums = function() {
+  if(_.size(this.room.find(FIND_CONSTRUCTION_SITES)) > 0) {
+    this.memory.max_builders = 1
+    this.memory.max_upgraders = 0
+  } else {
+    this.memory.max_builders = 0
+    this.memory.max_upgraders = 1
+  }
+  this.memory.max_carriers = (this.memory.max_miners) * 1
+  var sources = _.size(this.room.find(FIND_SOURCES))
+  if (this.room.controller && this.room.controller.my && this.room.controller.level >= 4) {
+    this.memory.max_harvesters = 0
+    this.memory.max_miners = sources
+  } else {
+    this.memory.max_harvesters = sources
+    this.memory.max_miners = 0
+  }
+}
 
 StructureSpawn.prototype.promoteCreeps = function() {
   if(this.harvesters() >  this.maxHarvesters()) {
@@ -54,11 +72,7 @@ StructureSpawn.prototype.spawnACreep = function(role, body)  {
 StructureSpawn.prototype.refreshData = function() {
   if(!this.memory.refresh_count || this.memory.refresh_count <= 0) {
     this.memory.refresh_count = 70;
-    this.setMaxHarvesters()
-    this.setMaxMiners()
-    this.setMaxCarriers()
-    this.setMaxUpgraders()
-    this.setMaxBuilders()
+    this.setMaximums()
     this.setHarvesters()
     this.setMaxExoHarvesters()
     this.setMaxExoAttackers()
