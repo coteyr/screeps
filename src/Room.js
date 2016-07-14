@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 20:04:34
+* @Last Modified time: 2016-07-13 19:52:51
 */
 
 'use strict';
@@ -19,14 +19,15 @@ Room.prototype.tick = function() {
   this.tickTowers() */
   this.tickCreeps(); //keep this separate
   this.report();
-
   return true;
 };
 Room.prototype.tickStuff = function() {
   var stuff = _.union({}, this.memory.my_storages, this.memory.my_containers, this.memory.my_extensions, this.memory.my_spawns, this.memory.my_towers)
   Object.keys(stuff).forEach(function(key, index) {
     var object = Game.getObjectById(this[key].id);
-    object.tick();
+    if(object) {
+      object.tick();
+    }
   }, stuff);
 }
 
@@ -61,6 +62,7 @@ Room.prototype.refreshData = function() {
   if(this.memory.refresh_count <= 0 || !this.memory.refresh_count) {
     this.memory.refresh_count = 500;
     this.resetMemory();
+    Memory.stats["room." + this.name + ".idlers"] = 0
   }
   this.memory.refresh_count -= 1;
 }
@@ -71,7 +73,7 @@ Room.prototype.reset = function() {
 
 Room.prototype.findSourceSpots = function() {
   var room = this;
-  if(!room.memory.sources) {
+  if(!room.memory.sources || _.size(room.memory.sources) == 0) {
     delete room.memory.sources
     var sources = room.find(FIND_SOURCES);
     var count = 0;
@@ -140,6 +142,21 @@ Room.prototype.addBuild = function(room_name) {
 }
 
 Room.prototype.report = function() {
+  var array = Memory.stats || {};
+  array["room." + this.name + ".energyAvailable"] = this.energyAvailable;
+  array["room." + this.name + ".energyCapacityAvailable"] = this.energyCapacity;
+  array["room." + this.name + ".harvesterCount"] = Finder.findCreeps('harvester', this.name).length
+  array["room." + this.name + ".builderCount"] = Finder.findCreeps('builder', this.name).length
+  array["room." + this.name + ".carrierCount"] = Finder.findCreeps('carrier', this.name).length
+  array["room." + this.name + ".minerCount"] = Finder.findCreeps('miner', this.name).length
+  array["room." + this.name + ".upgraderCount"] = Finder.findCreeps('upgrader', this.name).length
+  if (this.controller && this.controller.my) {
+    array["room." + this.name + ".level"] = this.controller.level
+    array["room." + this.name + ".progress"] = this.controller.progress
+    array["room." + this.name + ".progressTotal"] = this.controller.progressTotal
+  }
+
+  Memory.stats = array
   if(this.memory.report_count <= 0 || !this.memory.refresh_count) {
     this.memory.report_count = 10;
     console.log('<span style="color: #E6DB74;">Report for room: ' + this.name +'</span>')
@@ -147,4 +164,13 @@ Room.prototype.report = function() {
     console.log('<span style="color: #95CA2D;">Primary Energy: ' + this.energyAvailable + " of " + this.energyCapacityAvailable)
   }
   this.memory.report_count -= 1;
+}
+
+Room.prototype.energyCapacity = function() {
+  if(Finder.findCreeps('miner', this.name).length <= 0 && Finder.findCreeps('harvester', this.name).length <= 0) {
+    return 300
+  } else {
+    return this.energyCapacityAvailable
+  }
+
 }

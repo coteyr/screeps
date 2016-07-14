@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-12 00:08:46
+* @Last Modified time: 2016-07-13 20:04:22
 */
 
 'use strict';
@@ -13,7 +13,9 @@ StructureSpawn.prototype.tick = function() {
   this.assignMode();
   this.spawnCreeps();
   this.doWork();
+  this.doErSpawn();
   this.refreshData();
+  Memory.stats["room." + this.room.name + ".spawnQueue"] = _.size(this.memory.spawn_queue)
 
 
 }
@@ -98,7 +100,7 @@ StructureSpawn.prototype.doWork = function() {
   if (this.memory.mode === 'wait-energy') {
     this.doWaitEnergy();
   }
-  /* if (this.memory.mode === 'er-spawn') {
+  /*if (this.memory.mode === 'er-spawn') {
     this.doErSpawn();
   }*/
 }
@@ -116,18 +118,18 @@ StructureSpawn.prototype.doWaitEnergy = function() {
 }
 
 StructureSpawn.prototype.doErSpawn = function() {
-  /*if (this.harvesters() === 0 && this.maxHarvesters > 0) {
+  if (Finder.findRealCreepCount('harvester', this) === 0 && this.maxHarvesters > 0) {
     Log.info("ER Spawn Harvester")
-    this.spawnHarvester();
-  } else if (this.miners() === 0) {
+    this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK])
+  } else if (Finder.findRealCreepCount('miner', this) === 0) {
     Log.info("ER Spawn Miner")
-    this.spawnMiner();
-  } else if (this.carriers() === 0) {
+    this.spawnACreep('miner', [MOVE, MOVE, CARRY, CARRY, WORK])
+  } else if (Finder.findRealCreepCount('carrier', this) === 0) {
     Log.info("ER Spawn Carrier")
-    this.spawnCarrier()
+    this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY])
   } else {
     this.setMode('idle')
-  }*/
+  }
 
 }
 
@@ -182,13 +184,20 @@ StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {
 StructureSpawn.prototype.spawnFromQueue = function() {
   var array = this.memory.spawn_queue
   if (array) {
-    array = _.sortBy(array, ['priority'])
+    array = _.sortBy(array, function(a) {
+      a.priority;
+    })
     if(array.length > 0) {
+
       var creep = array[0] //shift()
+      Log.info("Trying to Spawn a " + creep.role + " in " + this.room.name)
       if (this.canCreateCreep(creep.body) === 0 && !this.spawning){ // && this.canCreateCreep(creep.body)){
         array.shift()
         this.spawnACreep(creep.role, creep.body)
 
+      } else if(this.canCreateCreep(creep.body) == ERR_INVALID_ARGS) {
+        array.shift()
+        Log.error("Invalid Creep Body Detected")
       }
     }
     this.memory.spawn_queue = array

@@ -2,17 +2,17 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 21:21:32
+* @Last Modified time: 2016-07-13 08:24:10
 */
 
 'use strict';
 
 StructureSpawn.prototype.getExoHarvesterBody = function(){
-  var energy = this.room.energyCapacityAvailable;
+  var energy = this.room.energyCapacity();
   if (energy >= 1300 && energy < 1800) {
-    return [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    return [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   } else if (energy >= 1800) {
-    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    return [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
 
   } else {
     return []
@@ -47,5 +47,5 @@ StructureSpawn.prototype.spawnExoHarvester = function() {
     choice = 0
   }
   Memory.last_harvest_choice = choice*/
-  this.addToSpawnQueue('exo-harvester', this.getExoBuilderBody(), 10)
+  this.addToSpawnQueue('exo-harvester', this.getExoHarvesterBody(), 10)
 }

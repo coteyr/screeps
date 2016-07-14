@@ -2,23 +2,23 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 22:26:08
+* @Last Modified time: 2016-07-13 05:10:33
 */
 
 'use strict';
 
 StructureSpawn.prototype.getUpgraderBody = function(){
-  var energy = this.room.energyCapacityAvailable;
+  var energy = this.room.energyCapacity();
   if (energy >= 300 && energy < 550) {
-    return [WORK, WORK, CARRY, MOVE]
+    return [WORK, CARRY, MOVE]
   } else if(energy >= 550 && energy < 800) {
     return [WORK, WORK, WORK, MOVE, CARRY, CARRY, CARRY, CARRY]
   } else if(energy >= 800 && energy < 1300) {
     return [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE]
   } else if(energy >= 1300 && energy < 1800) {
-    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE]
+    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE]
   } else if(energy >= 1800) {
-    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE]
+    return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE] // 10 Energy Tick
   } else {
     return [WORK, CARRY, MOVE]
   }

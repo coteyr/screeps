@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-10 23:37:27
+* @Last Modified time: 2016-07-13 19:56:45
 */
 
 'use strict';
@@ -12,11 +12,11 @@ Creep.prototype.assignHarvesterTasks = function() {
     this.setMode('idle')
   }
   if(this.memory.mode == 'idle') {
-    if (_.size(Finder.findCreeps('miner', this.room.name)) >= 2){
+    if (_.size(Finder.findCreeps('miner', this.room.name)) >= 2 && this.room.controller.level >= 4){
       this.setMode('recycle')
     } else if(this.carry.energy < this.carryCapacity) {
       this.setMode('mine')
-    } else if(this.room.energyAvailable < this.room.energyCapacityAvailable){
+    } else if(this.carry.energy >= this.carryCapacity){
       this.setMode('transfer');
     } else {
       this.setMode('noop')
@@ -37,7 +37,7 @@ Creep.prototype.doMine = function() {
   }
 }
 
-Creep.prototype.doStore = function() {
+/*Creep.prototype.doStore = function() {
   var creep = this;
   var target = undefined;
   Object.keys(this.room.memory.my_spawns).forEach(function(key, index) {
@@ -60,7 +60,7 @@ Creep.prototype.doStore = function() {
       creep.memory.mode = 'idle'
     }
   }
-}
+}*/
 
 Creep.prototype.findSourcePosition = function() {
   var creep = this
@@ -91,6 +91,7 @@ Creep.prototype.findSourcePosition = function() {
         var position = creep.room.memory.sources[key]
         delete creep.room.memory.sources[key].taken
       }, creep.room.memory.sources);
+      this.room.reset()
     }
   }
 }

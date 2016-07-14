@@ -2,13 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 21:11:04
+* @Last Modified time: 2016-07-12 04:42:26
 */
 
 'use strict';
 
 StructureSpawn.prototype.getExoBuilderBody = function(){
-  var energy = this.room.energyCapacityAvailable;
+  var energy = this.room.energyCapacity();
   if (energy >= 1300) {
     return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   } else {

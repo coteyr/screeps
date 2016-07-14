@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-12 00:02:28
+* @Last Modified time: 2016-07-12 19:24:17
 */
 
 'use strict';
@@ -39,17 +39,17 @@ var Targeting = {
   },
 
   nearestHostalStructure: function(pos) {
-    return nearestNonController(pos, FIND_HOSTILE_STRUCTURES)
+    return this.nearestNonController(pos, FIND_HOSTILE_STRUCTURES)
   },
 
   nearestStructure: function(pos) {
-    return nearestNonController(pos, FIND_STRUCTURES)
+    return this.nearestNonController(pos, FIND_STRUCTURES)
   },
 
   nearestNonController: function(pos, type) {
     var target = pos.findClosestByRange(type, {
         filter: function(object) {
-          return object.structureType !== 'controller';
+          return object.structureType !== 'controller' &&object.structureType !== 'road';
         }
       });
     return target
@@ -61,15 +61,15 @@ var Targeting = {
     if(target) {
       return target
     }
-    target = nearestHostalSpawn(pos);
+    target = this.nearestHostalSpawn(pos);
     if(target) {
       return target
     }
-    target = nearestHostalStructure(pos);
+    target = this.nearestHostalStructure(pos);
     if (target) {
       return target
     }
-    target = nearestStructure(pos);
+    target = this.nearestStructure(pos);
     if (target) {
       return target
     }

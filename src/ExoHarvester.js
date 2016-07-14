@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 10:24:08
+* @Last Modified time: 2016-07-12 01:10:31
 */
 
 'use strict';
@@ -10,6 +10,15 @@
 Creep.prototype.assignExoHarvesterTasks = function() {
   if(!this.memory.home) {
     this.memory.home = this.room.name
+  }
+  if(!this.memory.harvest) {
+    var choice = Memory.last_harvest_choice || 0;
+  this.memory.harvest = Memory.harvest[choice]
+  choice += 1
+  if (choice > _.size(Memory.harvest) - 1) {
+    choice = 0
+  }
+  Memory.last_harvest_choice = choice
   }
   if(this.room.name === this.memory.harvest) {
     // I am in the remote room

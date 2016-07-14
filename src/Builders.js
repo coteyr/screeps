@@ -2,23 +2,23 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-29 16:16:15
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 21:01:07
+* @Last Modified time: 2016-07-13 05:10:05
 */
 
 'use strict';
 
 StructureSpawn.prototype.getBuilderBody = function(){
-  var energy = this.room.energyCapacityAvailable;
+  var energy = this.room.energyCapacity();
   if (energy >= 300 && energy < 550) {
-    return [WORK, CARRY, CARRY, MOVE, MOVE]
+    return [WORK, CARRY, MOVE]
   } else if(energy >= 550 && energy < 800) {
     return [WORK, WORK, MOVE, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
   } else if(energy >= 800 && energy < 1300) {
     return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   } else if(energy >= 1300 && energy < 1800) {
-    return [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+    return [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] //10 Energy Tick
   } else if(energy >= 1800) {
-    return [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    return [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] // 10 Energy Tick
   } else {
     return [WORK, CARRY, MOVE]
   }

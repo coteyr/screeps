@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-12 00:12:11
+* @Last Modified time: 2016-07-13 19:46:45
 */
 
 'use strict';
@@ -33,13 +33,16 @@ Creep.prototype.tick = function(){
   } else if (this.memory.role === 'exo-builder') {
     this.assignExoBuilderTasks()
   }
-  /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacityAvailable * 0.25)) {
+  /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacity() * 0.25)) {
     this.setMode('recharge')
   }*/
   if(this.ticksToLive < 200 && (this.room.name === this.memory.home || !this.memory.home) && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
     this.memory.mode = 'recycle'
   }
   this.doWork();
+  if (this.memory.mode == 'idle') {
+    Memory.stats["room." + this.room.name + ".idlers"] += 1
+  }
 }
 
 Creep.prototype.doWork = function() {

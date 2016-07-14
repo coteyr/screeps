@@ -2,15 +2,15 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 17:23:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 21:05:00
+* @Last Modified time: 2016-07-13 05:09:47
 */
 
 'use strict';
 
 StructureSpawn.prototype.getCarrierBody = function(){
-  var energy = this.room.energyCapacityAvailable;
+  var energy = this.room.energyCapacity();
   if (energy >= 300 && energy < 550) {
-    return [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
+    return [CARRY, CARRY, MOVE, MOVE]
   } else if(energy >= 550 && energy < 800) {
     return [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
   } else if(energy >= 800 && energy < 1300) {
@@ -18,7 +18,7 @@ StructureSpawn.prototype.getCarrierBody = function(){
   } else if(energy >= 1300 && energy < 1800) {
     return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   } else if(energy >= 1800) {
-    return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
+    return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
   } else {
     return [WORK, CARRY, MOVE]
   }
@@ -41,6 +41,6 @@ StructureSpawn.prototype.setCarriers = function() {
 }
 
 StructureSpawn.prototype.spawnCarrier = function() {
-  this.addToSpawnQueue('carrier', this.getCarrierBody(), 10)
+  this.addToSpawnQueue('carrier', this.getCarrierBody(), 5)
   // this.spawnACreep('carrier', this.getCarrierBody())
 }

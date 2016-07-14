@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 14:19:19
+* @Last Modified time: 2016-07-13 05:20:12
 */
 
 'use strict';
@@ -66,6 +66,8 @@ Creep.prototype.doTransfer = function() {
       if ((target.carry && target.carry.energy && target.carry.energy >= target.carryCapacity) || (target.energyCapacity && target.energy >= target.energyCapacity) || (target.storeCapacity && target.store[RESOURCE_ENERGY] >= target.storeCapacity)) {
         delete this.memory.target
       }
+    } else {
+      delete this.memory.target
     }
   }
   if(this.carry.energy <= 0) {
@@ -112,6 +114,8 @@ Creep.prototype.doPickup = function() {
     // Log.info(this.memory.target_miner)
     if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {
       this.setMode('fill')
+    } else if (!this.memory.target_miner && this.carry.energy > 0) {
+      this.setMode('transfer')
     }
   } else { // this.carry.energy >= this.carryCapacity
     this.setMode('idle')
