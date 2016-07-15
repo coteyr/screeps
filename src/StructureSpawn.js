@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-14 01:52:17
+* @Last Modified time: 2016-07-14 20:44:08
 */
 
 'use strict';
@@ -71,19 +71,26 @@ StructureSpawn.prototype.spawnACreep = function(role, body)  {
 }
 StructureSpawn.prototype.refreshData = function() {
   if(!this.memory.refresh_count || this.memory.refresh_count <= 0) {
-    this.memory.refresh_count = 70;
+    var roles = [
+      { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 10 },
+      { role: 'exo-builder',   arrayName: 'build',   multiplyer: 4 },
+      { role: 'exo-harvester', arrayName: 'harvest', multiplyer: 4 },
+      { role: 'exo-claimer',   arrayName: 'claim',   multiplyer: 1 },
+      { role: 'exo-reserver',  arrayName: 'reserve', multiplyer: 1 }
+    ]
+    var spawn = this
+    roles.forEach(function(role) {
+      spawn.setExoCount(role.role)
+      spawn.setMaxExoCount(role.role, role.arrayName, role.multiplyer)
+    })
+
+    this.memory.refresh_count = 10;
     this.setMaximums()
     this.setHarvesters()
-    this.setMaxExoHarvesters()
-    this.setMaxExoAttackers()
-    this.setMaxExoReservers()
     this.setMiners()
     this.setCarriers()
     this.setUpgraders()
     this.setBuilders()
-    this.setExoHarvesters()
-    this.setExoAttackers()
-    this.setExoReservers()
   }
   this.memory.refresh_count -= 1;
 }
@@ -148,38 +155,33 @@ StructureSpawn.prototype.doErSpawn = function() {
 }
 
 StructureSpawn.prototype.spawnCreeps = function() {
-
-    // What kind of creep
-    if (this.harvesters() < this.maxHarvesters()) {
-      this.spawnHarvester();
+  // What kind of creep
+  if (this.harvesters() < this.maxHarvesters()) {
+    this.spawnHarvester();
+  }
+  if (this.builders() < this.maxBuilders()) {
+    this.spawnBuilder();
+  }
+  if (this.miners() < this.maxMiners()) {
+    this.spawnMiner();
+  }
+  if (this.carriers() < this.maxCarriers()) {
+    this.spawnCarrier()
+  }
+  var roles = [
+    { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 10, priority: 10, body: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE] },
+    { role: 'exo-builder',   arrayName: 'build',   multiplyer: 4,  priority: 30, body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
+    { role: 'exo-harvester', arrayName: 'harvest', multiplyer: 4,  priority: 20, body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
+    { role: 'exo-claimer',   arrayName: 'claim',   multiplyer: 1,  priority: 10, body: [CLAIM, CLAIM, MOVE, MOVE] },
+    { role: 'exo-reserver',  arrayName: 'reserve', multiplyer: 1,  priority: 10, body: [CLAIM, CLAIM, MOVE, MOVE] }
+  ]
+  var spawner = this
+  roles.forEach(function(role) {
+    if (spawner.getExoCount(role.role) < spawner.getMaxExoCount(role.role)) {
+      // this.spawnExoClaimer()
+      spawner.spawnExoCreep(role.role, role.body, role.priority)
     }
-    if (this.builders() < this.maxBuilders()) {
-      this.spawnBuilder();
-    }
-    if (this.miners() < this.maxMiners()) {
-      this.spawnMiner();
-    }
-    if (this.carriers() < this.maxCarriers()) {
-      this.spawnCarrier()
-    }
-    if (this.exoBuilders() < this.maxExoBuilders()) {
-      this.spawnExoBuilder()
-    }
-    if (this.upgraders() < this.maxUpgraders()) {
-      this.spawnUpgrader()
-    }
-    if (this.exoClaimers() < this.maxExoClaimers()) {
-      this.spawnExoClaimer()
-    }
-    if (this.exoReservers() < this.maxExoReservers()) {
-      this.spawnExoReserver()
-    }
-    if (this.exoHarvesters() < this.maxExoHarvesters()) {
-      this.spawnExoHarvester()
-    }
-    if (this.exoAttackers() < this.maxExoAttackers()) {
-      this.spawnExoAttacker()
-    }
+  })
 }
 
 StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {
