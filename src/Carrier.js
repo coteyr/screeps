@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 01:30:21
+* @Last Modified time: 2016-07-15 15:42:28
 */
 
 'use strict';
@@ -41,7 +41,7 @@ Creep.prototype.doTransfer = function() {
   if (this.memory.target) {
     var target = Game.getObjectById(this.memory.target.id);
     if(target && target.memory) {
-      target.memory.call_for_energy = 0
+      // target.memory.call_for_energy = 0
       var did = false;
        this.pos.findInRange(FIND_STRUCTURES, 1, {filter: {structureType: STRUCTURE_EXTENSION}}).forEach(function(ext){
         if(ext.storedEnergy() <= ext.possibleEnergy()) {

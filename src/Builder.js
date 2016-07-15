@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-12 16:53:52
+* @Last Modified time: 2016-07-15 16:14:25
 */
 
 'use strict';
@@ -20,11 +20,11 @@ Creep.prototype.assignBuilderTasks = function() {
       }
     } else {
       if(this.carry.energy < this.carryCapacity) {
-        this.setMode('wait-energy')
+        this.setMode('pickup')
       } else if(this.carry.energy >= this.carryCapacity  && this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)) {
         this.setMode('build')
       } else if(this.carry.energy >= this.carryCapacity) {
-        this.setMode('upgrade')
+        this.setMode('repair')
       }
     }
   }
@@ -42,11 +42,37 @@ Creep.prototype.doBuild = function() {
          }
       }
     } else {
-      this.setMode('noop');
+      this.setMode('repair');
     }
   }
   if(this.carry.energy == 0) {
     this.setMode('idle');
+  }
+}
+
+Creep.prototype.doRepair = function() {
+  if(this.carry.energy >= 1) {
+    if (!this.memory.target) {
+      var locations = this.room.find(FIND_STRUCTURES, {filter: function(structure) {
+        return structure.hits < structure.hitsMax * 0.90
+      }})
+      Log.info("Found " + _.size(locations) + " needing repair")
+      if(_.size(locations) === 0) {
+        this.setMode('idle')
+      }
+      this.memory.target = this.pos.findClosestByRange(locations);
+    } else {
+      var target = Game.getObjectById(this.memory.target.id)
+      if(target && this.moveCloseTo(target.pos.x, target.pos.y, 3)){
+        Log.info("Target: " + target.id)
+        Log.info(this.repair(target))
+      }
+      if(target.hit >= target.hitsMax) {
+        delete this.memory.target
+      }
+    }
+  } else {
+    this.setMode('idle')
   }
 }
 

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 01:03:40
+* @Last Modified time: 2016-07-15 15:50:29
 */
 
 'use strict';
@@ -29,11 +29,11 @@ StructureSpawn.prototype.promote = function(from, to) {
 
 StructureSpawn.prototype.setMaximums = function() {
   if(_.size(this.room.find(FIND_CONSTRUCTION_SITES)) > 0) {
-    this.memory.max_builders = 1
-    this.memory.max_upgraders = 0
-  } else {
-    this.memory.max_builders = 0
+    this.memory.max_builders = 2
     this.memory.max_upgraders = 1
+  } else {
+    this.memory.max_builders = 1
+    this.memory.max_upgraders = 2
   }
   this.memory.max_carriers = (this.memory.max_miners) * 1
   var sources = _.size(this.room.find(FIND_SOURCES))
