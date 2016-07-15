@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 15:50:29
+* @Last Modified time: 2016-07-15 16:35:06
 */
 
 'use strict';
@@ -71,16 +71,9 @@ StructureSpawn.prototype.spawnACreep = function(role, body)  {
 }
 StructureSpawn.prototype.refreshData = function() {
   if(!this.memory.refresh_count || this.memory.refresh_count <= 0) {
-    var roles = [
-    { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 10, priority: 10, body: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE] },
-    { role: 'exo-builder',   arrayName: 'build',   multiplyer: 4,  priority: 30, body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
-    { role: 'exo-harvester', arrayName: 'harvest', multiplyer: 4,  priority: 20, body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
-    { role: 'exo-claimer',   arrayName: 'claim',   multiplyer: 1,  priority: 10, body: [CLAIM, CLAIM, MOVE, MOVE] },
-    { role: 'exo-reserver',  arrayName: 'reserve', multiplyer: 1,  priority: 10, body: [CLAIM, CLAIM, MOVE, MOVE] },
-    { role: 'exo-theif',     arrayName: 'steal',   multiplyer: 2,  priority: 20, body: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]}
-    ]
+
     var spawn = this
-    roles.forEach(function(role) {
+    EXOROLES.forEach(function(role) {
       spawn.setExoCount(role.role)
       spawn.setMaxExoCount(role.role, role.arrayName, role.multiplyer)
     })
@@ -172,16 +165,8 @@ StructureSpawn.prototype.spawnCreeps = function() {
   if (this.upgraders() < this.maxUpgraders()) {
     this.spawnUpgrader()
   }
-  var roles = [
-    { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 10, priority: 10, body: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE] },
-    { role: 'exo-builder',   arrayName: 'build',   multiplyer: 4,  priority: 30, body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
-    { role: 'exo-harvester', arrayName: 'harvest', multiplyer: 4,  priority: 20, body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
-    { role: 'exo-claimer',   arrayName: 'claim',   multiplyer: 1,  priority: 10, body: [CLAIM, CLAIM, MOVE, MOVE] },
-    { role: 'exo-reserver',  arrayName: 'reserve', multiplyer: 1,  priority: 10, body: [CLAIM, CLAIM, MOVE, MOVE] },
-    { role: 'exo-theif',     arrayName: 'steal',   multiplyer: 2,  priority: 20, body: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]}
-  ]
   var spawner = this
-  roles.forEach(function(role) {
+  EXOROLES.forEach(function(role) {
     if (spawner.getExoCount(role.role) < spawner.getMaxExoCount(role.role)) {
       // this.spawnExoClaimer()
       spawner.spawnExoCreep(role.role, role.body, role.priority)
