@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-14 18:48:00
+* @Last Modified time: 2016-07-15 01:14:34
 */
 
 'use strict';
@@ -33,6 +33,8 @@ Creep.prototype.tick = function(){
     this.assignExoReserverTasks()
   } else if (this.memory.role === 'exo-builder') {
     this.assignExoBuilderTasks()
+  } else if (this.memory.role === 'exo-theif') {
+    this.assignExoTheifTasks()
   }
   /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacity() * 0.25)) {
     this.setMode('recharge')
@@ -132,6 +134,12 @@ Creep.prototype.doWork = function() {
         break;
       case 'exop-build':
         this.doExOpBuild()
+        break;
+      case 'sneak-out':
+        this.doSneakOut()
+        break;
+      case 'steal':
+        this.doSteal()
         break;
     }
 

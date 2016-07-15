@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-14 19:15:09
+* @Last Modified time: 2016-07-15 00:58:35
 */
 
 'use strict';
@@ -84,23 +84,6 @@ Room.prototype.findSourceSpots = function() {
       out[count] = source
     });
     room.memory.sources = out
-
-    /*sources.forEach(function(source) {
-        room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
-          Log.info(JSON.stringify(spot));
-          if (spot.terrain === 'plain' || spot.terrain === 'swamp') {
-            if(_.size(room.lookForAt(LOOK_STRUCTURES, spot.x, spot.y)) > 0 ) {
-              Log.info("There seems to be a structure blocking at " + spot.x + ", " + spot.y)
-            } else {
-
-              count += 1;
-              spot['source'] = source;
-              out[count] = spot;
-            }
-          }
-        })
-      });
-      room.memory.sources = out;*/
   }
 }
 
@@ -135,6 +118,10 @@ Room.prototype.addBuild = function(room_name) {
 
 Room.prototype.addAttack = function(room_name) {
   this.addExoTarget('attack', room_name)
+}
+
+Room.prototype.addSteal = function(room_name) {
+  this.addExoTarget('steal', room_name)
 }
 
 Room.prototype.report = function() {
