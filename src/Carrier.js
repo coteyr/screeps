@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 01:25:27
+* @Last Modified time: 2016-07-15 01:30:21
 */
 
 'use strict';
@@ -22,7 +22,7 @@ Creep.prototype.assignCarrierTasks = function() {
 Creep.prototype.doWaitEnergy = function() {
   if(this.carry.energy < this.carryCapacity) {
     if (this.memory.call_for_energy) {
-      this.memory.call_for_energy = this.memory.call_for_energy + 5
+      this.memory.call_for_energy += 5
     } else {
       this.memory.call_for_energy = 1
     }
