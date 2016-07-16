@@ -12,6 +12,9 @@ engines:
   eslint:
     enabled: true
     exclude_fingerprints:
+    checks:
+      no-eval:
+        enabled: false
   fixme:
     enabled: true
 ratings:

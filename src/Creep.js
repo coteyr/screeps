@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 21:42:37
+* @Last Modified time: 2016-07-15 22:04:23
 */
 
 'use strict';
@@ -23,19 +23,7 @@ Creep.prototype.tick = function(){
     this.assignUpgraderTasks()
   } else if (this.memory.role === 'builder') {
     this.assignBuilderTasks()
-  } /*else if (this.memory.role === 'exo-harvester') {
-    this.assignExoHarvesterTasks()
-  } else if (this.memory.role === 'exo-attacker') {
-    this.assignExoAttackerTasks()
-  } else if (this.memory.role === 'exo-reserver') {
-    this.assignExoReserverTasks()
-  } else if (this.memory.role === 'exo-cliamer') {
-    this.assignExoReserverTasks()
-  } else if (this.memory.role === 'exo-builder') {
-    this.assignExoBuilderTasks()
-  } else if (this.memory.role === 'exo-theif') {
-    this.assignExoTheifTasks()
-  }*/
+  }
   if(this.memory.role.startsWith('exo-')) {
     this.assignExoTasks()
   }
@@ -62,102 +50,7 @@ Creep.prototype.doWork = function() {
 
   try { // isolate the issue from other creeps
     var functionName = ("do_" + this.memory.mode).toCamel()
-    var fn = this[functionName]
-    if(typeof fn === 'function') {
-      eval('this.' + functionName + '()')               ;
-    } else {
-      Log.error("Function " + functionName + " not found")
-    }
-    /*switch(this.memory.mode) {
-      case 'goto':
-        this.moveCloseTo();
-        break;
-      case 'mine':
-        this.doMine()
-        break;
-      case 'store':
-        this.doStore()
-        break;
-      case 'recharge':
-        this.doRecharge()
-        break;
-      case 'send':
-        this.doSend()
-        break;
-      case 'broadcast':
-        this.doSend()
-        break;
-      case 'noop':
-        this.doNoop()
-        break;
-      case 'pickup':
-        this.doPickup()
-        break;
-      case 'fill':
-        this.doFill()
-        break;
-      case 'transfer':
-        this.doTransfer()
-        break;
-      case 'upgrade':
-        this.doUpgrade()
-        break;
-      case 'wait-energy':
-        this.doWaitEnergy()
-        break;
-      case 'build':
-        this.doBuild();
-        break;
-      case 'leave':
-        this.doLeave();
-        break;
-      case 'transition':
-        this.doTransition();
-        break;
-      case 'cross':
-        this.doTransition();
-        break;
-      case 'go-home':
-        this.doGoHome()
-        break;
-      case 'rally':
-        this.doRally()
-        break;
-      case 'move-out':
-        this.doMoveOut()
-        break;
-      case 'enter':
-        this.doEnter()
-        break;
-      case 'attack':
-        this.doAttack()
-        break;
-      case 'recycle':
-        this.doRecycle()
-        break;
-      case 'exop':
-        this.doExOp()
-        break;
-      case 'reserve':
-        this.doReserve()
-        break;
-      case 'claim':
-        this.doClaim()
-        break;
-      case 'exop-build':
-        this.doExOpBuild()
-        break;
-      case 'sneak-out':
-        this.doSneakOut()
-        break;
-      case 'steal':
-        this.doSteal()
-        break;
-      case 'repair':
-        this.doRepair()
-        break;
-    }*/
-
+    Caller(this, functionName)
   } catch(error) {
     Log.error(this.name + " HAS AN ERROR")
     Log.error(error.message)
@@ -187,6 +80,8 @@ Creep.prototype.doTransition = function() {
       delete this.memory.exit
       delete this.memory.goto_room
     }
+  } else {
+    this.move(this.memory.exit_dir)
   }
 }
 
@@ -248,5 +143,9 @@ Creep.prototype.doRecycle = function() {
 
 Creep.prototype.recycle = function() {
   this.setMode('recycle')
+}
+
+Creep.prototype.doIdle = function() {
+  Log.warn(this.name + " is doing nothing!")
 }
 

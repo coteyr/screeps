@@ -2,24 +2,12 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 21:36:58
+* @Last Modified time: 2016-07-15 21:58:33
 */
 
 'use strict';
 
-Creep.prototype.chooseExoTarget = function(arrayName) {
-  if(!this.memory[arrayName]) {
-    var choice = this.room.memory["last_" + arrayName + "_choice"] || 0
-    if (_.size(this.room.memory[arrayName]) > 0) {
-      this.memory[arrayName] = this.room.memory[arrayName][choice]
-    }
-    choice += 1
-    if(choice > _.size(this.room.memory[arrayName]) - 1) {
-      choice = 0
-    }
-    this.room.memory["last_" + arrayName + "_choice"] = choice
-  }
-}
+
 
 Creep.prototype.setupExoReserverMemory = function() {
   this.chooseExoTarget('reserve')
@@ -27,7 +15,7 @@ Creep.prototype.setupExoReserverMemory = function() {
 
 
 Creep.prototype.assignHomeExoReserverTasks = function() {
-  this.setMode('exop');
+  this.setMode('leave');
 }
 
 Creep.prototype.assignRemoteExoReserverTasks = function() {
@@ -54,6 +42,3 @@ Creep.prototype.doClaim = function() {
   }
 }
 
-Creep.prototype.doExop = function() {
-  this.gotoRoom(this.memory.reserve)
-}

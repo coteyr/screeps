@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 21:43:07
+* @Last Modified time: 2016-07-15 22:00:45
 */
 
 'use strict';
@@ -36,7 +36,7 @@ StructureSpawn.prototype.spawnExoCreep = function(role, body, priority) {
 
 Creep.prototype.assignExoTasks = function() {
   this.setupExoMemory()
-  if(this.room.name === this.memory.steal) {
+  if(this.room.name === this.memory.exo_target) {
     // I am in the remote room
     this.assignRemoteExoTasks()
   } else if (this.room.name === this.memory.home) {
@@ -51,31 +51,29 @@ Creep.prototype.assignExoTasks = function() {
 
 Creep.prototype.assignRemoteExoTasks = function() {
   var functionName = ("assign_remote_" + this.memory.role + "_tasks").toCamel()
-    var fn = this[functionName]
-    if(typeof fn === 'function') {
-      eval('this.' + functionName + '()')               ;
-    } else {
-      Log.error("Function " + functionName + " not found")
-    }
-
+  Caller(this, functionName)
 }
 
 Creep.prototype.assignHomeExoTasks = function() {
   var functionName = ("assign_home_" + this.memory.role + "_tasks").toCamel()
-  var fn = this[functionName]
-  if(typeof fn === 'function') {
-    eval('this.' + functionName + '()')               ;
-  } else {
-    Log.error("Function " + functionName + " not found")
-  }
+  Caller(this, functionName)
 }
 
 Creep.prototype.setupExoMemory = function() {
   var functionName = ("setup_" + this.memory.role + "_memory").toCamel()
-  var fn = this[functionName]
-  if(typeof fn === 'function') {
-    eval('this.' + functionName + '()')               ;
-  } else {
-    Log.error("Function " + functionName + " not found")
+  Caller(this, functionName)
+}
+
+Creep.prototype.chooseExoTarget = function(arrayName) {
+  if(!this.memory.exo_target) {
+    var choice = this.room.memory["last_" + arrayName + "_choice"] || 0
+    if (_.size(this.room.memory[arrayName]) > 0) {
+      this.memory.exo_target = this.room.memory[arrayName][choice]
+    }
+    choice += 1
+    if(choice > _.size(this.room.memory[arrayName]) - 1) {
+      choice = 0
+    }
+    this.room.memory["last_" + arrayName + "_choice"] = choice
   }
 }
