@@ -2,40 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-12 01:10:31
+* @Last Modified time: 2016-07-15 21:43:52
 */
 
 'use strict';
 
-Creep.prototype.assignExoHarvesterTasks = function() {
-  if(!this.memory.home) {
-    this.memory.home = this.room.name
-  }
-  if(!this.memory.harvest) {
-    var choice = Memory.last_harvest_choice || 0;
-  this.memory.harvest = Memory.harvest[choice]
-  choice += 1
-  if (choice > _.size(Memory.harvest) - 1) {
-    choice = 0
-  }
-  Memory.last_harvest_choice = choice
-  }
-  if(this.room.name === this.memory.harvest) {
-    // I am in the remote room
-    this.assignRemoteExoHarvesterTasks()
-  } else if (this.room.name === this.memory.home) {
-    this.assignHomeExoHarvesterTasks()
-    // I am home
-  } else {
-    // I have no clue where I am
-
-  }
-  if(this.room.name === this.memory.home && this.carry.energy > 0 && this.memory.mode !== 'transition') {
-    this.setMode('transfer')
-  }
-  if(this.room.name === this.memory.home && this.memory.mode === 'mine') {
-    this.setMode('idle')
-  }
+Creep.prototype.setupExoHarvesterMemory = function() {
+  this.chooseExoTarget('harvest')
 }
 
 Creep.prototype.assignHomeExoHarvesterTasks = function() {

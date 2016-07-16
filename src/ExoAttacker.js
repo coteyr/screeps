@@ -2,29 +2,12 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-12 19:06:29
+* @Last Modified time: 2016-07-15 21:37:16
 */
 
 'use strict';
 
-Creep.prototype.assignExoAttackerTasks = function() {
-  if(!this.memory.mode) {
-    this.setMode('idle')
-  }
-  if(!this.memory.attack) {
-    this.memory.attack = this.room.memory.attack
-  }
-    if(this.room.name === this.memory.attack) {
-      // I am in the remote room
-      this.assignRemoteExoAttackerTasks()
-    } else if (this.room.name === this.memory.home) {
-      this.assignHomeExoAttackerTasks()
-      // I am home
-    } else {
-      // I have no clue where I am
 
-    }
-}
 
 Creep.prototype.assignHomeExoAttackerTasks = function() {
   if (_.filter(Game.creeps, (creep) => creep.memory.role == 'exo-attacker').length < 1 && this.memory.mode != 'move-out') {

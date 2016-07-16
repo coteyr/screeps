@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 20:35:15
+* @Last Modified time: 2016-07-15 21:36:58
 */
 
 'use strict';
@@ -25,19 +25,6 @@ Creep.prototype.setupExoReserverMemory = function() {
   this.chooseExoTarget('reserve')
 }
 
-Creep.prototype.assignExoReserverTasks = function() {
-  this.setupExoReserverMemory()
-  if(this.room.name === this.memory.reserve) {
-    // I am in the remote room
-    this.assignRemoteExoReserverTasks()
-  } else if (this.room.name === this.memory.home) {
-    this.assignHomeExoReserverTasks()
-    // I am home
-  } else {
-    // I have no clue where I am
-
-  }
-}
 
 Creep.prototype.assignHomeExoReserverTasks = function() {
   this.setMode('exop');

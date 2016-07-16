@@ -2,24 +2,12 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 01:19:24
+* @Last Modified time: 2016-07-15 21:37:03
 */
 
 'use strict';
 
-Creep.prototype.assignExoTheifTasks = function() {
-    this.setupExoTheifMemory()
-    if(this.room.name === this.memory.steal) {
-      // I am in the remote room
-      this.assignRemoteExoTheifTasks()
-    } else if (this.room.name === this.memory.home) {
-      this.assignHomeExoTheifTasks()
-      // I am home
-    } else {
-      // I have no clue where I am
 
-    }
-}
 Creep.prototype.setupExoTheifMemory = function() {
   this.chooseExoTarget('steal')
 }

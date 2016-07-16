@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 20:33:58
+* @Last Modified time: 2016-07-15 21:42:37
 */
 
 'use strict';
@@ -23,7 +23,7 @@ Creep.prototype.tick = function(){
     this.assignUpgraderTasks()
   } else if (this.memory.role === 'builder') {
     this.assignBuilderTasks()
-  } else if (this.memory.role === 'exo-harvester') {
+  } /*else if (this.memory.role === 'exo-harvester') {
     this.assignExoHarvesterTasks()
   } else if (this.memory.role === 'exo-attacker') {
     this.assignExoAttackerTasks()
@@ -35,6 +35,9 @@ Creep.prototype.tick = function(){
     this.assignExoBuilderTasks()
   } else if (this.memory.role === 'exo-theif') {
     this.assignExoTheifTasks()
+  }*/
+  if(this.memory.role.startsWith('exo-')) {
+    this.assignExoTasks()
   }
   /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacity() * 0.25)) {
     this.setMode('recharge')
@@ -61,7 +64,7 @@ Creep.prototype.doWork = function() {
     var functionName = ("do_" + this.memory.mode).toCamel()
     var fn = this[functionName]
     if(typeof fn === 'function') {
-      eval('this.' + functionName + '()');
+      eval('this.' + functionName + '()')               ;
     } else {
       Log.error("Function " + functionName + " not found")
     }
