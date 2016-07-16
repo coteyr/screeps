@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-14 18:49:47
+* @Last Modified time: 2016-07-15 20:35:15
 */
 
 'use strict';
@@ -67,6 +67,6 @@ Creep.prototype.doClaim = function() {
   }
 }
 
-Creep.prototype.doExOp = function() {
+Creep.prototype.doExop = function() {
   this.gotoRoom(this.memory.reserve)
 }

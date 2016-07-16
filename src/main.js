@@ -2,10 +2,17 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-12 23:36:10
+* @Last Modified time: 2016-07-15 19:57:32
 */
 
 'use strict';
+
+String.prototype.toCamel = function(){
+  return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');}).replace(/(\-[a-z])/g, function($1){return $1.toUpperCase().replace('-','');});
+};
+String.prototype.toUnderscore = function(){
+  return this.replace(/([A-Z])/g, function($1){return "_"+$1.toLowerCase();});
+};
 
 var logLevel = 4; //show it all
 

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-11 13:41:35
+* @Last Modified time: 2016-07-15 19:58:36
 */
 
 'use strict';
@@ -18,6 +18,10 @@ Creep.prototype.assignMinerTasks = function() {
       this.setMode('send');
     }
   }
+}
+
+Creep.prototype.doBroadcast = function() {
+  return true;
 }
 
 Creep.prototype.doSend = function() {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 16:14:25
+* @Last Modified time: 2016-07-15 18:06:07
 */
 
 'use strict';
@@ -56,7 +56,7 @@ Creep.prototype.doRepair = function() {
       var locations = this.room.find(FIND_STRUCTURES, {filter: function(structure) {
         return structure.hits < structure.hitsMax * 0.90
       }})
-      Log.info("Found " + _.size(locations) + " needing repair")
+      Log.debug("Found " + _.size(locations) + " needing repair")
       if(_.size(locations) === 0) {
         this.setMode('idle')
       }
@@ -64,12 +64,13 @@ Creep.prototype.doRepair = function() {
     } else {
       var target = Game.getObjectById(this.memory.target.id)
       if(target && this.moveCloseTo(target.pos.x, target.pos.y, 3)){
-        Log.info("Target: " + target.id)
-        Log.info(this.repair(target))
+        Log.debug("Target: " + target.id)
+        Log.debug(this.repair(target))
       }
-      if(target.hit >= target.hitsMax) {
+      if(target.hits >= target.hitsMax) {
         delete this.memory.target
       }
+
     }
   } else {
     this.setMode('idle')

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 15:54:12
+* @Last Modified time: 2016-07-15 20:33:58
 */
 
 'use strict';
@@ -55,8 +55,17 @@ Creep.prototype.setHome = function(){
 }
 
 Creep.prototype.doWork = function() {
+
+
   try { // isolate the issue from other creeps
-    switch(this.memory.mode) {
+    var functionName = ("do_" + this.memory.mode).toCamel()
+    var fn = this[functionName]
+    if(typeof fn === 'function') {
+      eval('this.' + functionName + '()');
+    } else {
+      Log.error("Function " + functionName + " not found")
+    }
+    /*switch(this.memory.mode) {
       case 'goto':
         this.moveCloseTo();
         break;
@@ -144,7 +153,7 @@ Creep.prototype.doWork = function() {
       case 'repair':
         this.doRepair()
         break;
-    }
+    }*/
 
   } catch(error) {
     Log.error(this.name + " HAS AN ERROR")
