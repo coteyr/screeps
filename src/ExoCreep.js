@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 22:00:45
+* @Last Modified time: 2016-07-15 22:07:37
 */
 
 'use strict';
@@ -76,4 +76,8 @@ Creep.prototype.chooseExoTarget = function(arrayName) {
     }
     this.room.memory["last_" + arrayName + "_choice"] = choice
   }
+}
+
+Creep.prototype.doGoHome = function() {
+  this.gotoRoom(this.memory.home)
 }
