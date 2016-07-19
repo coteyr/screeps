@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 16:35:06
+* @Last Modified time: 2016-07-18 01:53:58
 */
 
 'use strict';
@@ -27,33 +27,42 @@ StructureSpawn.prototype.promote = function(from, to) {
     })
 }
 
-StructureSpawn.prototype.setMaximums = function() {
-  if(_.size(this.room.find(FIND_CONSTRUCTION_SITES)) > 0) {
-    this.memory.max_builders = 2
-    this.memory.max_upgraders = 1
-  } else {
-    this.memory.max_builders = 1
-    this.memory.max_upgraders = 2
+StructureSpawn.prototype.getCount = function(role) {
+  return Finder.findCreepCount(role, this)
+}
+
+StructureSpawn.prototype.getMaxCount = function(role) {
+  return this.memory['max_' + role]
+}
+
+StructureSpawn.prototype.setCount = function(role) {
+  var count = Finder.findCreeps(role, this.room.name).length;
+  this.memory['current_' + role] = count;
+  return count;
+}
+
+StructureSpawn.prototype.setMaxCount = function(role) {
+  role = ROLES[_.findIndex(ROLES, {role: role})]
+  if (!role) {
+    Log.error('Can not find role: ' + role)
+    return 0;
   }
-  this.memory.max_carriers = (this.memory.max_miners) * 1
-  var sources = _.size(this.room.find(FIND_SOURCES))
-  if (this.room.controller && this.room.controller.my && this.room.controller.level >= 4) {
-    this.memory.max_harvesters = 0
-    this.memory.max_miners = sources
-  } else {
-    this.memory.max_harvesters = sources
-    this.memory.max_miners = 0
+  var max = role.multiplyer;
+  if(typeof role.multiplyer === 'function') {
+    max = eval('role.multiplyer(this)');
   }
+  this.memory['max_' + role.role] = max
+  return max
 }
 
 StructureSpawn.prototype.promoteCreeps = function() {
-  if(this.harvesters() >  this.maxHarvesters()) {
+  /*if(this.harvesters() >  this.maxHarvesters()) {
     this.promote('harvester', 'carrier')
   }
 
   if(this.builders() > this.maxBuilders()) {
     this.promote('builder', 'harvester')
-  }
+  }*/
 }
 StructureSpawn.prototype.spawnACreep = function(role, body)  {
   this.room.cleanCreeps()
@@ -77,14 +86,12 @@ StructureSpawn.prototype.refreshData = function() {
       spawn.setExoCount(role.role)
       spawn.setMaxExoCount(role.role, role.arrayName, role.multiplyer)
     })
+    ROLES.forEach(function(role) {
+      spawn.setCount(role.role)
+      spawn.setMaxCount(role.role)
+    })
 
     this.memory.refresh_count = 10;
-    this.setMaximums()
-    this.setHarvesters()
-    this.setMiners()
-    this.setCarriers()
-    this.setUpgraders()
-    this.setBuilders()
   }
   this.memory.refresh_count -= 1;
 }
@@ -150,26 +157,16 @@ StructureSpawn.prototype.doErSpawn = function() {
 
 StructureSpawn.prototype.spawnCreeps = function() {
   // What kind of creep
-  if (this.harvesters() < this.maxHarvesters()) {
-    this.spawnHarvester();
-  }
-  if (this.builders() < this.maxBuilders()) {
-    this.spawnBuilder();
-  }
-  if (this.miners() < this.maxMiners()) {
-    this.spawnMiner();
-  }
-  if (this.carriers() < this.maxCarriers()) {
-    this.spawnCarrier()
-  }
-  if (this.upgraders() < this.maxUpgraders()) {
-    this.spawnUpgrader()
-  }
   var spawner = this
+  ROLES.forEach(function(role){
+    Log.info("Role: " + role.role + ", Count: " + spawner.getCount(role.role) + ", Max " + spawner.getMaxCount(role.role))
+    if(spawner.getCount(role.role) < spawner.getMaxCount(role.role)) {
+      spawner.addToSpawnQueue(role.role, role.body, role.priority)
+    }
+  })
   EXOROLES.forEach(function(role) {
     if (spawner.getExoCount(role.role) < spawner.getMaxExoCount(role.role)) {
-      // this.spawnExoClaimer()
-      spawner.spawnExoCreep(role.role, role.body, role.priority)
+      spawner.addToSpawnQueue(role.role, role.body, role.priority)
     }
   })
 }
@@ -179,6 +176,9 @@ StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {
     this.memory.spawn_queue = []
   }
   if(!this.spawning) {
+    if(typeof body === 'function') {
+      body = eval('body(this)');
+    }
     var array = this.memory.spawn_queue
     array.push({role: role, body: body, priority: priority})
     this.memory.spawn_queue = array

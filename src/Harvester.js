@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-14 02:09:28
+* @Last Modified time: 2016-07-17 21:21:26
 */
 
 'use strict';
@@ -80,6 +80,7 @@ Creep.prototype.findSourcePosition = function() {
         delete creep.room.memory.sources[key].taken
       }, creep.room.memory.sources);
       this.room.reset()
+      creep.doNoop()
     }
   }
 }

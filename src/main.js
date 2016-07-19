@@ -2,10 +2,11 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 19:57:32
+* @Last Modified time: 2016-07-18 19:25:23
 */
 
 'use strict';
+var profiler = require('screeps-profiler');
 
 String.prototype.toCamel = function(){
   return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');}).replace(/(\-[a-z])/g, function($1){return $1.toUpperCase().replace('-','');});
@@ -16,7 +17,9 @@ String.prototype.toUnderscore = function(){
 
 var logLevel = 4; //show it all
 
+profiler.enable();
 module.exports.loop = function () {
+  profiler.wrap(function() {
   Object.keys(Game.rooms).forEach(function(key, index) {
     this[key].tick();
   }, Game.rooms);
@@ -31,4 +34,5 @@ module.exports.loop = function () {
     Memory.stats["cpuTotal"] = Game.cpu.limit
     Memory.stats["cpuBucket"] = Game.cpu.bucket
     Memory.stats["cpuUsed"] = Game.cpu.getUsed() //should be last
+    });
   };

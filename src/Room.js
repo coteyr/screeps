@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 00:58:35
+* @Last Modified time: 2016-07-18 01:32:58
 */
 
 'use strict';
@@ -153,4 +153,16 @@ Room.prototype.energyCapacity = function() {
     return this.energyCapacityAvailable
   }
 
+}
+
+Room.prototype.needsConstruction = function() {
+  return _.size(this.find(FIND_CONSTRUCTION_SITES)) > 0
+}
+
+Room.prototype.sourceCount = function() {
+  return _.size(this.find(FIND_SOURCES))
+}
+
+Room.prototype.carrierReady = function() {
+  return this.controller && this.controller.my && _.size(this.find(FIND_STRUCTURES, {filter: {structureType: 'container'}})) >= this.sourceCount()
 }

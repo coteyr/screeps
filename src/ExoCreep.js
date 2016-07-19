@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 22:07:37
+* @Last Modified time: 2016-07-18 00:52:22
 */
 
 'use strict';
@@ -30,10 +30,6 @@ StructureSpawn.prototype.getMaxExoCount = function(role) {
   return this.memory["max-" + role] || 0
 }
 
-StructureSpawn.prototype.spawnExoCreep = function(role, body, priority) {
-  this.addToSpawnQueue(role, body, priority)
-}
-
 Creep.prototype.assignExoTasks = function() {
   this.setupExoMemory()
   if(this.room.name === this.memory.exo_target) {
@@ -44,9 +40,15 @@ Creep.prototype.assignExoTasks = function() {
     // I am home
   } else {
     // I have no clue where I am
+    this.assignTravelTasks()
 
   }
 
+}
+
+Creep.prototype.assignTravelTasks = function() {
+  var functionName = ("assign_travel_" + this.memory.role + "_tasks").toCamel()
+  Caller(this, functionName)
 }
 
 Creep.prototype.assignRemoteExoTasks = function() {
@@ -80,4 +82,38 @@ Creep.prototype.chooseExoTarget = function(arrayName) {
 
 Creep.prototype.doGoHome = function() {
   this.gotoRoom(this.memory.home)
+}
+
+Creep.prototype.doTransition = function() {
+  var roomName = this.memory.old_room
+  if (this.room.name !== roomName) {
+    Log.info('####3')
+    if(this.move(this.memory.exit_dir) === 0) {
+      Log.info('$$$$$$$$$$')
+      this.setMode('idle');
+      delete this.memory.exit_dir
+      delete this.memory.exit
+      delete this.memory.goto_room
+      delete this.memory.old_room
+    }
+  } else {
+    this.move(this.memory.exit_dir)
+  }
+}
+
+Creep.prototype.gotoRoom = function(roomName) {
+  if(!this.memory.exit) {
+    var exitDir = this.room.findExitTo(roomName);
+    var exit = this.pos.findClosestByRange(exitDir);
+    this.memory.exit = exit
+    this.memory.exit_dir = exitDir
+    this.memory.old_room = this.room.name
+  }
+  if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
+    this.moveTo(this.memory.exit.x, this.memory.exit.y)
+    this.memory.goto_room = roomName
+    this.setMode('transition')
+    delete this.memory.exit
+    // delete this.memory.exit_dir
+  }
 }

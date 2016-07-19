@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 22:04:23
+* @Last Modified time: 2016-07-16 15:49:16
 */
 
 'use strict';
@@ -70,25 +70,6 @@ Creep.prototype.doNoop = function() {
     this.setMode('idle')
   }
 }
-
-Creep.prototype.doTransition = function() {
-  var roomName = this.memory.goto_room
-  if (this.room.name === roomName) {
-    if(this.move(this.memory.exit_dir) === 0) {
-      this.setMode('idle');
-      delete this.memory.exit_dir
-      delete this.memory.exit
-      delete this.memory.goto_room
-    }
-  } else {
-    this.move(this.memory.exit_dir)
-  }
-}
-
-
-
-
-
 
 Creep.prototype.doRecharge = function() {
   var creep = this;

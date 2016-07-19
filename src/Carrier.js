@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 15:42:28
+* @Last Modified time: 2016-07-16 11:23:33
 */
 
 'use strict';
@@ -87,13 +87,20 @@ Creep.prototype.doFill = function() {
   } else {
     var miner = Game.getObjectById(this.memory.target_miner.id);
     if(miner.memory.role) { // is a creep miner
-      if (!miner.memory.mode === 'send') {
+ /*     if (!miner.memory.mode === 'broadcast') {
         // get more energy from a different miner
         delete this.memory.target_miner
         this.setMode('idle')
-      }
-    } else {
+      }*/
+    // } else {
       miner.transfer(this, RESOURCE_ENERGY)
+
+      delete this.memory.target_miner
+      miner.setMode('idle')
+      this.setMode('idle')
+    } else {
+      this.withdraw(miner, RESOURCE_ENERGY)
+      delete this.memory.target_miner
       this.setMode('idle')
     }
     if(this.memory.target_miner && !this.pos.inRangeTo(Game.getObjectById(this.memory.target_miner.id).pos, 1)) {
