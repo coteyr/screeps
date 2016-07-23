@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-18 01:53:58
+* @Last Modified time: 2016-07-23 02:03:26
 */
 
 'use strict';
@@ -159,7 +159,6 @@ StructureSpawn.prototype.spawnCreeps = function() {
   // What kind of creep
   var spawner = this
   ROLES.forEach(function(role){
-    Log.info("Role: " + role.role + ", Count: " + spawner.getCount(role.role) + ", Max " + spawner.getMaxCount(role.role))
     if(spawner.getCount(role.role) < spawner.getMaxCount(role.role)) {
       spawner.addToSpawnQueue(role.role, role.body, role.priority)
     }
@@ -181,6 +180,9 @@ StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {
     }
     var array = this.memory.spawn_queue
     array.push({role: role, body: body, priority: priority})
+    array = _.sortBy(array, function(a) {
+      return a.priority;
+    })
     this.memory.spawn_queue = array
     Log.warn("Spawn Queue is now " + _.size(array) + " long")
     Log.warn("Added a " + role)
@@ -191,7 +193,7 @@ StructureSpawn.prototype.spawnFromQueue = function() {
   var array = this.memory.spawn_queue
   if (array) {
     array = _.sortBy(array, function(a) {
-      a.priority;
+      return a.priority;
     })
     if(array.length > 0) {
 

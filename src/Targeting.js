@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 15:44:41
+* @Last Modified time: 2016-07-20 04:11:33
 */
 
 'use strict';
@@ -47,7 +47,7 @@ var Targeting = {
   },
 
   nearestNonController: function(pos, type) {
-    var target = pos.findClosestByRange(type, {
+    var target = pos.findClosestByPath(type, {
         filter: function(object) {
           return object.structureType !== 'controller' &&object.structureType !== 'road';
         }

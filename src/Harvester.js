@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-17 21:21:26
+* @Last Modified time: 2016-07-21 08:57:50
 */
 
 'use strict';
@@ -67,7 +67,7 @@ Creep.prototype.findSourcePosition = function() {
   if(this.room.memory.sources) {
     Object.keys(this.room.memory.sources).some(function(key, index) {
       var position = Game.getObjectById(creep.room.memory.sources[key].id)
-      if(!position.taken && _.size(position.pos.findInRange(FIND_MY_CREEPS, 3)) == 0) {
+      if(!position.taken && _.size(position.pos.findInRange(FIND_MY_CREEPS, 1)) == 0) {
         creep.room.memory.sources[key].taken = true
         creep.memory.assigned_position = creep.room.memory.sources[key]
         return true
@@ -79,7 +79,7 @@ Creep.prototype.findSourcePosition = function() {
         var position = creep.room.memory.sources[key]
         delete creep.room.memory.sources[key].taken
       }, creep.room.memory.sources);
-      this.room.reset()
+      // this.room.reset()
       creep.doNoop()
     }
   }

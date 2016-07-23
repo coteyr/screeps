@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 18:06:07
+* @Last Modified time: 2016-07-23 04:49:33
 */
 
 'use strict';
@@ -54,7 +54,7 @@ Creep.prototype.doRepair = function() {
   if(this.carry.energy >= 1) {
     if (!this.memory.target) {
       var locations = this.room.find(FIND_STRUCTURES, {filter: function(structure) {
-        return structure.hits < structure.hitsMax * 0.90
+        return structure.hits < structure.hitsMax * 0.90 && structure.structureType !== 'constructedWall'
       }})
       Log.debug("Found " + _.size(locations) + " needing repair")
       if(_.size(locations) === 0) {

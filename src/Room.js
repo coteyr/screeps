@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-18 01:32:58
+* @Last Modified time: 2016-07-23 08:20:58
 */
 
 'use strict';
@@ -18,6 +18,7 @@ Room.prototype.tick = function() {
   this.tickSpawns();
   this.tickTowers() */
   this.tickCreeps(); //keep this separate
+  this.cleanPaths();
   this.report();
   return true;
 };
@@ -35,6 +36,7 @@ Room.prototype.tickCreeps = function() {
   var me = this;
   _.filter(Game.creeps).forEach(function(creep) {
     if(creep.my && creep.room.name === me.name) {
+      global.logUsedCPU(creep)
       creep.tick();
     }
   });
@@ -58,11 +60,22 @@ Room.prototype.resetMemory = function() {
   this.findSourceSpots();
 }
 
+Room.prototype.cleanPaths = function() {
+  var keys = Object.keys(this.memory.paths);
+  keys.forEach((key) => {
+    var val = this.memory.paths[key];
+    if(val.last_used < Game.time - 200) {
+      delete this.memory.paths[key]
+    }
+  });
+}
+
 Room.prototype.refreshData = function() {
   if(this.memory.refresh_count <= 0 || !this.memory.refresh_count) {
     this.memory.refresh_count = 500;
     this.resetMemory();
     Memory.stats["room." + this.name + ".idlers"] = 0
+    this.clearPaths()
   }
   this.memory.refresh_count -= 1;
 }
@@ -104,6 +117,15 @@ Room.prototype.addExoTarget = function(arrayName, target) {
   array.push(target)
   this.memory[arrayName] = array
 }
+Room.prototype.removeExoTarget = function(arrayName, target) {
+  var array = this.memory[arrayName] || []
+  for(var i = array.length - 1; i >= 0; i--) {
+    if(array[i] === target) {
+       array.splice(i, 1);
+    }
+  }
+  this.memory[arrayName] = array
+}
 
 Room.prototype.addHarvest = function(room_name) {
   this.addExoTarget('harvest', room_name)
@@ -111,7 +133,12 @@ Room.prototype.addHarvest = function(room_name) {
 Room.prototype.addReserve = function(room_name) {
   this.addExoTarget('reserve', room_name)
 }
-
+Room.prototype.addClaim = function(room_name) {
+  this.addExoTarget('claim', room_name)
+}
+Room.prototype.removeHarvest = function(room_name) {
+  this.removeExoTarget('harvest', room_name)
+}
 Room.prototype.addBuild = function(room_name) {
   this.addExoTarget('build', room_name)
 }
@@ -120,8 +147,40 @@ Room.prototype.addAttack = function(room_name) {
   this.addExoTarget('attack', room_name)
 }
 
+Room.prototype.removeAttack = function(room_name) {
+  this.removeExoTarget('attack', room_name)
+}
+
+Room.prototype.removeSteal = function(room_name) {
+  this.removeExoTarget('steal', room_name)
+}
+
 Room.prototype.addSteal = function(room_name) {
   this.addExoTarget('steal', room_name)
+}
+
+Room.prototype.addCarry = function(room_name) {
+  this.addExoTarget('carry', room_name)
+}
+
+Room.prototype.addMine = function(room_name) {
+  this.addExoTarget('mine', room_name)
+}
+
+Room.prototype.removeCarry = function(room_name) {
+  this.removeExoTarget('carry', room_name)
+}
+
+Room.prototype.removeMine = function(room_name) {
+  this.removeExoTarget('mine', room_name)
+}
+
+Room.prototype.list = function(arrayName) {
+  var array = this.memory[arrayName] || []
+  console.log('<span style="#00FFFF">Values for ' + arrayName + "</span>")
+  array.forEach(function(value){
+    console.log('<span style="#00FFFF">' + value + '</span>')
+  })
 }
 
 Room.prototype.report = function() {
@@ -137,13 +196,6 @@ Room.prototype.report = function() {
     Report.addRoomValue(this.name, 'progress', this.controller.progress)
     Report.addRoomValue(this.name, 'progressTotal', this.controller.progressTotal)
   }
-  if(this.memory.report_count <= 0 || !this.memory.refresh_count) {
-    this.memory.report_count = 10;
-    console.log('<span style="color: #E6DB74;">Report for room: ' + this.name +'</span>')
-    console.log('<span style="color: #E6DB74;">=======================</span>')
-    console.log('<span style="color: #95CA2D;">Primary Energy: ' + this.energyAvailable + " of " + this.energyCapacityAvailable)
-  }
-  this.memory.report_count -= 1;
 }
 
 Room.prototype.energyCapacity = function() {
@@ -164,5 +216,18 @@ Room.prototype.sourceCount = function() {
 }
 
 Room.prototype.carrierReady = function() {
-  return this.controller && this.controller.my && _.size(this.find(FIND_STRUCTURES, {filter: {structureType: 'container'}})) >= this.sourceCount()
+  return _.size(this.find(FIND_STRUCTURES, {filter: {structureType: 'container'}})) >= this.sourceCount()
+}
+
+Room.prototype.getExitTo = function(roomName) {
+  if(!this.memory['exit_from_' + this.name + "_to_" + roomName]) {
+    this.memory['exit_from_' + this.name + "_to_" + roomName] = this.findExitTo(roomName)
+  }
+  return this.memory['exit_from_' + this.name + "_to_" + roomName]
+}
+
+Room.prototype.clearPaths = function() {
+  Log.info('Clearing Path Cache for ' + this.name)
+  delete this.memory.paths
+  this.memory.paths = {}
 }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-16 15:49:16
+* @Last Modified time: 2016-07-22 02:57:01
 */
 
 'use strict';
@@ -30,7 +30,7 @@ Creep.prototype.tick = function(){
   /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacity() * 0.25)) {
     this.setMode('recharge')
   }*/
-  if(this.ticksToLive < 200 && (this.room.name === this.memory.home || !this.memory.home) && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
+  if(this.ticksToLive < 100 && (this.room.name === this.memory.home || !this.memory.home)) { // && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
     this.memory.mode = 'recycle'
   }
   this.doWork();
@@ -60,9 +60,7 @@ Creep.prototype.doWork = function() {
 }
 
 Creep.prototype.doNoop = function() {
-  var choices = [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT];
-  var choice = choices[Math.floor(Math.random()*choices.length)];
-  this.move(choice);
+  this.move(Memory.dance_move);
   Log.warn(this.name + " has nothing to do. Wiggle!")
   if(this.memory.role === 'harvester') {
     this.setMode('send')
@@ -92,18 +90,58 @@ Creep.prototype.doRecharge = function() {
   }
 }
 
-Creep.prototype.moveCloseTo = function(x, y, range) {
+Creep.prototype.moveCloseTo = function(x, y, range, ignoreStuff) {
   if(!range) {
     range = 0
   }
   var distance = this.pos.getRangeTo(x, y)
   if(this.pos.inRangeTo(x, y, range)) {
+    delete this.memory.path
     return true
   } else {
-    this.moveTo(x, y, {reusePath: distance})
+    if(!this.memory.path) {
+      if(!this.room.memory.paths) {
+        this.room.memory.paths = {}
+      }
+      var pathName = this.pos.x + "-" + this.pos.y + "-to-" + x + '-' + y
+      if(!this.room.memory.paths[pathName]) {
+        this.room.memory.paths[pathName] = {}
+        this.room.memory.paths[pathName].path = this.pos.findPathTo(x, y, {ignoreCreeps: false, serialize: true })
+      }
+      this.memory.path = this.room.memory.paths[pathName].path
+      this.room.memory.paths[pathName].last_used = Game.time
+    }
+    if(!this.memory.stiller) {
+      this.memory.stiller = 1
+    }
+    if(!this.memory.old_x) {
+      this.memory.old_x = 1
+    }
+    if(!this.memory.old_y) {
+      this.memory.old_y = 1
+    }
+    if(this.pos.x === this.memory.old_x && this.pos.y === this.memory.old_y && this.fatigue <= 0) {
+      // No Movement
+      this.memory.stiller += 1
+      if(this.memory.stiller >= 3) {
+        this.memory.stiller = 0
+        delete this.memory.path
+        Log.warn(this.name + " is stuck. Resetting Path in " + this.room.name)
+        this.move(Memory.dance_move)
+      }
+    } else {
+      this.memory.old_x = this.pos.x
+      this.memory.old_y = this.pos.y
+      this.memory.stiller = 1
+    }
+
+    if(this.moveByPath(this.memory.path) == ERR_NOT_FOUND) {
+      delete this.memory.path
+    }
     return false
   }
 }
+
 
 Creep.prototype.doRecycle = function() {
   var me = this;

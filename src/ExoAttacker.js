@@ -2,15 +2,21 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 21:37:16
+* @Last Modified time: 2016-07-19 23:32:49
 */
 
 'use strict';
 
 
+Creep.prototype.setupExoAttackerMemory = function() {
+  this.chooseExoTarget('attack')
+}
+Creep.prototype.assignTravelExoAttackerTasks = function() {
+  this.setMode('move-out')
+}
 
 Creep.prototype.assignHomeExoAttackerTasks = function() {
-  if (_.filter(Game.creeps, (creep) => creep.memory.role == 'exo-attacker').length < 1 && this.memory.mode != 'move-out') {
+  if (_.filter(Game.creeps, (creep) => creep.memory.role == 'exo-attacker').length < 6 && this.memory.mode != 'move-out') {
     this.setMode('rally')
   } else {
     this.setMode('move-out')
@@ -29,7 +35,7 @@ Creep.prototype.doRally = function() {
 }
 
 Creep.prototype.doMoveOut = function() {
-  this.gotoRoom(this.memory.attack)
+  this.gotoRoom(this.memory.exo_target)
 }
 
 Creep.prototype.doAttack = function() {

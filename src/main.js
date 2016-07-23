@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-18 19:25:23
+* @Last Modified time: 2016-07-21 23:58:45
 */
 
 'use strict';
@@ -15,13 +15,20 @@ String.prototype.toUnderscore = function(){
   return this.replace(/([A-Z])/g, function($1){return "_"+$1.toLowerCase();});
 };
 
-var logLevel = 4; //show it all
+var logLevel = 4;
 
-profiler.enable();
+ profiler.enable();
 module.exports.loop = function () {
+  global.resetUsedCPU()
   profiler.wrap(function() {
+
+
+  var choices = [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT];
+  var choice = choices[Math.floor(Math.random()*choices.length)];
+  Memory.dance_move = choice
   Object.keys(Game.rooms).forEach(function(key, index) {
     this[key].tick();
+    global.logUsedCPU(this[key])
   }, Game.rooms);
     //new Spawner(Game.spawns.Spawn1).tick();
     /*_.filter(Game.creeps).forEach(function(creep) {

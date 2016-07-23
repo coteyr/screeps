@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-18 00:52:22
+* @Last Modified time: 2016-07-23 08:05:37
 */
 
 'use strict';
@@ -32,9 +32,15 @@ StructureSpawn.prototype.getMaxExoCount = function(role) {
 
 Creep.prototype.assignExoTasks = function() {
   this.setupExoMemory()
+  if(this.memory.mode != 'transition' && this.memory.mode != 'leave') {
+    this.getOffExits()
+  }
   if(this.room.name === this.memory.exo_target) {
     // I am in the remote room
     this.assignRemoteExoTasks()
+  } else if(Object.prototype.toString.call( this.memory.exo_target ) === '[object Array]' && this.room.name === this.memory.exo_target[_.size(this.memory.exo_target) - 1]) {
+    this.assignRemoteExoTasks()
+
   } else if (this.room.name === this.memory.home) {
     this.assignHomeExoTasks()
     // I am home
@@ -44,6 +50,26 @@ Creep.prototype.assignExoTasks = function() {
 
   }
 
+}
+
+Creep.prototype.getOffExits = function() {
+  if(this.pos.y >= 47) {
+    this.move(TOP)
+    return false
+  }
+  if (this.pos.x >= 47) {
+    this.move(LEFT)
+    return false
+  }
+  if (this.pos.y <= 3) {
+    this.move(BOTTOM)
+    return false
+  }
+  if (this.pos.x <= 3) {
+    this.move(RIGHT)
+    return false
+  }
+  return true
 }
 
 Creep.prototype.assignTravelTasks = function() {
@@ -87,9 +113,7 @@ Creep.prototype.doGoHome = function() {
 Creep.prototype.doTransition = function() {
   var roomName = this.memory.old_room
   if (this.room.name !== roomName) {
-    Log.info('####3')
     if(this.move(this.memory.exit_dir) === 0) {
-      Log.info('$$$$$$$$$$')
       this.setMode('idle');
       delete this.memory.exit_dir
       delete this.memory.exit
@@ -102,18 +126,36 @@ Creep.prototype.doTransition = function() {
 }
 
 Creep.prototype.gotoRoom = function(roomName) {
-  if(!this.memory.exit) {
-    var exitDir = this.room.findExitTo(roomName);
-    var exit = this.pos.findClosestByRange(exitDir);
-    this.memory.exit = exit
-    this.memory.exit_dir = exitDir
-    this.memory.old_room = this.room.name
+  if(!this.memory.waypoints && Memory.waypoints[this.room.name + "-to-" + roomName]) {
+    this.memory.waypoints = Memory.waypoints[this.room.name + "-to-" + roomName]
   }
-  if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
-    this.moveTo(this.memory.exit.x, this.memory.exit.y)
-    this.memory.goto_room = roomName
-    this.setMode('transition')
-    delete this.memory.exit
-    // delete this.memory.exit_dir
+  if(!this.memory.waypoints && Memory.waypoints[roomName+ "-to-" + this.room.name]) {
+    this.memory.waypoints = Memory.waypoints[roomName + "-to-" + this.room.name]
   }
+  if(this.memory.waypoints && this.memory.waypoints[0] === this.room.name) {
+    this.memory.waypoints.shift()
+    console.log('3hhta')
+    if(_.size(this.memory.waypoints) <= 0) {
+      delete this.memory.waypoints
+    }
+  } else if(this.memory.waypoints && this.memory.waypoints[0] !== roomName) {
+    this.gotoRoom(this.memory.waypoints[0])
+    return true
+  }  else {
+    if(!this.memory.exit) {
+      var exitDir = this.room.getExitTo(roomName);
+      var exit = this.pos.findClosestByRange(exitDir);
+      this.memory.exit = exit
+      this.memory.exit_dir = exitDir
+      this.memory.old_room = this.room.name
+    }
+    if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
+      this.moveTo(this.memory.exit.x, this.memory.exit.y)
+      this.memory.goto_room = roomName
+      this.setMode('transition')
+      delete this.memory.exit
+      // delete this.memory.exit_dir
+    }
+  }
+
 }

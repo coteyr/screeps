@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-16 11:23:33
+* @Last Modified time: 2016-07-22 18:03:55
 */
 
 'use strict';
@@ -41,26 +41,25 @@ Creep.prototype.doTransfer = function() {
   if (this.memory.target) {
     var target = Game.getObjectById(this.memory.target.id);
     if(target && target.memory) {
-      // target.memory.call_for_energy = 0
-      var did = false;
-       this.pos.findInRange(FIND_STRUCTURES, 1, {filter: {structureType: STRUCTURE_EXTENSION}}).forEach(function(ext){
+      target.memory.call_for_energy = 0
+      if(!this.pos.findInRange(FIND_STRUCTURES, 1, {filter: {structureType: STRUCTURE_EXTENSION}}).some(function(ext){
         if(ext.storedEnergy() <= ext.possibleEnergy()) {
           if(me.transfer(ext, RESOURCE_ENERGY) === 0) {
-            did = true
             ext.memory.call_for_energy = 0
+            return true
           }
-
-
         }
-       })
-      if(this.moveCloseTo(this.memory.target.pos.x, this.memory.target.pos.y, 1) && !did) {
-        var energy = this.carry.energy
-        this.transfer(target, RESOURCE_ENERGY)
+        return false
+      })){
+        if(this.moveCloseTo(this.memory.target.pos.x, this.memory.target.pos.y, 1)) {
+          var energy = this.carry.energy
+          this.transfer(target, RESOURCE_ENERGY)
 
-        target.memory.call_for_energy = 0
-        delete this.memory.target
-        if (this.carry.energy <= 0) {
-          this.setMode('idle')
+          target.memory.call_for_energy = 0
+          delete this.memory.target
+          if (this.carry.energy <= 0) {
+            this.setMode('idle')
+          }
         }
       }
       if ((target.carry && target.carry.energy && target.carry.energy >= target.carryCapacity) || (target.energyCapacity && target.energy >= target.energyCapacity) || (target.storeCapacity && target.store[RESOURCE_ENERGY] >= target.storeCapacity)) {
@@ -94,7 +93,7 @@ Creep.prototype.doFill = function() {
       }*/
     // } else {
       miner.transfer(this, RESOURCE_ENERGY)
-
+      this.withdraw(miner, RESOURCE_ENERGY)
       delete this.memory.target_miner
       miner.setMode('idle')
       this.setMode('idle')

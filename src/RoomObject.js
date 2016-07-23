@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:31:08
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 12:04:48
+* @Last Modified time: 2016-07-21 08:45:26
 */
 
 'use strict';
@@ -19,6 +19,9 @@ RoomObject.prototype.mode = function() {
 RoomObject.prototype.setMode = function(mode) {
   if(this.memory.mode != mode) {
     this.memory.mode = mode || 'idle'
+    if(mode !== 'idle') {
+      delete this.memory.path
+    }
     if(typeof this.say != "undefined") {
       this.say(mode)
     } else {

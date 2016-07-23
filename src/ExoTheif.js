@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 22:02:45
+* @Last Modified time: 2016-07-20 08:19:30
 */
 
 'use strict';
@@ -17,6 +17,12 @@ Creep.prototype.assignHomeExoTheifTasks = function() {
     this.setMode('leave')
   } else {
     this.setMode('transfer')
+  }
+}
+
+Creep.prototype.assignTravelExoTheifTasks = function() {
+  if(this.memory.mode !== 'transition') {
+    this.setMode('leave')
   }
 }
 
@@ -41,7 +47,7 @@ Creep.prototype.doSteal = function() {
     var target = Game.getObjectById(this.memory.target.id)
   }
   if(target) {
-    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 1, true)) {
       this.dismantle(target)
     }
   } else {
