@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-16 20:09:47
+* @Last Modified time: 2016-07-25 19:33:44
 */
 
 'use strict';
@@ -33,10 +33,12 @@ Creep.prototype.assignRemoteExoHarvesterTasks = function() {
   if(this.memory.mode === 'transition') {
     // this.setMode('mine')
   } else {
-    if (this.carry.energy < this.carryCapacity) {
+    if (this.carry.energy < this.carryCapacity && this.carryCapacity > 0) {
       this.setMode('mine')
-    } else if (this.carry.energy >= this.carryCapacity) {
+    } else if (this.carry.energy >= this.carryCapacity && this.carryCapacity > 0) {
       this.setMode('go-home')
+    } else {
+      this.setMode('idle')
     }
   }
 }

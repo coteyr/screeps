@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-20 04:11:33
+* @Last Modified time: 2016-07-26 22:19:56
 */
 
 'use strict';
@@ -46,6 +46,13 @@ var Targeting = {
     return this.nearestNonController(pos, FIND_STRUCTURES)
   },
 
+  nearestHostalRampart: function(pos) {
+    var target = pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {filter: function(object){
+      return object.structureType === 'rampart'
+    }});
+    return target
+  },
+
   nearestNonController: function(pos, type) {
     var target = pos.findClosestByPath(type, {
         filter: function(object) {
@@ -53,6 +60,22 @@ var Targeting = {
         }
       });
     return target
+  },
+
+  nearestHostalSpread: function(pos) {
+    var structures = pos.findClosestByPath(FIND_STRUCTURES, {filter: {
+      function(object) {
+        console.log('g')
+        console.log(Memory.ignores)
+        console.log(_.includes(Memory.spread_targets, object.id))
+        // return !_.includes(Memory.ignores, object.id)
+      }
+    }})
+    console.log(structures)
+    if (_.size(structures)) {
+      Memory.spread_targets.push(structures[0].id)
+      return structures[0]
+    }
   },
 
 
@@ -76,8 +99,18 @@ var Targeting = {
   },
 
   nearByStructures: function(pos) {
-    if (_.size(pos.findInRange(FIND_STRUCTURES, 1)) > 0) {
-      return pos.findClosestByRange(FIND_STRUCTURES)
+    console.log('t')
+    var structures = pos.findInRange(FIND_STRUCTURES, 1, {filter: {
+      function(object) {
+        console.log('g')
+        console.log(Memory.ignores)
+        console.log(_.includes(Memory.ignores, object.id))
+        // return !_.includes(Memory.ignores, object.id)
+      }
+    }})
+    console.log(structures)
+    if (_.size(structures)) {
+      return structures[0]
     }
   },
 

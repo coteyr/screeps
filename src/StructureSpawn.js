@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-23 02:03:26
+* @Last Modified time: 2016-07-26 07:50:24
 */
 
 'use strict';
@@ -67,7 +67,7 @@ StructureSpawn.prototype.promoteCreeps = function() {
 StructureSpawn.prototype.spawnACreep = function(role, body)  {
   this.room.cleanCreeps()
   Log.info("Spawning A " + role + " in " + this.room.name)
-  if(this.memory.creeper) {
+  if(Memory.creeper) {
     Memory.creeper += 1
   } else {
     Memory.creeper = 1
@@ -140,17 +140,19 @@ StructureSpawn.prototype.doWaitEnergy = function() {
 }
 
 StructureSpawn.prototype.doErSpawn = function() {
-  if (Finder.findRealCreepCount('harvester', this) === 0 && this.maxHarvesters > 0) {
-    Log.info("ER Spawn Harvester")
-    this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK])
-  } else if (Finder.findRealCreepCount('miner', this) === 0) {
-    Log.info("ER Spawn Miner")
-    this.spawnACreep('miner', [MOVE, MOVE, CARRY, CARRY, WORK])
-  } else if (Finder.findRealCreepCount('carrier', this) === 0) {
-    Log.info("ER Spawn Carrier")
-    this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY])
-  } else {
-    this.setMode('idle')
+  if(this.room.energyCapacity() > 300) {
+    if (Finder.findRealCreepCount('harvester', this) === 0 && this.maxHarvesters > 0) {
+      Log.info("ER Spawn Harvester")
+      this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK])
+    } else if (Finder.findRealCreepCount('miner', this) === 0) {
+      Log.info("ER Spawn Miner")
+      this.spawnACreep('miner', [MOVE, MOVE, CARRY, CARRY, WORK])
+    } else if (Finder.findRealCreepCount('carrier', this) === 0) {
+      Log.info("ER Spawn Carrier")
+      this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY])
+    } else {
+      this.setMode('idle')
+    }
   }
 
 }
@@ -210,4 +212,9 @@ StructureSpawn.prototype.spawnFromQueue = function() {
     }
     this.memory.spawn_queue = array
   }
+}
+
+StructureSpawn.prototype.clearSpawn = function() {
+  delete this.memory.spawn_queue
+  this.memory.spawn_queue = []
 }

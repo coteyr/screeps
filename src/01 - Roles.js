@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-23 08:23:06
+* @Last Modified time: 2016-07-27 00:27:03
 */
 
 'use strict';
@@ -19,24 +19,20 @@ var ROLES = [
     if (energy >= 300 && energy < 550) {
       return [WORK, CARRY, MOVE]
     } else if(energy >= 550 && energy < 800) {
-      return [WORK, WORK, MOVE, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
+      return [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
     } else if(energy >= 800 && energy < 1300) {
       return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
     } else if(energy >= 1300 && energy < 1800) {
-      return [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] //10 Energy Tick
+      return [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE] //10 Energy Tick
     } else if(energy >= 1800) {
-      return [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] // 10 Energy Tick
+      return [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE] // 10 Energy Tick
     } else {
       return [WORK, CARRY, MOVE]
     }
    } },
   { role: 'carrier',   multiplyer: function(spawn){
      if (spawn.room.carrierReady()) {
-      if (spawn.room.energyCapacity() >= 2300) {
-        return 1
-      } else {
         return spawn.room.sourceCount() * 1;
-      }
      } else {
       return 0;
      }
@@ -45,15 +41,13 @@ var ROLES = [
       if (energy >= 300 && energy < 550) {
         return [CARRY, CARRY, MOVE, MOVE]
       } else if(energy >= 550 && energy < 800) {
-        return [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
+        return [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
       } else if(energy >= 800 && energy < 1300) {
         return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
       } else if(energy >= 1300 && energy < 1800) {
         return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
-      } else if(energy >= 1800  && energy < 2300) {
+      } else if(energy >= 1800) {
         return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
-      } else if(energy >= 2300) {
-        return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
       } else {
         return [WORK, CARRY, MOVE]
       }
@@ -62,18 +56,18 @@ var ROLES = [
     if (spawn.room.carrierReady()) {
       return 0;
      } else {
-      return spawn.room.sourceCount() * 2;
+      return spawn.room.sourceCount() * 4;
      }
   }, priority: 1, body: function(spawn){
     var energy = spawn.room.energyCapacity();
     if (energy >= 300 && energy < 550) {
       return [WORK, CARRY, CARRY, MOVE, MOVE]
     } else if(energy >= 550 && energy < 800) {
-      return [WORK, WORK, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY]
+      return [WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
     } else if(energy >= 800 && energy < 1300) {
       return [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
     } else if(energy >= 1300) {
-      return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] // 10 Energy Tick
+      return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] // 10 Energy Tick
     } else {
       return [WORK, CARRY, MOVE]
     }
@@ -101,10 +95,12 @@ var ROLES = [
     }
    } },
   { role: 'upgrader',  multiplyer: function(spawn){
-     if(spawn.room.needsConstruction()) {
+     if(spawn.room.needsConstruction() && spawn.room.carrierReady()) {
       return 1
-    } else {
+    } else if(!spawn.room.needsConstruction() && spawn.room.carrierReady()) {
       return 2
+    } else {
+      return 0;
     }
   }, priority: 4, body: function(spawn){
     var energy = spawn.room.energyCapacity();
@@ -126,15 +122,18 @@ var ROLES = [
 ]
 
 var EXOROLES = [
-  // { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 10, priority: 10, body: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE] },
-  { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 10, priority: 10, body: [ATTACK, RANGED_ATTACK, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE] },
-  { role: 'exo-builder',   arrayName: 'build',   multiplyer: 1,  priority: 30, body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
-  { role: 'exo-harvester', arrayName: 'harvest', multiplyer: 2,  priority: 20, body: [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
-  { role: 'exo-claimer',   arrayName: 'claim',   multiplyer: 1,  priority: 1, body: [CLAIM, CLAIM, MOVE, MOVE] },
+  { role: 'exo-tank',      arrayName: 'attack',  multiplyer: 5,  priority: 10, body: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, WORK, HEAL, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
+  { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 10, priority: 15, body: [TOUGH, TOUGH, ATTACK, RANGED_ATTACK, MOVE, MOVE, MOVE, MOVE] },
+  { role: 'exo-healer',    arrayName: 'attack',  multiplyer: 4,  priority: 11, body: [TOUGH, TOUGH, HEAL, MOVE, MOVE, MOVE, MOVE] },
+  { role: 'exo-demo',      arrayName: 'attack',  multiplyer: 4,  priority: 12, body: [WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE] },
+  { role: 'exo-builder',   arrayName: 'build',   multiplyer: 4,  priority: 30, body: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
+  { role: 'exo-harvester', arrayName: 'harvest', multiplyer: 2,  priority: 20, body: [ATTACK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
+  { role: 'exo-claimer',   arrayName: 'claim',   multiplyer: 1,  priority: 1,  body: [CLAIM, CLAIM, MOVE, MOVE] },
   { role: 'exo-reserver',  arrayName: 'reserve', multiplyer: 1,  priority: 30, body: [CLAIM, CLAIM, MOVE, MOVE] },
   { role: 'exo-theif',     arrayName: 'steal',   multiplyer: 2,  priority: 20, body: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]},
   { role: 'exo-miner',     arrayName: 'mine',    multiplyer: 1,  priority: 20, body: [WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE] },
-  { role: 'exo-carrier',   arrayName: 'carry',   multiplyer: 1,  priority: 20, body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] }
+  { role: 'exo-carrier',   arrayName: 'carry',   multiplyer: 1,  priority: 20, body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] },
+  { role: 'exo-responder', arrayName: 'responder', multiplyer: 2, priority: 5, body: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK, HEAL, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]}
 ]
 
 module.exports = ROLES, EXOROLES;

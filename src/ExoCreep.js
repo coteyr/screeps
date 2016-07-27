@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-23 08:05:37
+* @Last Modified time: 2016-07-26 23:50:15
 */
 
 'use strict';
@@ -90,6 +90,11 @@ Creep.prototype.assignHomeExoTasks = function() {
 Creep.prototype.setupExoMemory = function() {
   var functionName = ("setup_" + this.memory.role + "_memory").toCamel()
   Caller(this, functionName)
+  if(this.memory.mode != 'transition') {
+    delete this.memory.exit_dir
+    delete this.memory.exit
+
+  }
 }
 
 Creep.prototype.chooseExoTarget = function(arrayName) {
@@ -121,7 +126,19 @@ Creep.prototype.doTransition = function() {
       delete this.memory.old_room
     }
   } else {
-    this.move(this.memory.exit_dir)
+    if (this.memory.exit) {
+      if(this.pos.x > this.memory.exit.x) {
+        this.move(LEFT)
+      } else if(this.pos.x < this.memory.exit.x) {
+        this.move(RIGHT)
+      } else if(this.pos.y > this.memory.exit.y) {
+        this.move(BOTTOM)
+      } else if(this.pos.y < this.memory.exit.y) {
+        this.move(TOP)
+      }
+    } else {
+      this.move(this.memory.exit_dir)
+    }
   }
 }
 

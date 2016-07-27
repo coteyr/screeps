@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-22 02:57:01
+* @Last Modified time: 2016-07-27 16:27:34
 */
 
 'use strict';
@@ -24,7 +24,7 @@ Creep.prototype.tick = function(){
   } else if (this.memory.role === 'builder') {
     this.assignBuilderTasks()
   }
-  if(this.memory.role.startsWith('exo-')) {
+  if(this.memory.role && this.memory.role.startsWith('exo-')) {
     this.assignExoTasks()
   }
   /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacity() * 0.25)) {
@@ -91,7 +91,7 @@ Creep.prototype.doRecharge = function() {
 }
 
 Creep.prototype.moveCloseTo = function(x, y, range, ignoreStuff) {
-  if(!range) {
+  /*if(!range) {
     range = 0
   }
   var distance = this.pos.getRangeTo(x, y)
@@ -138,6 +138,16 @@ Creep.prototype.moveCloseTo = function(x, y, range, ignoreStuff) {
     if(this.moveByPath(this.memory.path) == ERR_NOT_FOUND) {
       delete this.memory.path
     }
+    return false
+  }*/
+  if(!range) {
+    range = 0
+  }
+  var distance = this.pos.getRangeTo(x, y)
+  if(this.pos.inRangeTo(x, y, range)) {
+    return true
+  } else {
+    this.moveTo(x, y, {reusePath: distance})
     return false
   }
 }

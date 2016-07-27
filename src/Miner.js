@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-15 19:58:36
+* @Last Modified time: 2016-07-23 15:17:45
 */
 
 'use strict';
@@ -36,7 +36,7 @@ Creep.prototype.doSend = function() {
     Log.debug(JSON.stringify(found));
     var me = this;
     if(found.length > 1) {
-      _.filter(found, (f) => f.creep.memory.role != 'miner').some(function(f) {
+      _.filter(found, (f) => f.creep.memory.role != 'miner' && f.creep.memory.role != 'harvester').some(function(f) {
         me.transfer(f.creep, RESOURCE_ENERGY);
         me.setMode('idle')
         // f.creep.memory.mode = 'transfer'

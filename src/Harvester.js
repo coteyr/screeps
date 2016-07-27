@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-21 08:57:50
+* @Last Modified time: 2016-07-24 00:01:01
 */
 
 'use strict';
@@ -16,8 +16,10 @@ Creep.prototype.assignHarvesterTasks = function() {
       this.setMode('recycle')
     } else if(this.carry.energy < this.carryCapacity) {
       this.setMode('mine')
-    } else if(this.carry.energy >= this.carryCapacity){
+    } else if(this.carry.energy >= this.carryCapacity && this.room.carrierReady()) {
       this.setMode('transfer');
+    } else if(this.carry.energy >= this.carryCapacity && !this.room.carrierReady()){
+      this.setMode('upgrade')
     } else {
       this.setMode('noop')
     }
@@ -64,21 +66,19 @@ Creep.prototype.doMine = function() {
 
 Creep.prototype.findSourcePosition = function() {
   var creep = this
-  if(this.room.memory.sources) {
-    Object.keys(this.room.memory.sources).some(function(key, index) {
-      var position = Game.getObjectById(creep.room.memory.sources[key].id)
-      if(!position.taken && _.size(position.pos.findInRange(FIND_MY_CREEPS, 1)) == 0) {
-        creep.room.memory.sources[key].taken = true
-        creep.memory.assigned_position = creep.room.memory.sources[key]
+  if(this.room.memory.my_sources) {
+    Object.keys(this.room.memory.my_sources).some(function(key, index) {
+      var position = Game.getObjectById(creep.room.memory.my_sources[key].id)
+      if(!position.mined()) {
+        creep.memory.assigned_position = creep.room.memory.my_sources[key]
         return true
       }
-    }, creep.room.memory.sources);
+    }, creep.room.memory.my_sources);
     if(!creep.memory.assigned_position) {
-      Log.warn("All mining spots reserved, cleaning up")
-      Object.keys(this.room.memory.sources).some(function(key, index) {
-        var position = creep.room.memory.sources[key]
-        delete creep.room.memory.sources[key].taken
-      }, creep.room.memory.sources);
+      Log.warn("All mining spots mined")
+      Object.keys(this.room.memory.my_sources).some(function(key, index) {
+        // find some other criteria
+      }, creep.room.memory.my_sources);
       // this.room.reset()
       creep.doNoop()
     }

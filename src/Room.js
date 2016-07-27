@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-23 08:20:58
+* @Last Modified time: 2016-07-25 19:19:56
 */
 
 'use strict';
@@ -23,7 +23,7 @@ Room.prototype.tick = function() {
   return true;
 };
 Room.prototype.tickStuff = function() {
-  var stuff = _.union({}, this.memory.my_storages, this.memory.my_containers, this.memory.my_extensions, this.memory.my_spawns, this.memory.my_towers)
+  var stuff = _.union({}, this.memory.my_storages, this.memory.my_containers, this.memory.my_extensions, this.memory.my_spawns, this.memory.my_towers, this.memory.my_sources)
   Object.keys(stuff).forEach(function(key, index) {
     var object = Game.getObjectById(this[key].id);
     if(object) {
@@ -57,7 +57,8 @@ Room.prototype.resetMemory = function() {
   this.memory.my_towers = towers
   var storages = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_STORAGE}})
   this.memory.my_storages = storages
-  this.findSourceSpots();
+  var sources = this.find(FIND_SOURCES)
+  this.memory.my_sources = sources
 }
 
 Room.prototype.cleanPaths = function() {
@@ -84,21 +85,6 @@ Room.prototype.reset = function() {
   this.memory.refresh_count = -1;
 }
 
-Room.prototype.findSourceSpots = function() {
-  var room = this;
-  if(!room.memory.sources || _.size(room.memory.sources) === 0) {
-    delete room.memory.sources
-    var sources = room.find(FIND_SOURCES);
-    var count = 0;
-    var out = {}
-    sources.forEach(function(source) {
-      count += 1
-      source['taken'] = false
-      out[count] = source
-    });
-    room.memory.sources = out
-  }
-}
 
 Room.prototype.myCreeps = function() {
   return this.find(FIND_MY_CREEPS);
@@ -139,6 +125,9 @@ Room.prototype.addClaim = function(room_name) {
 Room.prototype.removeHarvest = function(room_name) {
   this.removeExoTarget('harvest', room_name)
 }
+Room.prototype.removeClaim = function(room_name) {
+  this.removeExoTarget('claim', room_name)
+}
 Room.prototype.addBuild = function(room_name) {
   this.addExoTarget('build', room_name)
 }
@@ -175,6 +164,14 @@ Room.prototype.removeMine = function(room_name) {
   this.removeExoTarget('mine', room_name)
 }
 
+Room.prototype.addResponder = function(room_name) {
+  this.addExoTarget('responder', room_name)
+}
+
+Room.prototype.removeResponder = function(room_name) {
+  this.removeExoTarget('responder', room_name)
+}
+
 Room.prototype.list = function(arrayName) {
   var array = this.memory[arrayName] || []
   console.log('<span style="#00FFFF">Values for ' + arrayName + "</span>")
@@ -186,7 +183,7 @@ Room.prototype.list = function(arrayName) {
 Room.prototype.report = function() {
   var roomName = this.name
   Report.addRoomValue(this.name, 'energyAvailable', this.energyAvailable)
-  Report.addRoomValue(this.name, 'energyCapacityAvailable', this.energyCapacity)
+  Report.addRoomValue(this.name, 'energyCapacityAvailable', this.energyCapacity())
   var array =['harvester', 'builder', 'carrier', 'miner', 'upgrader']
   array.forEach(function(role){
     Report.addRoomValue(roomName, role + 'Count', Finder.findCreeps(role, roomName).length)
@@ -216,7 +213,7 @@ Room.prototype.sourceCount = function() {
 }
 
 Room.prototype.carrierReady = function() {
-  return _.size(this.find(FIND_STRUCTURES, {filter: {structureType: 'container'}})) >= this.sourceCount()
+  return this.controller && this.controller.level >= 3 && _.size(this.find(FIND_STRUCTURES, {filter: {structureType: 'container'}})) >= this.sourceCount()
 }
 
 Room.prototype.getExitTo = function(roomName) {
