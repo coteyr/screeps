@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-27 18:37:30
+* @Last Modified time: 2016-07-29 02:02:56
 */
 
 'use strict';
@@ -103,10 +103,7 @@ var Targeting = {
     console.log('t')
     var structures = pos.findInRange(FIND_STRUCTURES, 1, {filter: {
       function(object) {
-        console.log('g')
-        console.log(Memory.ignores)
-        console.log(_.includes(Memory.ignores, object.id))
-        // return !_.includes(Memory.ignores, object.id)
+        return !_.includes(Memory.ignores, object.id)
       }
     }})
     console.log(structures)
@@ -119,8 +116,6 @@ var Targeting = {
     var creeps = _.filter(Game.creeps, function(creep) {
       return creep.my && creep.memory.mode === 'send' && creep.room.name === room.name
     })
-    //console.log("g: " + creeps)
-    // Log.info(JSON.stringify(creeps))
     var miner = pos.findClosestByRange(creeps)
     if (miner) {
       miner.setMode('broadcast')
@@ -129,19 +124,10 @@ var Targeting = {
   },
 
   findEnergyBuffer: function(pos, room) {
-    var buffers = _.filter(_.union({}, room.memory.my_containers, room.memory.my_storages), function(object) {
+    return pos.findClosestByRange(_.union({}, room.memory.my_containers, room.memory.my_storages), {filter: function(object) {
       var structure = Game.getObjectById(object.id)
-      // Log.info(JSON.stringify(structure))
       return structure.storedEnergy() >= 300 && structure.room.name === room.name;
-    })
-    if(_.size(buffers) > 0) {
-      return buffers[0]
-    }
-    /*var objects = []
-    buffers.forEach(function(object){
-      objects.push(Game.getObjectById(object));
-    })
-    return pos.findClosestByRange(objects) */
+    }});
   },
 
   findEnergySource: function(pos, room) {
