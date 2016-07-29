@@ -2,16 +2,16 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-23 04:49:33
+* @Last Modified time: 2016-07-29 02:15:56
 */
 
 'use strict';
 
 Creep.prototype.assignBuilderTasks = function() {
-  if(!this.memory.mode) {
+  if(!this.mode()) {
     this.setMode('idle')
   }
-  if(this.memory.mode == 'idle') {
+  if(this.modeIs('idle')) {
     if(this.room.controller.level < 2) {
        if(this.carry.energy === 0) {
         this.setMode('mine')

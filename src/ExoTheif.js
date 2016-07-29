@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-25 00:56:00
+* @Last Modified time: 2016-07-29 02:07:06
 */
 
 'use strict';
@@ -21,13 +21,13 @@ Creep.prototype.assignHomeExoTheifTasks = function() {
 }
 
 Creep.prototype.assignTravelExoTheifTasks = function() {
-  if(this.memory.mode !== 'transition') {
+  if(this.mode() !== 'transition') {
     this.setMode('leave')
   }
 }
 
 Creep.prototype.assignRemoteExoTheifTasks = function() {
-  if(this.memory.mode === 'transition') {
+  if(this.mode() === 'transition') {
     // this.setMode('mine')
   } else {
     if (this.carry.energy < this.carryCapacity) {

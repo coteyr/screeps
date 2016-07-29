@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-08 22:31:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-08 23:58:33
+* @Last Modified time: 2016-07-29 02:07:06
 */
 
 'use strict';
@@ -15,7 +15,7 @@ EnergyStructure.prototype.energyCallModifier = 0.01 // really low by default
 
 EnergyStructure.prototype.tick = function() {
   this.setupMemory();
-  Log.debug('Ticking Energy Container: ' + this.structureType + " : " + this.id + ' Mode: ' + this.memory.mode);
+  Log.debug('Ticking Energy Container: ' + this.structureType + " : " + this.id + ' Mode: ' + this.mode());
   this.assignMode();
   this.doWork();
 }
@@ -45,7 +45,7 @@ EnergyStructure.prototype.assignMode = function() {
 }
 
 EnergyStructure.prototype.doWork = function() {
-  if(this.memory.mode === 'wait-energy') {
+  if(this.mode() === 'wait-energy') {
     this.doWaitEnergy()
   }
 }

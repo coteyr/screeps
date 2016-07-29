@@ -2,16 +2,16 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-22 18:03:55
+* @Last Modified time: 2016-07-29 03:58:00
 */
 
 'use strict';
 
 Creep.prototype.assignCarrierTasks = function() {
-  if(!this.memory.mode) {
+  if(!this.mode()) {
     this.setMode('idle')
   }
-  if(this.memory.mode === 'idle') {
+  if(this.mode() === 'idle') {
     if(this.carry.energy < this.carryCapacity) {
       this.setMode('pickup');
     } else if(this.carry.energy >= this.carryCapacity) {
@@ -75,8 +75,9 @@ Creep.prototype.doTransfer = function() {
 }
 
 Creep.prototype.doFill = function() {
-  if(!this.memory.target_miner) {
+  if(!this.memory.target_miner || this.memory.target_miner === null) {
     this.setMode('idle')
+    console.log('q')
     return false;
   }
   if(!Game.getObjectById(this.memory.target_miner.id)) {
@@ -115,6 +116,7 @@ Creep.prototype.doFill = function() {
 Creep.prototype.doPickup = function() {
   if(this.carry.energy < this.carryCapacity) {
     if(!this.memory.target_miner) {
+      console.log('u')
       this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room)
     }
     // Log.info(this.memory.target_miner)

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-27 18:21:06
+* @Last Modified time: 2016-07-29 02:07:06
 */
 
 'use strict';
@@ -32,7 +32,7 @@ StructureSpawn.prototype.getMaxExoCount = function(role) {
 
 Creep.prototype.assignExoTasks = function() {
   this.setupExoMemory()
-  if(this.memory.mode != 'transition' && this.memory.mode != 'leave') {
+  if(this.mode() != 'transition' && this.mode() != 'leave') {
     this.getOffExits()
   }
   if(this.room.name === this.memory.exo_target) {
@@ -91,7 +91,7 @@ Creep.prototype.assignHomeExoTasks = function() {
 Creep.prototype.setupExoMemory = function() {
   var functionName = ("setup_" + this.memory.role + "_memory").toCamel()
   Caller(this, functionName)
-  if(this.memory.mode != 'transition') {
+  if(this.mode() != 'transition') {
     delete this.memory.exit_dir
     delete this.memory.exit
 

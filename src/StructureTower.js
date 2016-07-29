@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-27 19:03:52
+* @Last Modified time: 2016-07-29 02:07:06
 */
 
 'use strict';
@@ -12,7 +12,7 @@ _.merge(StructureTower.prototype, EnergyStructure.prototype);
 StructureTower.prototype.energyCallModifier = 3 // higher then normal for defense
 
 StructureTower.prototype.doWork = function() {
-  if(this.memory.mode === 'wait-energy') {
+  if(this.mode() === 'wait-energy') {
     this.doWaitEnergy()
   }
   if(_.size(this.room.find(FIND_HOSTILE_CREEPS)) > 0) {

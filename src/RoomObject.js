@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:31:08
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-21 08:45:26
+* @Last Modified time: 2016-07-29 02:16:24
 */
 
 'use strict';
@@ -28,4 +28,15 @@ RoomObject.prototype.setMode = function(mode) {
       Log.debug("Setting Mode: " + mode + " for " + this.id)
     }
   }
+}
+
+RoomObject.prototype.mode = function() {
+  if(!this.memory.mode) {
+    return 'idle'
+  }
+  return this.memory.mode
+}
+
+RoomObject.prototype.modeIs = function(mode) {
+  return this.mode() === mode
 }

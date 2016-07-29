@@ -2,16 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-24 00:01:01
+* @Last Modified time: 2016-07-29 02:14:54
 */
 
 'use strict';
 
 Creep.prototype.assignHarvesterTasks = function() {
-  if(!this.memory.mode) {
-    this.setMode('idle')
-  }
-  if(this.memory.mode == 'idle') {
+  if(this.modeIs('idle')) {
     if (_.size(Finder.findCreeps('miner', this.room.name)) >= 2 && this.room.controller.level >= 4){
       this.setMode('recycle')
     } else if(this.carry.energy < this.carryCapacity) {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-26 22:29:54
+* @Last Modified time: 2016-07-29 02:07:06
 */
 
 'use strict';
@@ -11,7 +11,7 @@
 Creep.prototype.setupExoHealerMemory = Creep.prototype.setupExoAttackerMemory
 Creep.prototype.assignTravelExoHealerTasks = function() {
   this.assignTravelExoAttackerTasks()
-  if (this.memory.mode !== 'heal') {
+  if (this.mode() !== 'heal') {
     var target = this.pos.findClosestByRange(FIND_MY_CREEPS, {
       filter: function(object) {
           return object.hits < object.hitsMax;
@@ -25,7 +25,7 @@ Creep.prototype.assignTravelExoHealerTasks = function() {
 
 Creep.prototype.assignHomeExoHealerTasks = Creep.prototype.assignHomeExoAttackerTasks
 Creep.prototype.assignRemoteExoHealerTasks = function() {
-  if(this.memory.mode != 'transition') {
+  if(this.mode() != 'transition') {
     if (this.hits <= 600) {
       this.setMode('go-home')
     } else {

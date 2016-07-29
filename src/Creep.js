@@ -2,18 +2,18 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 01:55:42
+* @Last Modified time: 2016-07-29 02:14:22
 */
 
 'use strict';
 
 Creep.prototype.tick = function(){
   this.setHome()
-  if(!this.memory.mode) {
+  if(!this.mode()) {
     this.setMode('idle')
   }
   if(!this.spawning) {
-    Log.debug('Tickingreep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.memory.mode);
+    Log.debug('Ticking creep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.mode());
     if (this.memory.role === 'harvester') {
       this.assignHarvesterTasks()
     } else if (this.memory.role === 'miner') {
@@ -32,10 +32,10 @@ Creep.prototype.tick = function(){
       this.setMode('recharge')
     }*/
     if(this.ticksToLive < 100 && (this.room.name === this.memory.home || !this.memory.home)) { // && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
-      this.memory.mode = 'recycle'
+      this.setMode('recycle')
     }
     this.doWork();
-    if (this.memory.mode == 'idle') {
+    if (this.modeIs('idle')) {
       Memory.stats["room." + this.room.name + ".idlers"] += 1
     }
   }
@@ -51,12 +51,12 @@ Creep.prototype.doWork = function() {
 
 
   try { // isolate the issue from other creeps
-    var functionName = ("do_" + this.memory.mode).toCamel()
+    var functionName = ("do_" + this.mode()).toCamel()
     Caller(this, functionName)
   } catch(error) {
     Log.error(this.name + " HAS AN ERROR")
     Log.error(error.message)
-    Log.error("Role: " + this.memory.role + " Mode: " + this.memory.mode)
+    Log.error("Role: " + this.memory.role + " Mode: " + this.mode())
     this.room.resetMemory();
   }
 }

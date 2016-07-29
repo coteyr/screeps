@@ -2,16 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-26 23:44:44
+* @Last Modified time: 2016-07-29 02:15:17
 */
 
 'use strict';
 
 Creep.prototype.assignUpgraderTasks = function() {
-  if(!this.memory.mode) {
-    this.setMode('idle')
-  }
-  if(this.memory.mode == 'idle') {
+  if(this.modeIs('idle')) {
     if(this.carry.energy < this.carryCapacity && this.room.carrierReady()) {
       this.setMode('skim')
     } else if(this.carry.energy < this.carryCapacity) {

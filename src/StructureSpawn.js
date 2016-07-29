@@ -2,13 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 01:57:35
+* @Last Modified time: 2016-07-29 02:07:06
 */
 
 'use strict';
 
 StructureSpawn.prototype.tick = function() {
-  Log.debug('Ticking Spawn: ' + this.name + ' Mode: ' + this.memory.mode + " - " + this.memory.refresh_count);
+  Log.debug('Ticking Spawn: ' + this.name + ' Mode: ' + this.mode() + " - " + this.memory.refresh_count);
   this.promoteCreeps();
   this.assignMode();
   if(!this.spawning) {
@@ -100,17 +100,17 @@ StructureSpawn.prototype.refreshData = function() {
 }
 
 StructureSpawn.prototype.assignMode = function() {
-  if(!this.memory.mode) {
+  if(!this.mode()) {
     Log.warn("No current mode for Spawn " + this.name)
     this.setMode('idle')
   }
-  if(!this.memory.mode || this.memory.mode === 'idle') {
+  if(!this.mode() || this.mode() === 'idle') {
     if (this.energy < this.energyCapacity) {
       this.setMode('wait-energy')
     } else {
       this.setMode('idle')
     }
-  } else if (this.memory.mode === 'spawning' && this.spawning === null ) {
+  } else if (this.mode() === 'spawning' && this.spawning === null ) {
       this.setMode('idle')
   }
   /*if (this.room.energyAvailable >= 300 && (this.miners() <= 0 || this.carriers() <= 0)) {
@@ -119,13 +119,13 @@ StructureSpawn.prototype.assignMode = function() {
 }
 
 StructureSpawn.prototype.doWork = function() {
-  if((this.memory.mode === 'idle' || this.memory.mode === 'wait-energy') && !this.spawning) {
+  if((this.mode() === 'idle' || this.mode() === 'wait-energy') && !this.spawning) {
     this.spawnFromQueue()
   }
-  if (this.memory.mode === 'wait-energy') {
+  if (this.mode() === 'wait-energy') {
     this.doWaitEnergy();
   }
-  /*if (this.memory.mode === 'er-spawn') {
+  /*if (this.mode() === 'er-spawn') {
     this.doErSpawn();
   }*/
 }

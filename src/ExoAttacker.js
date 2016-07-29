@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-27 00:00:01
+* @Last Modified time: 2016-07-29 02:07:06
 */
 
 'use strict';
@@ -12,7 +12,7 @@ Creep.prototype.setupExoAttackerMemory = function() {
   this.chooseExoTarget('attack')
 }
 Creep.prototype.assignTravelExoAttackerTasks = function() {
-  if (this.memory.mode !== 'move-out' && this.memory.mode !== 'transition') {
+  if (this.mode() !== 'move-out' && this.mode() !== 'transition') {
     var flag = this.room.find(FIND_FLAGS)[0]
     if(flag) {
       if(Game.rooms[this.memory.exo_target] && this.hits >= this.hitsMax) {
@@ -37,14 +37,14 @@ Creep.prototype.assignHomeExoAttackerTasks = function() {
   var flag = this.room.find(FIND_FLAGS)[0]
   if(flag && _.size(flag.pos.findInRange(FIND_MY_CREEPS, 5)) >= 6) {
     this.setMode('move-out')
-  } else if(this.memory.mode !== 'move-out' && this.memory.mode != 'transition') {
+  } else if(this.mode() !== 'move-out' && this.mode() != 'transition') {
     this.setMode('rally')
   }
 }
 
 Creep.prototype.assignRemoteExoAttackerTasks = function() {
-  if(this.memory.mode !== 'transition') {
-    if (this.memory.mode != 'go-home') {
+  if(this.mode() !== 'transition') {
+    if (this.mode() != 'go-home') {
       this.setMode('attack')
     }
     if (this.hits <= 500) {

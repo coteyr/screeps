@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:02:56
+* @Last Modified time: 2016-07-29 04:05:43
 */
 
 'use strict';
@@ -124,17 +124,24 @@ var Targeting = {
   },
 
   findEnergyBuffer: function(pos, room) {
-    return pos.findClosestByRange(_.union({}, room.memory.my_containers, room.memory.my_storages), {filter: function(object) {
+    var objects = []
+    _.union({}, room.memory.my_containers, room.memory.my_storages).forEach(function(value) {
+      objects.push(Game.getObjectById(value.id));
+    })
+    var buffer = pos.findClosestByRange(objects, {filter: function(object) {
       var structure = Game.getObjectById(object.id)
-      return structure.storedEnergy() >= 300 && structure.room.name === room.name;
+      return structure.storedEnergy() >= 300;
     }});
+    return buffer;
   },
 
   findEnergySource: function(pos, room) {
     var miner = Targeting.findFullMiner(pos, room)
     if (miner) {
+      console.log('g')
       return miner
     } else {
+      console.log('i')
       return Targeting.findEnergyBuffer(pos, room)
     }
 
