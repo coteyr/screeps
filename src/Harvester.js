@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:14:54
+* @Last Modified time: 2016-07-29 14:14:18
 */
 
 'use strict';
@@ -36,30 +36,6 @@ Creep.prototype.doMine = function() {
   }
 }
 
-/*Creep.prototype.doStore = function() {
-  var creep = this;
-  var target = undefined;
-  Object.keys(this.room.memory.my_spawns).forEach(function(key, index) {
-      var spawn = Game.getObjectById(creep.room.memory.my_spawns[key].id);
-      if(spawn.energy < spawn.energyCapacity) {
-        target = spawn;
-      }
-    }, this.memory.my_spawns);
-  if(!target) {
-    Object.keys(this.room.memory.my_extensions).forEach(function(key, index) {
-      var extension = Game.getObjectById(creep.room.memory.my_extensions[key].id);
-      if(extension.energy < extension.energyCapacity) {
-        target = extension;
-      }
-    }, this.memory.my_extensions);
-  }
-  if(target) {
-    if(creep.moveCloseTo(target.pos.x, target.pos.y, 1)) {
-      creep.transfer(target, RESOURCE_ENERGY)
-      creep.memory.mode = 'idle'
-    }
-  }
-}*/
 
 Creep.prototype.findSourcePosition = function() {
   var creep = this

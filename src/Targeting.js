@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 04:05:43
+* @Last Modified time: 2016-07-29 10:42:09
 */
 
 'use strict';
@@ -138,10 +138,8 @@ var Targeting = {
   findEnergySource: function(pos, room) {
     var miner = Targeting.findFullMiner(pos, room)
     if (miner) {
-      console.log('g')
       return miner
     } else {
-      console.log('i')
       return Targeting.findEnergyBuffer(pos, room)
     }
 

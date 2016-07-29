@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:07:06
+* @Last Modified time: 2016-07-29 12:24:44
 */
 
 'use strict';
@@ -23,12 +23,14 @@ Creep.prototype.assignTravelExoAttackerTasks = function() {
         } else {
           this.setMode('rally')
         }
-      if(_.size(flag.pos.findInRange(FIND_MY_CREEPS, 5)) >= 6) {
+      if(_.size(flag.pos.findInRange(FIND_MY_CREEPS, 5)) >= 15) {
         this.setMode('move-out')
       }
     } else {
-      this.setMode('move-out')
+      this.setMode('rally')
     }
+  } else {
+    this.setMode('move-out')
   }
 }
 }

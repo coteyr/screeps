@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:07:06
+* @Last Modified time: 2016-07-29 12:23:26
 */
 
 'use strict';
@@ -11,6 +11,7 @@
 Creep.prototype.setupExoHealerMemory = Creep.prototype.setupExoAttackerMemory
 Creep.prototype.assignTravelExoHealerTasks = function() {
   this.assignTravelExoAttackerTasks()
+  if (!this.modeIs('transition')) {
   if (this.mode() !== 'heal') {
     var target = this.pos.findClosestByRange(FIND_MY_CREEPS, {
       filter: function(object) {
@@ -22,6 +23,7 @@ Creep.prototype.assignTravelExoHealerTasks = function() {
     }
   }
   }
+}
 
 Creep.prototype.assignHomeExoHealerTasks = Creep.prototype.assignHomeExoAttackerTasks
 Creep.prototype.assignRemoteExoHealerTasks = function() {
