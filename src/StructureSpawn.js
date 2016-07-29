@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-26 07:50:24
+* @Last Modified time: 2016-07-29 01:57:35
 */
 
 'use strict';
@@ -11,9 +11,12 @@ StructureSpawn.prototype.tick = function() {
   Log.debug('Ticking Spawn: ' + this.name + ' Mode: ' + this.memory.mode + " - " + this.memory.refresh_count);
   this.promoteCreeps();
   this.assignMode();
-  this.spawnCreeps();
+  if(!this.spawning) {
+    this.spawnCreeps();
+    this.doErSpawn();
+  }
   this.doWork();
-  this.doErSpawn();
+
   this.refreshData();
   Memory.stats["room." + this.room.name + ".spawnQueue"] = _.size(this.memory.spawn_queue)
 
@@ -116,7 +119,7 @@ StructureSpawn.prototype.assignMode = function() {
 }
 
 StructureSpawn.prototype.doWork = function() {
-  if(this.memory.mode === 'idle' || this.memory.mode === 'wait-energy') {
+  if((this.memory.mode === 'idle' || this.memory.mode === 'wait-energy') && !this.spawning) {
     this.spawnFromQueue()
   }
   if (this.memory.mode === 'wait-energy') {
@@ -180,8 +183,14 @@ StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {
     if(typeof body === 'function') {
       body = eval('body(this)');
     }
+
+    var p = priority
+
+    var total = Finder.findCreepCount(role, this)
+    p = p + total
+
     var array = this.memory.spawn_queue
-    array.push({role: role, body: body, priority: priority})
+    array.push({role: role, body: body, priority: p})
     array = _.sortBy(array, function(a) {
       return a.priority;
     })

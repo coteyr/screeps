@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 01:42:37
+* @Last Modified time: 2016-07-29 01:55:42
 */
 
 'use strict';
@@ -12,30 +12,32 @@ Creep.prototype.tick = function(){
   if(!this.memory.mode) {
     this.setMode('idle')
   }
-  Log.debug('Ticking Creep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.memory.mode);
-  if (this.memory.role === 'harvester') {
-    this.assignHarvesterTasks()
-  } else if (this.memory.role === 'miner') {
-    this.assignMinerTasks()
-  } else if (this.memory.role === 'carrier') {
-    this.assignCarrierTasks()
-  } else if (this.memory.role === 'upgrader') {
-    this.assignUpgraderTasks()
-  } else if (this.memory.role === 'builder') {
-    this.assignBuilderTasks()
-  }
-  if(this.memory.role && this.memory.role.startsWith('exo-')) {
-    this.assignExoTasks()
-  }
-  /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacity() * 0.25)) {
-    this.setMode('recharge')
-  }*/
-  if(this.ticksToLive < 100 && (this.room.name === this.memory.home || !this.memory.home)) { // && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
-    this.memory.mode = 'recycle'
-  }
-  this.doWork();
-  if (this.memory.mode == 'idle') {
-    Memory.stats["room." + this.room.name + ".idlers"] += 1
+  if(!this.spawning) {
+    Log.debug('Tickingreep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.memory.mode);
+    if (this.memory.role === 'harvester') {
+      this.assignHarvesterTasks()
+    } else if (this.memory.role === 'miner') {
+      this.assignMinerTasks()
+    } else if (this.memory.role === 'carrier') {
+      this.assignCarrierTasks()
+    } else if (this.memory.role === 'upgrader') {
+      this.assignUpgraderTasks()
+    } else if (this.memory.role === 'builder') {
+      this.assignBuilderTasks()
+    }
+    if(this.memory.role && this.memory.role.startsWith('exo-')) {
+      this.assignExoTasks()
+    }
+    /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacity() * 0.25)) {
+      this.setMode('recharge')
+    }*/
+    if(this.ticksToLive < 100 && (this.room.name === this.memory.home || !this.memory.home)) { // && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
+      this.memory.mode = 'recycle'
+    }
+    this.doWork();
+    if (this.memory.mode == 'idle') {
+      Memory.stats["room." + this.room.name + ".idlers"] += 1
+    }
   }
 }
 
