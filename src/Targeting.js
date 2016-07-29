@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-26 22:19:56
+* @Last Modified time: 2016-07-27 18:37:30
 */
 
 'use strict';
@@ -29,7 +29,8 @@ var Targeting = {
   },
 
   nearestHostalCreep: function(pos) {
-    var target = pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+    var target = pos.findClosestByRange(FIND_HOSTILE_CREEPS)
+    console.log(JSON.stringify(target))
     return target;
   },
 

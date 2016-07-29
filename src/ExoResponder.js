@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-26 06:33:02
+* @Last Modified time: 2016-07-27 18:49:02
 */
 
 'use strict';
@@ -19,6 +19,9 @@ Creep.prototype.assignHomeExoResponderTasks = function() {
 }
 Creep.prototype.assignRemoteExoResponderTasks = function () {
   this.setMode('respond')
+  /*if(this.hits < this.hitsMax * 0.25) {
+    this.heal(this)
+  }*/
 }
 
 Creep.prototype.doRespond = function() {
@@ -30,12 +33,16 @@ Creep.prototype.doRespond = function() {
     if(this.heal(critical) == ERR_NOT_IN_RANGE) {
         this.moveTo(critical);
     }
+    this.rangedMassAttack()
   } else {
     var target = Targeting.nearestHostalCreep(this.pos)
     if(target) {
-      if(this.attack(target) == ERR_NOT_IN_RANGE) {
-          this.rangedMassAttack()
-          this.moveTo(target);
+      console.log('h')
+      if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
+        this.attack(target)
+      } else {
+        this.rangedMassAttack()
+        //this.heal(this)
       }
     } else {
       var patient = this.pos.findClosestByRange(FIND_MY_CREEPS, {
@@ -46,6 +53,7 @@ Creep.prototype.doRespond = function() {
         if(this.heal(patient) == ERR_NOT_IN_RANGE) {
           this.moveTo(patient);
         }
+        this.rangedMassAttack()
       } else {
         var flag = this.room.find(FIND_FLAGS)[0]
         if(flag) {

@@ -9,7 +9,7 @@ To anyone that stumbles across this. Screeps is a game where you focus on automa
   - Your limited in the amount of *CPU* you can use per tick
   - The CPU limit is a semi-fake unit that measures real CPU time.
   - Requiring files generally has a very large overhead in CPU time.
-  - Requiring files can some times "break" if the disk IO tread (that we have no control over) is very busy.
-
+  - Requiring files can some times "break" if something that we have no control over is very busy. It seems like disk IO, but I have been told it's not.
+  - The order you put creep body parts in matters
 
 <a href="https://codeclimate.com/github/coteyr/screeps"><img src="https://codeclimate.com/github/coteyr/screeps/badges/gpa.svg" /></a>

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-26 23:50:15
+* @Last Modified time: 2016-07-27 18:21:06
 */
 
 'use strict';
@@ -71,6 +71,7 @@ Creep.prototype.getOffExits = function() {
   }
   return true
 }
+
 
 Creep.prototype.assignTravelTasks = function() {
   var functionName = ("assign_travel_" + this.memory.role + "_tasks").toCamel()

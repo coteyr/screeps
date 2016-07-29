@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-27 16:27:34
+* @Last Modified time: 2016-07-29 01:42:37
 */
 
 'use strict';
@@ -91,63 +91,22 @@ Creep.prototype.doRecharge = function() {
 }
 
 Creep.prototype.moveCloseTo = function(x, y, range, ignoreStuff) {
-  /*if(!range) {
-    range = 0
-  }
-  var distance = this.pos.getRangeTo(x, y)
-  if(this.pos.inRangeTo(x, y, range)) {
-    delete this.memory.path
-    return true
-  } else {
-    if(!this.memory.path) {
-      if(!this.room.memory.paths) {
-        this.room.memory.paths = {}
-      }
-      var pathName = this.pos.x + "-" + this.pos.y + "-to-" + x + '-' + y
-      if(!this.room.memory.paths[pathName]) {
-        this.room.memory.paths[pathName] = {}
-        this.room.memory.paths[pathName].path = this.pos.findPathTo(x, y, {ignoreCreeps: false, serialize: true })
-      }
-      this.memory.path = this.room.memory.paths[pathName].path
-      this.room.memory.paths[pathName].last_used = Game.time
-    }
-    if(!this.memory.stiller) {
-      this.memory.stiller = 1
-    }
-    if(!this.memory.old_x) {
-      this.memory.old_x = 1
-    }
-    if(!this.memory.old_y) {
-      this.memory.old_y = 1
-    }
-    if(this.pos.x === this.memory.old_x && this.pos.y === this.memory.old_y && this.fatigue <= 0) {
-      // No Movement
-      this.memory.stiller += 1
-      if(this.memory.stiller >= 3) {
-        this.memory.stiller = 0
-        delete this.memory.path
-        Log.warn(this.name + " is stuck. Resetting Path in " + this.room.name)
-        this.move(Memory.dance_move)
-      }
-    } else {
-      this.memory.old_x = this.pos.x
-      this.memory.old_y = this.pos.y
-      this.memory.stiller = 1
-    }
-
-    if(this.moveByPath(this.memory.path) == ERR_NOT_FOUND) {
-      delete this.memory.path
-    }
+  if(this.fatigue) { // Don't do pathing if I can't even move
+    Log.debug('Creep is too tired to move ' + " Creep: " + this.name + " Room: " + this.room.name)
+    Memory.stats["room." + this.room.name + ".bad_moves"] += 1
     return false
-  }*/
+  }
   if(!range) {
     range = 0
   }
-  var distance = this.pos.getRangeTo(x, y)
   if(this.pos.inRangeTo(x, y, range)) {
     return true
   } else {
-    this.moveTo(x, y, {reusePath: distance})
+    var distance = this.pos.getRangeTo(x, y)
+    var result = this.moveTo(x, y, {reusePath: distance})
+    if(result) {
+      Log.warn("Could not move: " + result  + " Creep: " + this.name + " Room: " + this.room.name)
+    }
     return false
   }
 }

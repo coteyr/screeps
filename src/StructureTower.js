@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-09 23:47:55
+* @Last Modified time: 2016-07-27 19:03:52
 */
 
 'use strict';
@@ -24,12 +24,21 @@ StructureTower.prototype.doWork = function() {
 
 
 StructureTower.prototype.doAttackInvaders = function() {
-  var hostiles = this.room.find(FIND_HOSTILE_CREEPS);
+  if (!this.memory.target) {
+    var hostiles = this.pos.findInRange(FIND_HOSTILE_CREEPS, 16, {filter: function(creep){
+      return  true;
+    }});
     if(hostiles.length > 0) {
-        var username = hostiles[0].owner.username;
-        Game.notify('User ${username} spotted in room ');
-        this.attack(hostiles[0]);
+      this.memory.target = hostiles[0].id
     }
+  } else {
+    var target = Game.getObjectById(this.memory.target)
+    if(target) {
+      this.attack(target);
+    } else {
+      delete this.memory.target
+    }
+  }
 }
 
 StructureTower.prototype.doRepairs = function() {
