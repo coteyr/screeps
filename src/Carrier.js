@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 03:58:00
+* @Last Modified time: 2016-07-29 17:31:12
 */
 
 'use strict';
@@ -116,8 +116,11 @@ Creep.prototype.doFill = function() {
 Creep.prototype.doPickup = function() {
   if(this.carry.energy < this.carryCapacity) {
     if(!this.memory.target_miner) {
-      console.log('u')
-      this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room)
+      if(this.memory.role == 'carrier') {
+        this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room, 'pickup')
+      } else {
+        this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room, 'grab')
+      }
     }
     // Log.info(this.memory.target_miner)
     if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 14:14:18
+* @Last Modified time: 2016-07-29 16:47:54
 */
 
 'use strict';
@@ -43,8 +43,10 @@ Creep.prototype.findSourcePosition = function() {
     Object.keys(this.room.memory.my_sources).some(function(key, index) {
       var position = Game.getObjectById(creep.room.memory.my_sources[key].id)
       if(!position.mined()) {
-        creep.memory.assigned_position = creep.room.memory.my_sources[key]
-        return true
+        if (_.size(Finder.findMiningCreeps(creep.room.memory.my_sources[key].id, creep.room.name)) <= 0 ) { // Miners with the same position
+          creep.memory.assigned_position = creep.room.memory.my_sources[key]
+          return true
+        }
       }
     }, creep.room.memory.my_sources);
     if(!creep.memory.assigned_position) {

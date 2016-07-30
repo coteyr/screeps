@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 01:48:35
+* @Last Modified time: 2016-07-30 06:46:12
 */
 
 'use strict';
@@ -32,7 +32,7 @@ var ROLES = [
    } },
   { role: 'carrier',   multiplyer: function(spawn){
      if (spawn.room.carrierReady()) {
-        return spawn.room.sourceCount() * 1;
+        return spawn.room.sourceCount() * 1.50;
      } else {
       return 0;
      }
@@ -117,8 +117,27 @@ var ROLES = [
     } else {
       return [WORK, CARRY, MOVE]
     }
-   } }
-
+   } },
+   { role: 'demo', multiplyer: function(spawn){
+    if(spawn.room.needsDemolition()) {
+      return 2
+    } else {
+      return 0
+    }
+   }, priority: 40, body: function(spawn) {
+    var energy = spawn.room.energyCapacity();
+    if(energy >= 300 && energy < 550) {
+      return [WORK, CARRY, MOVE]
+    } else if(energy >= 550 && energy < 800) {
+      return [WORK, WORK, WORK, CARRY, MOVE, MOVE]
+    } else if(energy >= 800 && energy < 1300) {
+      return [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE]
+    } else if(energy >= 1300) {
+      return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY]
+    } else {
+      return [WORK, MOVE, CARRY]
+    }
+   }}
 ]
 
 var EXOROLES = [

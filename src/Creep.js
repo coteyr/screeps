@@ -2,16 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:14:22
+* @Last Modified time: 2016-07-30 07:16:38
 */
 
 'use strict';
 
 Creep.prototype.tick = function(){
   this.setHome()
-  if(!this.mode()) {
-    this.setMode('idle')
-  }
   if(!this.spawning) {
     Log.debug('Ticking creep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.mode());
     if (this.memory.role === 'harvester') {
@@ -24,6 +21,8 @@ Creep.prototype.tick = function(){
       this.assignUpgraderTasks()
     } else if (this.memory.role === 'builder') {
       this.assignBuilderTasks()
+    } else if (this.memory.role === 'demo') {
+      this.assignDemoTasks()
     }
     if(this.memory.role && this.memory.role.startsWith('exo-')) {
       this.assignExoTasks()

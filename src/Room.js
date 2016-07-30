@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 01:43:14
+* @Last Modified time: 2016-07-30 06:49:41
 */
 
 'use strict';
@@ -185,7 +185,7 @@ Room.prototype.report = function() {
   var roomName = this.name
   Report.addRoomValue(this.name, 'energyAvailable', this.energyAvailable)
   Report.addRoomValue(this.name, 'energyCapacityAvailable', this.energyCapacity())
-  var array =['harvester', 'builder', 'carrier', 'miner', 'upgrader']
+  var array =['harvester', 'builder', 'carrier', 'miner', 'upgrader', 'demo', 'ranger', 'swarmer']
   array.forEach(function(role){
     Report.addRoomValue(roomName, role + 'Count', Finder.findCreeps(role, roomName).length)
   })
@@ -228,4 +228,15 @@ Room.prototype.clearPaths = function() {
   Log.info('Clearing Path Cache for ' + this.name)
   delete this.memory.paths
   this.memory.paths = {}
+}
+
+Room.prototype.needsDemolition = function() {
+  return _.size(this.memory.demos) > 0
+}
+
+Room.prototype.addDemo = function(id) {
+  if(!this.memory.demos) {
+    this.memory.demos = []
+  }
+  this.memory.demos.push(id)
 }
