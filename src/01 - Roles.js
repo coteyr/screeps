@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-30 06:46:12
+* @Last Modified time: 2016-08-02 18:18:14
 */
 
 'use strict';
@@ -14,7 +14,7 @@ var ROLES = [
     } else {
       return 1
     }
-   }, priority: 40, body: function(spawn){
+   }, priority: 4, body: function(spawn){
     var energy = spawn.room.energyCapacity();
     if (energy >= 300 && energy < 550) {
       return [WORK, CARRY, MOVE]
@@ -36,7 +36,7 @@ var ROLES = [
      } else {
       return 0;
      }
-    }, priority: 30, body: function(spawn){
+    }, priority: 3, body: function(spawn){
       var energy = spawn.room.energyCapacity();
       if (energy >= 300 && energy < 550) {
         return [CARRY, CARRY, MOVE, MOVE]
@@ -46,7 +46,9 @@ var ROLES = [
         return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
       } else if(energy >= 1300 && energy < 1800) {
         return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
-      } else if(energy >= 1800) {
+      } else if(energy >= 1800 && energy < 2300) {
+        return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+      } else if(energy >= 2300) {
         return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
       } else {
         return [WORK, CARRY, MOVE]
@@ -58,7 +60,7 @@ var ROLES = [
      } else {
       return spawn.room.sourceCount() * 4;
      }
-  }, priority: 10, body: function(spawn){
+  }, priority: 1, body: function(spawn){
     var energy = spawn.room.energyCapacity();
     if (energy >= 300 && energy < 550) {
       return [WORK, CARRY, CARRY, MOVE, MOVE]
@@ -74,11 +76,15 @@ var ROLES = [
   } },
   { role: 'miner',     multiplyer: function(spawn){
     if (spawn.room.carrierReady()) {
-      return spawn.room.sourceCount();
+      if(spawn.room.energyCapacity() < 2300) {
+        return spawn.room.sourceCount();
+      } else {
+          return 0
+      }
      } else {
       return 0;
      }
-  }, priority: 20, body: function(spawn){
+  }, priority: 2, body: function(spawn){
     var energy = spawn.room.energyCapacity();
     if (energy >= 300 && energy < 550) {
       return [WORK, WORK, CARRY, MOVE] // 4 Energy Tick
@@ -102,7 +108,7 @@ var ROLES = [
     } else {
       return 0;
     }
-  }, priority: 40, body: function(spawn){
+  }, priority: 4, body: function(spawn){
     var energy = spawn.room.energyCapacity();
     if (energy >= 300 && energy < 550) {
       return [WORK, CARRY, MOVE]
@@ -110,10 +116,8 @@ var ROLES = [
       return [WORK, WORK, WORK, MOVE, CARRY, CARRY, CARRY, CARRY]
     } else if(energy >= 800 && energy < 1300) {
       return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE]
-    } else if(energy >= 1300 && energy < 1800) {
-      return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE]
-    } else if(energy >= 1800) {
-      return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE] // 10 Energy Tick
+    } else if(energy >= 1300) {
+      return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE] // 5 Energy a tick * 2 units
     } else {
       return [WORK, CARRY, MOVE]
     }
@@ -124,7 +128,7 @@ var ROLES = [
     } else {
       return 0
     }
-   }, priority: 40, body: function(spawn) {
+   }, priority: 4, body: function(spawn) {
     var energy = spawn.room.energyCapacity();
     if(energy >= 300 && energy < 550) {
       return [WORK, CARRY, MOVE]
@@ -137,7 +141,38 @@ var ROLES = [
     } else {
       return [WORK, MOVE, CARRY]
     }
-   }}
+   }},
+   { role: 'big-miner', multiplyer: function(spawn) {
+    if(spawn.room.energyCapacity() >= 2300) {
+      return 1;
+    } else {
+      return 0;
+    }
+   }, priority: 1, body: function(spawn) {
+    var energy = spawn.room.energyCapacity();
+      return [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY]
+   }
+  },
+  { role: 'excavator', multiplyer: function(spawn) {
+      if(spawn.room.excavatorReady()){
+        return 1
+      } else {
+        return 0
+      }
+    }, priority: 5, body: function(spawn) {
+        return [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+      }
+
+  },
+  {role: 'hauler', multiplyer: function(spawn){
+    if(spawn.room.excavatorReady()) {
+      return 1
+    } else {
+      return 0
+    }
+  }, priority: 6, body: function(spawn){
+    return [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE] // these are tiny cause we can't mine much at one time
+  }}
 ]
 
 var EXOROLES = [

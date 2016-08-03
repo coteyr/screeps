@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 17:31:12
+* @Last Modified time: 2016-08-02 21:46:16
 */
 
 'use strict';
@@ -35,8 +35,9 @@ Creep.prototype.doWaitEnergy = function() {
 Creep.prototype.doTransfer = function() {
   var me = this;
   if(!this.memory.target){
-    var possibilities = _.union({}, this.room.myCreeps(), this.room.memory.my_spawns, this.room.memory.my_extensions, this.room.memory.my_towers, this.room.memory.my_containers, this.room.memory.my_storages)
+    var possibilities = _.union({}, this.room.myCreeps(), this.room.memory.my_spawns, this.room.memory.my_extensions, this.room.memory.my_towers, this.room.memory.my_storages)
     this.memory.target = Targeting.getTransferTarget(possibilities, this.pos);
+    console.log(this.memory.target)
   }
   if (this.memory.target) {
     var target = Game.getObjectById(this.memory.target.id);
@@ -50,18 +51,18 @@ Creep.prototype.doTransfer = function() {
           }
         }
         return false
-      })){
-        if(this.moveCloseTo(this.memory.target.pos.x, this.memory.target.pos.y, 1)) {
-          var energy = this.carry.energy
-          this.transfer(target, RESOURCE_ENERGY)
-
-          target.memory.call_for_energy = 0
-          delete this.memory.target
-          if (this.carry.energy <= 0) {
-            this.setMode('idle')
-          }
+      }))
+      if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
+        console.log('c')
+        var energy = this.carry.energy
+        this.transfer(target, RESOURCE_ENERGY)
+        target.memory.call_for_energy = 0
+        delete this.memory.target
+        if (this.carry.energy <= 0) {
+          this.setMode('idle')
         }
       }
+
       if ((target.carry && target.carry.energy && target.carry.energy >= target.carryCapacity) || (target.energyCapacity && target.energy >= target.energyCapacity) || (target.storeCapacity && target.store[RESOURCE_ENERGY] >= target.storeCapacity)) {
         delete this.memory.target
       }
@@ -77,7 +78,6 @@ Creep.prototype.doTransfer = function() {
 Creep.prototype.doFill = function() {
   if(!this.memory.target_miner || this.memory.target_miner === null) {
     this.setMode('idle')
-    console.log('q')
     return false;
   }
   if(!Game.getObjectById(this.memory.target_miner.id)) {
@@ -86,7 +86,7 @@ Creep.prototype.doFill = function() {
     delete this.memory.target_miner
   } else {
     var miner = Game.getObjectById(this.memory.target_miner.id);
-    if(miner.memory.role) { // is a creep miner
+    if(miner.memory && miner.memory.role) { // is a creep miner
  /*     if (!miner.memory.mode === 'broadcast') {
         // get more energy from a different miner
         delete this.memory.target_miner
@@ -114,6 +114,14 @@ Creep.prototype.doFill = function() {
 }
 
 Creep.prototype.doPickup = function() {
+  var droped = Finder.findDropedEnergy(this.room.name)
+  if(_.size(droped) > 0) {
+    if(this.moveCloseTo(droped[0].pos.x, droped[0].pos.y, 1)) {
+      this.pickup(droped[0])
+      this.setMode('idle')
+    }
+    return true
+  }
   if(this.carry.energy < this.carryCapacity) {
     if(!this.memory.target_miner) {
       if(this.memory.role == 'carrier') {

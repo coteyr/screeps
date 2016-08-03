@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:07:06
+* @Last Modified time: 2016-08-01 20:29:33
 */
 
 'use strict';
@@ -35,7 +35,9 @@ Creep.prototype.assignExoTasks = function() {
   if(this.mode() != 'transition' && this.mode() != 'leave') {
     this.getOffExits()
   }
-  if(this.room.name === this.memory.exo_target) {
+  if(this.room.name === this.memory.home && this.ticksToLive <= 300) {
+    this.setMode('recycle')
+  } else if(this.room.name === this.memory.exo_target) {
     // I am in the remote room
     this.assignRemoteExoTasks()
   } else if(Object.prototype.toString.call( this.memory.exo_target ) === '[object Array]' && this.room.name === this.memory.exo_target[_.size(this.memory.exo_target) - 1]) {

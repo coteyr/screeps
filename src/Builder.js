@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-30 07:21:43
+* @Last Modified time: 2016-08-02 20:42:09
 */
 
 'use strict';
@@ -58,7 +58,7 @@ Creep.prototype.doRepair = function() {
         if(_.includes(creep.room.demos, structure.id)) {
             return false
         }
-        return structure.hits < structure.hitsMax * 0.90 && structure.structureType !== 'constructedWall'
+        return structure.hits < structure.hitsMax * 0.75 && structure.structureType !== 'constructedWall'
       }})
       Log.debug("Found " + _.size(locations) + " needing repair")
       if(_.size(locations) === 0) {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 17:18:10
+* @Last Modified time: 2016-08-02 21:54:08
 */
 
 'use strict';
@@ -20,6 +20,10 @@ var Targeting = {
             result = target;
             biggest = target.memory.call_for_energy
           }
+        } else {
+          // target.memory.call_for_energy = 0
+          //result = target
+           //biggest = 0;
         }
       } else {
        Log.warn("No Memory for: " + target.id)
@@ -100,7 +104,6 @@ var Targeting = {
   },
 
   nearByStructures: function(pos) {
-    console.log('t')
     var structures = pos.findInRange(FIND_STRUCTURES, 1, {filter: {
       function(object) {
         return !_.includes(Memory.ignores, object.id)
@@ -128,18 +131,41 @@ var Targeting = {
       mode = 'none'
     }
     var objects = []
-    _.union({}, room.memory.my_containers, room.memory.my_storages).forEach(function(value) {
+    if (mode === 'pickup') {
+    _.union({}, room.memory.my_containers).forEach(function(value) {
       objects.push(Game.getObjectById(value.id));
     })
+    } else {
+      _.union({}, room.memory.my_containers, room.memory.my_storages).forEach(function(value) {
+        objects.push(Game.getObjectById(value.id));
+      })
+    }
     var buffer = pos.findClosestByRange(objects, {filter: function(object) {
       var structure = Game.getObjectById(object.id)
-      if (mode === 'pickup') {
-        return structure.structureType !== 'storage' && structure.storedEnergy() >= 300
-      } else {
+      // if (mode === 'pickup') {
+      //  return structure.structureType !== 'storage' && structure.storedEnergy() >= 300
+      //} else {
         return structure.storedEnergy() >= 300;
-      }
+      //}
     }});
-    return buffer;
+    if(buffer) {
+      return buffer;
+    } else {
+      objects = []
+      _.union({}, room.memory.my_storages).forEach(function(value) {
+        objects.push(Game.getObjectById(value.id));
+      })
+      buffer = pos.findClosestByRange(objects, {filter: function(object) {
+      var structure = Game.getObjectById(object.id)
+      // if (mode === 'pickup') {
+      //  return structure.structureType !== 'storage' && structure.storedEnergy() >= 300
+      //} else {
+        return structure.storedEnergy() >= 300;
+      //}
+    }});
+    }
+    return buffer
+
   },
 
   findEnergySource: function(pos, room, mode) {

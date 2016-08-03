@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:07:06
+* @Last Modified time: 2016-08-02 20:27:50
 */
 
 'use strict';
@@ -13,7 +13,6 @@ StructureSpawn.prototype.tick = function() {
   this.assignMode();
   if(!this.spawning) {
     this.spawnCreeps();
-    this.doErSpawn();
   }
   this.doWork();
 
@@ -59,11 +58,11 @@ StructureSpawn.prototype.setMaxCount = function(role) {
 }
 
 StructureSpawn.prototype.promoteCreeps = function() {
-  /*if(this.harvesters() >  this.maxHarvesters()) {
+  if(Finder.findRealCreepCount('harvester', this) >  this.getMaxCount('harvesters')) {
     this.promote('harvester', 'carrier')
   }
 
-  if(this.builders() > this.maxBuilders()) {
+  /*if(this.builders() > this.maxBuilders()) {
     this.promote('builder', 'harvester')
   }*/
 }
@@ -100,22 +99,19 @@ StructureSpawn.prototype.refreshData = function() {
 }
 
 StructureSpawn.prototype.assignMode = function() {
-  if(!this.mode()) {
-    Log.warn("No current mode for Spawn " + this.name)
-    this.setMode('idle')
-  }
-  if(!this.mode() || this.mode() === 'idle') {
+  if(this.modeIs('idle')) {
     if (this.energy < this.energyCapacity) {
       this.setMode('wait-energy')
     } else {
       this.setMode('idle')
     }
-  } else if (this.mode() === 'spawning' && this.spawning === null ) {
+  } else if (this.modeIs('spawning') && !this.spawning) {
       this.setMode('idle')
   }
-  /*if (this.room.energyAvailable >= 300 && (this.miners() <= 0 || this.carriers() <= 0)) {
+  if (Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this) === 0) {
     this.setMode('er-spawn')
-  }*/
+    console.log('1')
+  }
 }
 
 StructureSpawn.prototype.doWork = function() {
@@ -125,9 +121,9 @@ StructureSpawn.prototype.doWork = function() {
   if (this.mode() === 'wait-energy') {
     this.doWaitEnergy();
   }
-  /*if (this.mode() === 'er-spawn') {
-    this.doErSpawn();
-  }*/
+  if(this.modeIs('er-spawn')) {
+    this.doErSpawn()
+  }
 }
 
 
@@ -144,17 +140,28 @@ StructureSpawn.prototype.doWaitEnergy = function() {
 
 StructureSpawn.prototype.doErSpawn = function() {
   if(this.room.energyCapacity() > 300) {
-    if (Finder.findRealCreepCount('harvester', this) === 0 && this.maxHarvesters > 0) {
+    /*if (Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this)) {
+      // no energy producers
       Log.info("ER Spawn Harvester")
       this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK])
-    } else if (Finder.findRealCreepCount('miner', this) === 0) {
-      Log.info("ER Spawn Miner")
-      this.spawnACreep('miner', [MOVE, MOVE, CARRY, CARRY, WORK])
     } else if (Finder.findRealCreepCount('carrier', this) === 0) {
       Log.info("ER Spawn Carrier")
       this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY])
     } else {
       this.setMode('idle')
+    }
+  }*/
+    console.log('2')
+    if(!this.spawning) {
+      if(Finder.findRealCreepCount('harvester', this) + Finder.findRealCreepCount('carrier', this) < 4){
+        this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK])
+      } else if(Finder.findRealCreepCount('miner', this) < 2) {
+        this.spawnACreep('miner', [MOVE, CARRY, WORK, WORK])
+      } else if(Finder.findRealCreepCount('carrier', this) < 2){
+        this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY])
+      } else {
+        this.setMode('idle')
+      }
     }
   }
 

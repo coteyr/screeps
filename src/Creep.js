@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-30 07:16:38
+* @Last Modified time: 2016-08-02 16:25:30
 */
 
 'use strict';
@@ -11,7 +11,13 @@ Creep.prototype.tick = function(){
   this.setHome()
   if(!this.spawning) {
     Log.debug('Ticking creep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.mode());
-    if (this.memory.role === 'harvester') {
+    if(this.memory.role && this.memory.role.startsWith('exo-')) {
+      this.assignExoTasks()
+    } else {
+      var functionName = ('assign_' + this.memory.role + '_tasks').toCamel()
+      Caller(this, functionName)
+    }
+    /*if (this.memory.role === 'harvester') {
       this.assignHarvesterTasks()
     } else if (this.memory.role === 'miner') {
       this.assignMinerTasks()
@@ -23,10 +29,10 @@ Creep.prototype.tick = function(){
       this.assignBuilderTasks()
     } else if (this.memory.role === 'demo') {
       this.assignDemoTasks()
-    }
-    if(this.memory.role && this.memory.role.startsWith('exo-')) {
-      this.assignExoTasks()
-    }
+    } else if (this.memory.role === 'big-miner') {
+      this.assignBigMinerTasks()
+    }*/
+
     /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacity() * 0.25)) {
       this.setMode('recharge')
     }*/
