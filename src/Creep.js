@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 18:14:04
+* @Last Modified time: 2016-08-03 19:14:06
 */
 
 'use strict';
@@ -122,7 +122,7 @@ Creep.prototype.recycle = function() {
 }
 
 Creep.prototype.doIdle = function() {
-  Log.warn(this.name + " is doing nothing!")
+  Log.warn(this.name + " is doing nothing in " + this.room.name + "!")
 }
 
 Creep.prototype.freshCreep = function() {
@@ -137,6 +137,14 @@ Creep.prototype.isFull = function() {
   return !this.hasRoom()
 }
 
+Creep.prototype.isEmpty = function() {
+  return _.sum(this.carry) <= 0
+}
+
+Creep.prototype.hasSome = function() {
+  return !this.isEmpty()
+}
+
 Creep.prototype.getCloseAndAction = function(target, action, range) {
   if(!range) range = 1
   if(this.moveCloseTo(target.pos.x, target.pos.y, range)) {
@@ -145,6 +153,7 @@ Creep.prototype.getCloseAndAction = function(target, action, range) {
 }
 
 Creep.prototype.dumpResources = function(target) {
+  var creep = this
   Object.keys(this.carry).forEach(function(key, index) {
       creep.transfer(target, key)
   }, this.carry);

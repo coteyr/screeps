@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 18:11:24
+* @Last Modified time: 2016-08-03 19:12:02
 */
 
 'use strict';
@@ -183,6 +183,18 @@ var Targeting = {
 
   findCloseContainer: function(pos, range) {
     return pos.findInRange(FIND_STRUCTURES, range, {filter: {structureType: STRUCTURE_CONTAINER}})
+  },
+
+  findClosestConstruction: function(pos){
+    return pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
+  },
+
+  findClosestRepairTarget: function(pos, room){
+    var locations = room.find(FIND_STRUCTURES, {filter: function(structure) {
+      if(_.includes(room.demos, structure.id)) return false
+        return structure.hits < structure.hitsMax * 0.75 && structure.structureType !== 'constructedWall'
+      }})
+    pos.findClosestByRange(locations);
   }
 
 }
