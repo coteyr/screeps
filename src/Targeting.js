@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-02 21:54:08
+* @Last Modified time: 2016-08-03 18:11:24
 */
 
 'use strict';
@@ -179,6 +179,10 @@ var Targeting = {
       return Targeting.findEnergyBuffer(pos, room, mode)
     }
 
+  },
+
+  findCloseContainer: function(pos, range) {
+    return pos.findInRange(FIND_STRUCTURES, range, {filter: {structureType: STRUCTURE_CONTAINER}})
   }
 
 }

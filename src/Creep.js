@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 09:47:51
+* @Last Modified time: 2016-08-03 18:14:04
 */
 
 'use strict';
@@ -125,5 +125,27 @@ Creep.prototype.doIdle = function() {
   Log.warn(this.name + " is doing nothing!")
 }
 
+Creep.prototype.freshCreep = function() {
+  return this.ticksToLive >= 1499
+}
 
+Creep.prototype.hasRoom = function() {
+  return _.sum(this.carry) < this.carryCapacity
+}
 
+Creep.prototype.isFull = function() {
+  return !this.hasRoom()
+}
+
+Creep.prototype.getCloseAndAction = function(target, action, range) {
+  if(!range) range = 1
+  if(this.moveCloseTo(target.pos.x, target.pos.y, range)) {
+    action
+  }
+}
+
+Creep.prototype.dumpResources = function(target) {
+  Object.keys(this.carry).forEach(function(key, index) {
+      creep.transfer(target, key)
+  }, this.carry);
+}
