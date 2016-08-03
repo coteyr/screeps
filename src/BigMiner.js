@@ -2,13 +2,15 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-02 12:05:35
+* @Last Modified time: 2016-08-03 09:59:11
 */
 
 'use strict';
 
 Creep.prototype.assignBigMinerTasks = function() {
-  this.killSmallMiners()
+  if(this.ticksToLive >= 1499){
+    this.killSmallMiners() // first tick
+  }
   if(this.modeIs('idle')) {
     if(this.carry.energy < this.carryCapacity) {
       this.setMode('big-mine');
@@ -19,16 +21,16 @@ Creep.prototype.assignBigMinerTasks = function() {
 }
 
 Creep.prototype.doBigMine = function() {
-  if(!this.memory.target) {
-    this.memory.target = Finder.findLargestSource(this.room.name)
+  if(this.needsTarget()) {
+    this.setTarget(Finder.findLargestSource(this.room.name))
   }
-  if(this.memory.target) {
-    var target = Game.getObjectById(this.memory.target.id)
+  if(this.hasTarget()) {
+    var target = this.target()
     if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
       this.harvest(target)
     }
     if(target.energy < 20 && target.ticksToRegeneration > 20) {
-      delete this.memory.target
+      this.clearTarget()
       this.doBigSend()
     }
     if(this.carry.energy >= this.carryCapacity) {

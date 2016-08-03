@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:07:06
+* @Last Modified time: 2016-08-03 09:41:30
 */
 
 'use strict';
@@ -40,18 +40,16 @@ Creep.prototype.assignRemoteExoTheifTasks = function() {
 
 
 Creep.prototype.doSteal = function() {
-  if(!this.memory.target) {
-    var target = Targeting.nearestStructure(this.pos)
-    this.memory.target = target
-  } else {
-    var target = Game.getObjectById(this.memory.target.id)
+  if(this.needsTarget()) {
+    this.setTarget(Targeting.nearestStructure(this.pos))
   }
-  if(target) {
+  if(this.hasTarget()) {
+    var target = this.target()
     if(this.moveCloseTo(target.pos.x, target.pos.y, 1, true)) {
       this.dismantle(target)
     }
   } else {
-    delete this.memory.target
+    this.clearTarget()
   }
   if(this.carry.energy >= this.carryCapacity && this.carryCapacity > 0) {
     this.setMode('go-home');

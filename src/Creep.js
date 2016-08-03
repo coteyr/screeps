@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-02 16:25:30
+* @Last Modified time: 2016-08-03 09:47:51
 */
 
 'use strict';
@@ -17,25 +17,6 @@ Creep.prototype.tick = function(){
       var functionName = ('assign_' + this.memory.role + '_tasks').toCamel()
       Caller(this, functionName)
     }
-    /*if (this.memory.role === 'harvester') {
-      this.assignHarvesterTasks()
-    } else if (this.memory.role === 'miner') {
-      this.assignMinerTasks()
-    } else if (this.memory.role === 'carrier') {
-      this.assignCarrierTasks()
-    } else if (this.memory.role === 'upgrader') {
-      this.assignUpgraderTasks()
-    } else if (this.memory.role === 'builder') {
-      this.assignBuilderTasks()
-    } else if (this.memory.role === 'demo') {
-      this.assignDemoTasks()
-    } else if (this.memory.role === 'big-miner') {
-      this.assignBigMinerTasks()
-    }*/
-
-    /*if(this.ticksToLive < 200 && this.room.energyAvailable >= (this.room.energyCapacity() * 0.25)) {
-      this.setMode('recharge')
-    }*/
     if(this.ticksToLive < 100 && (this.room.name === this.memory.home || !this.memory.home)) { // && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
       this.setMode('recycle')
     }
@@ -143,4 +124,6 @@ Creep.prototype.recycle = function() {
 Creep.prototype.doIdle = function() {
   Log.warn(this.name + " is doing nothing!")
 }
+
+
 

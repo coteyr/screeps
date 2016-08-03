@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-02 18:18:14
+* @Last Modified time: 2016-08-03 15:52:28
 */
 
 'use strict';
@@ -171,7 +171,7 @@ var ROLES = [
       return 0
     }
   }, priority: 6, body: function(spawn){
-    return [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE] // these are tiny cause we can't mine much at one time
+    return [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE] // these are tiny cause we can't mine much at one time
   }}
 ]
 

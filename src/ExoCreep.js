@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-01 20:29:33
+* @Last Modified time: 2016-08-03 12:34:55
 */
 
 'use strict';
@@ -32,7 +32,7 @@ StructureSpawn.prototype.getMaxExoCount = function(role) {
 
 Creep.prototype.assignExoTasks = function() {
   this.setupExoMemory()
-  if(this.mode() != 'transition' && this.mode() != 'leave') {
+  if(this.mode() != 'transition' && this.mode() != 'leave' && this.mode() !== 'respond') {
     this.getOffExits()
   }
   if(this.room.name === this.memory.home && this.ticksToLive <= 300) {
@@ -76,18 +76,24 @@ Creep.prototype.getOffExits = function() {
 
 
 Creep.prototype.assignTravelTasks = function() {
-  var functionName = ("assign_travel_" + this.memory.role + "_tasks").toCamel()
-  Caller(this, functionName)
+  if(!this.modeIs('transition')){
+    var functionName = ("assign_travel_" + this.memory.role + "_tasks").toCamel()
+    Caller(this, functionName)
+  }
 }
 
 Creep.prototype.assignRemoteExoTasks = function() {
-  var functionName = ("assign_remote_" + this.memory.role + "_tasks").toCamel()
-  Caller(this, functionName)
+  if(!this.modeIs('transition')){
+    var functionName = ("assign_remote_" + this.memory.role + "_tasks").toCamel()
+    Caller(this, functionName)
+  }
 }
 
 Creep.prototype.assignHomeExoTasks = function() {
-  var functionName = ("assign_home_" + this.memory.role + "_tasks").toCamel()
-  Caller(this, functionName)
+  if(!this.modeIs('transition')){
+    var functionName = ("assign_home_" + this.memory.role + "_tasks").toCamel()
+    Caller(this, functionName)
+  }
 }
 
 Creep.prototype.setupExoMemory = function() {
@@ -96,7 +102,6 @@ Creep.prototype.setupExoMemory = function() {
   if(this.mode() != 'transition') {
     delete this.memory.exit_dir
     delete this.memory.exit
-
   }
 }
 
@@ -120,6 +125,9 @@ Creep.prototype.doGoHome = function() {
 
 Creep.prototype.doTransition = function() {
   var roomName = this.memory.old_room
+  if(_.size(this.pos.findInRange(FIND_CREEPS), 1) >= 3) {
+    this.move(BOTTOM) // maybe don't hard code
+  } else {
   if (this.room.name !== roomName) {
     if(this.move(this.memory.exit_dir) === 0) {
       this.setMode('idle');
@@ -142,6 +150,7 @@ Creep.prototype.doTransition = function() {
     } else {
       this.move(this.memory.exit_dir)
     }
+  }
   }
 }
 

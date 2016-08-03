@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-31 03:36:26
+* @Last Modified time: 2016-08-03 11:22:25
 */
 
 'use strict';
@@ -12,7 +12,7 @@ _.merge(StructureTower.prototype, EnergyStructure.prototype);
 StructureTower.prototype.energyCallModifier = 3 // higher then normal for defense
 
 StructureTower.prototype.doWork = function() {
-  if(this.mode() === 'wait-energy') {
+  if(this.modeIs('wait-energy')) {
     this.doWaitEnergy()
   }
   if(_.size(this.room.find(FIND_HOSTILE_CREEPS)) > 0) {
@@ -24,20 +24,17 @@ StructureTower.prototype.doWork = function() {
 
 
 StructureTower.prototype.doAttackInvaders = function() {
-  if (!this.memory.target) {
-    var hostiles = this.pos.findInRange(FIND_HOSTILE_CREEPS, 16, {filter: function(creep){
+  if (this.needsTarget()) {
+    var hostiles = this.pos.findInRange(FIND_HOSTILE_CREEPS, 16)/*, {filter: function(creep){
       return  true;
-    }});
+    }});*/
     if(hostiles.length > 0) {
-      this.memory.target = hostiles[0].id
+      this.setTarget(hostiles[0])
     }
-  } else {
-    var target = Game.getObjectById(this.memory.target)
-    if(target) {
-      this.attack(target);
-    } else {
-      delete this.memory.target
-    }
+  }
+  if(this.hasTarget()) {
+    var target = this.target()
+    this.attack(target);
   }
 }
 
@@ -54,6 +51,23 @@ StructureTower.prototype.doRepairs = function() {
     });
    if(target) {
      this.repair(target)
+   } else {
+    if(this.storedEnergy() >= 0.90 * this.possibleEnergy()) {
+      var smallest = 0
+      var targets = this.room.find(FIND_STRUCTURES, {filter: function(s){
+        return s.structureType === 'constructedWall' || s.structureType === 'rampart'
+      }})
+      var target = null
+      targets.forEach(function(t){
+        if((t.hitsMax - t.hits) > smallest) {
+          target = t
+          smallest = t.hitsMax - t.hits
+        }
+      })
+      if(target) {
+        this.repair(target)
+      }
+    }
    }
 
 }

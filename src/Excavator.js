@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-02 17:21:24
+* @Last Modified time: 2016-08-03 09:40:20
 */
 
 'use strict';
@@ -18,11 +18,12 @@ Creep.prototype.assignExcavatorTasks = function() {
 }
 
 Creep.prototype.doExcavate = function() {
-  if(!this.memory.target) {
-    this.memory.target = Finder.findMineral(this.room.name)
+  if(this.needsTarget()) {
+    this.setTarget(Finder.findMineral(this.room.name))
   }
-  var target = Game.getObjectById(this.memory.target.id)
-  if(target){
+
+  if(this.hasTarget()){
+    var target = this.target()
     if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
       this.harvest(target)
     }
@@ -41,9 +42,6 @@ Creep.prototype.doStash = function() {
     Object.keys(this.carry).forEach(function(key, index) {
       creep.transfer(containers[0], key)
     }, this.carry);
-
-
-
   } else {
     this.setMode('idle')
   }

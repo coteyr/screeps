@@ -2,15 +2,12 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-02 21:46:16
+* @Last Modified time: 2016-08-03 12:44:31
 */
 
 'use strict';
 
 Creep.prototype.assignCarrierTasks = function() {
-  if(!this.mode()) {
-    this.setMode('idle')
-  }
   if(this.mode() === 'idle') {
     if(this.carry.energy < this.carryCapacity) {
       this.setMode('pickup');
@@ -34,40 +31,35 @@ Creep.prototype.doWaitEnergy = function() {
 
 Creep.prototype.doTransfer = function() {
   var me = this;
-  if(!this.memory.target){
+  if(this.needsTarget()){
     var possibilities = _.union({}, this.room.myCreeps(), this.room.memory.my_spawns, this.room.memory.my_extensions, this.room.memory.my_towers, this.room.memory.my_storages)
-    this.memory.target = Targeting.getTransferTarget(possibilities, this.pos);
-    console.log(this.memory.target)
+    this.setTarget(Targeting.getTransferTarget(possibilities, this.pos));
   }
-  if (this.memory.target) {
-    var target = Game.getObjectById(this.memory.target.id);
-    if(target && target.memory) {
+  if (this.hasTarget()) {
+    var target = this.target()
+    target.memory.call_for_energy = 0
+    if(!this.pos.findInRange(FIND_STRUCTURES, 1, {filter: {structureType: STRUCTURE_EXTENSION}}).some(function(ext){
+      if(ext.storedEnergy() <= ext.possibleEnergy()) {
+        if(me.transfer(ext, RESOURCE_ENERGY) === 0) {
+          ext.memory.call_for_energy = 0
+          return true
+        }
+      }
+      return false
+    }))
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
+      console.log('c')
+      var energy = this.carry.energy
+      this.transfer(target, RESOURCE_ENERGY)
       target.memory.call_for_energy = 0
-      if(!this.pos.findInRange(FIND_STRUCTURES, 1, {filter: {structureType: STRUCTURE_EXTENSION}}).some(function(ext){
-        if(ext.storedEnergy() <= ext.possibleEnergy()) {
-          if(me.transfer(ext, RESOURCE_ENERGY) === 0) {
-            ext.memory.call_for_energy = 0
-            return true
-          }
-        }
-        return false
-      }))
-      if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
-        console.log('c')
-        var energy = this.carry.energy
-        this.transfer(target, RESOURCE_ENERGY)
-        target.memory.call_for_energy = 0
-        delete this.memory.target
-        if (this.carry.energy <= 0) {
-          this.setMode('idle')
-        }
+      this.clearTarget()
+      if (this.carry.energy <= 0) {
+        this.setMode('idle')
       }
+    }
 
-      if ((target.carry && target.carry.energy && target.carry.energy >= target.carryCapacity) || (target.energyCapacity && target.energy >= target.energyCapacity) || (target.storeCapacity && target.store[RESOURCE_ENERGY] >= target.storeCapacity)) {
-        delete this.memory.target
-      }
-    } else {
-      delete this.memory.target
+    if ((target.carry && target.carry.energy && target.carry.energy >= target.carryCapacity) || (target.energyCapacity && target.energy >= target.energyCapacity) || (target.storeCapacity && target.store[RESOURCE_ENERGY] >= target.storeCapacity)) {
+      this.clearTarget()
     }
   }
   if(this.carry.energy <= 0) {
@@ -133,7 +125,7 @@ Creep.prototype.doPickup = function() {
     // Log.info(this.memory.target_miner)
     if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {
       this.setMode('fill')
-    } else if (!this.memory.target_miner && this.carry.energy > 0) {
+    } else if (!this.memory.target_miner && this.carry.energy > 0 && this.memory.role !== 'builder') {
       this.setMode('transfer')
     }
   } else { // this.carry.energy >= this.carryCapacity
