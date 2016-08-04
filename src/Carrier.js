@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 21:42:02
+* @Last Modified time: 2016-08-04 00:12:21
 */
 
 'use strict';
@@ -25,13 +25,13 @@ Creep.prototype.doTransfer = function() {
   var me = this;
   if(this.needsTarget()) this.setTarget(Targeting.getTransferTarget(this.pos, this.room))
   if (this.hasTarget()) {
+    if(this.doFillCloseExtensions()) return true
     var target = this.target()
-
     if(this.getCloseAndAction(target, this.dumpResources(target), 1)) {
       target.resetCallForEnergy()
       this.clearTarget()
     }
-    this.doFillCloseExtensions() // this will override move
+    // this will override move
     if(target.isFull()) this.clearTarget()
   }
   if(this.isEmpty()) this.setMode('idle')
@@ -62,9 +62,9 @@ Creep.prototype.doPickup = function() {
 
 Creep.prototype.doFillCloseExtensions = function() {
   var target = Targeting.findCloseExtension(this.pos)
-  if(target) {
-    console.log(target.id)
+  if(target && target.hasRoom()) {
     target.resetCallForEnergy()
     this.dumpResources(target)
+    return true
   }
 }

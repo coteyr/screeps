@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 21:55:48
+* @Last Modified time: 2016-08-04 07:51:23
 */
 
 'use strict';
@@ -109,7 +109,7 @@ StructureSpawn.prototype.assignMode = function() {
   } else if (this.modeIs('spawning') && !this.spawning) {
       this.setMode('idle')
   }
-  if (Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this) === 0) {
+  if (this.energyCapacity > 300 && Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this) === 0) {
     this.setMode('er-spawn')
   }
 }

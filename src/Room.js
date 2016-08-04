@@ -2,13 +2,14 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-02 16:19:38
+* @Last Modified time: 2016-08-04 12:43:12
 */
 
 'use strict';
 
 
 Room.prototype.tick = function() {
+  if(!Memory.stats) Memory.stats = {}
   Log.debug('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
   this.refreshData();
   this.tickStuff();
@@ -18,7 +19,7 @@ Room.prototype.tick = function() {
   this.tickSpawns();
   this.tickTowers() */
   this.tickCreeps(); //keep this separate
-  this.cleanPaths();
+  //this.cleanPaths();
   this.report();
   return true;
 };
@@ -245,4 +246,12 @@ Room.prototype.removeDemo = function(id) {
 }
 Room.prototype.excavatorReady = function() {
   return this.controller.level >= 6 // and there are minerals and an extractor
+}
+
+Room.prototype.isFull = function() {
+  return this.energyAvailable >= this.energyCapacity
+}
+
+Room.prototype.hasRoom = function() {
+  return !this.isFull()
 }

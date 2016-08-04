@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 21:19:52
+* @Last Modified time: 2016-08-04 00:13:30
 */
 
 'use strict';
@@ -183,7 +183,8 @@ var Targeting = {
   },
 
   findCloseContainer: function(pos, range) {
-    return pos.findInRange(FIND_STRUCTURES, range, {filter: {structureType: STRUCTURE_CONTAINER}})
+    var results = pos.findInRange(FIND_STRUCTURES, range, {filter: {structureType: STRUCTURE_CONTAINER}})
+    if(_.size(results) > 0) return results[0]
   },
 
   findClosestConstruction: function(pos){
@@ -201,7 +202,7 @@ var Targeting = {
   findCloseExtension: function(pos, range){
     if(!range) range = 1
     var canidates = pos.findInRange(FIND_STRUCTURES, range, {filter: function(e){
-      return e.structureType === STRUCTURE_EXTENSION && e.storedEnergy() <= e.possibleEnergy()
+      return e.structureType === STRUCTURE_EXTENSION && e.hasRoom()
     }})
     if(_.size(canidates) > 0) return canidates[0]
   }
