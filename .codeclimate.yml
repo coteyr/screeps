@@ -26,5 +26,5 @@ ratings:
   - "**.php"
   - "**.py"
   - "**.rb"
-exclude_paths: []
-- "screeps-profiler.js"
+exclude_paths:
+  - "screeps-profiler.js"
