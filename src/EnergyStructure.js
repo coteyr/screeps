@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-08 22:31:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 20:40:26
+* @Last Modified time: 2016-08-03 23:29:18
 */
 
 'use strict';
@@ -21,46 +21,30 @@ EnergyStructure.prototype.tick = function() {
 }
 
 EnergyStructure.prototype.storedEnergy = function() {
-  if(typeof this.energy != 'undefined') {
-    return this.energy; // Towers
-  } else if (typeof this.store != 'undefined') {
-    return this.store[RESOURCE_ENERGY]
-  }
+  if(typeof this.energy != 'undefined') return this.energy; // Towers
+  if (typeof this.store != 'undefined') return this.store[RESOURCE_ENERGY]
 }
 
 EnergyStructure.prototype.possibleEnergy = function() {
-  if(typeof this.energyCapacity != 'undefined') {
-    return this.energyCapacity;
-  } else if (typeof this.storeCapacity != 'undefined') {
-    return this.storeCapacity
-  }
+  if(typeof this.energyCapacity != 'undefined') return this.energyCapacity;
+  if (typeof this.storeCapacity != 'undefined') return this.storeCapacity
 }
 
 EnergyStructure.prototype.assignMode = function() {
-  if(this.storedEnergy() < this.possibleEnergy()) {
-    this.setMode('wait-energy')
-  } else {
-    this.setMode('idle')
-  }
+  if(this.hasRoom()) this.setMode('wait-energy')
+  if(this.isFull()) this.setMode('idle')
 }
 
 EnergyStructure.prototype.doWork = function() {
-  if(this.mode() === 'wait-energy') {
-    this.doWaitEnergy()
-  }
+  if(this.modeIs('wait-energy')) this.doWaitEnergy()
 }
 
 EnergyStructure.prototype.doWaitEnergy = function() {
-  if(this.storedEnergy() < this.possibleEnergy()) {
-    if (this.memory.call_for_energy) {
-      this.memory.call_for_energy += this.energyCallModifier
-    } else {
-      this.memory.call_for_energy = 1
+    this.callForEnergy()
+    if(this.isFull()) {
+      this.setMode('idle')
+      this.resetCallForEnergy()
     }
-  } else {
-    delete this.memory.call_for_energy
-    this.setMode('idle')
-  }
 }
 
 EnergyStructure.prototype.isEmpty = function() {
@@ -71,6 +55,15 @@ EnergyStructure.prototype.isFull = function() {
   return this.storedEnergy() >= this.possibleEnergy()
 }
 
+EnergyStructure.prototype.hasRoom = function() {
+  return !this.isFull()
+}
+
 EnergyStructure.prototype.resetCallForEnergy = function() {
   delete this.memory.call_for_energy
+}
+
+EnergyStructure.prototype.callForEnergy = function() {
+  if(!this.memory.call_for_energy) this.memory.call_for_energy = 0
+  this.memory.call_for_energy += this.energyCallModifier
 }

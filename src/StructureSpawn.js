@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 21:16:43
+* @Last Modified time: 2016-08-03 21:55:48
 */
 
 'use strict';
@@ -111,7 +111,6 @@ StructureSpawn.prototype.assignMode = function() {
   }
   if (Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this) === 0) {
     this.setMode('er-spawn')
-    console.log('1')
   }
 }
 
@@ -152,7 +151,6 @@ StructureSpawn.prototype.doErSpawn = function() {
       this.setMode('idle')
     }
   }*/
-    console.log('2')
     if(!this.spawning) {
       if(Finder.findRealCreepCount('harvester', this) + Finder.findRealCreepCount('carrier', this) < 4){
         this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK])
@@ -191,14 +189,8 @@ StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {
     if(typeof body === 'function') {
       body = eval('body(this)');
     }
-
-    var p = priority
-
-    var total = Finder.findCreepCount(role, this)
-    p = p + total
-
     var array = this.memory.spawn_queue
-    array.push({role: role, body: body, priority: p})
+    array.push({role: role, body: body, priority: priority})
     array = _.sortBy(array, function(a) {
       return a.priority;
     })
