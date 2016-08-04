@@ -2,133 +2,69 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 12:44:31
+* @Last Modified time: 2016-08-03 21:42:02
 */
 
 'use strict';
 
 Creep.prototype.assignCarrierTasks = function() {
-  if(this.mode() === 'idle') {
-    if(this.carry.energy < this.carryCapacity) {
-      this.setMode('pickup');
-    } else if(this.carry.energy >= this.carryCapacity) {
-      this.setMode('transfer');
-    }
+  if(this.modeIs('idle')) {
+    if(this.hasRoom()) this.setMode('pickup')
+    if(this.isFull()) this.setMode('transfer')
   }
 }
 Creep.prototype.doWaitEnergy = function() {
-  if(this.carry.energy < this.carryCapacity) {
-    if (this.memory.call_for_energy) {
-      this.memory.call_for_energy += 5
-    } else {
-      this.memory.call_for_energy = 1
-    }
-  } else {
-    delete this.memory.call_for_energy
+  if(this.hasRoom()) this.callForEnergy()
+  if(this.isFull()) {
+    this.resetCallForEnergy()
     this.setMode('idle')
   }
 }
 
 Creep.prototype.doTransfer = function() {
   var me = this;
-  if(this.needsTarget()){
-    var possibilities = _.union({}, this.room.myCreeps(), this.room.memory.my_spawns, this.room.memory.my_extensions, this.room.memory.my_towers, this.room.memory.my_storages)
-    this.setTarget(Targeting.getTransferTarget(possibilities, this.pos));
-  }
+  if(this.needsTarget()) this.setTarget(Targeting.getTransferTarget(this.pos, this.room))
   if (this.hasTarget()) {
     var target = this.target()
-    target.memory.call_for_energy = 0
-    if(!this.pos.findInRange(FIND_STRUCTURES, 1, {filter: {structureType: STRUCTURE_EXTENSION}}).some(function(ext){
-      if(ext.storedEnergy() <= ext.possibleEnergy()) {
-        if(me.transfer(ext, RESOURCE_ENERGY) === 0) {
-          ext.memory.call_for_energy = 0
-          return true
-        }
-      }
-      return false
-    }))
-    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
-      console.log('c')
-      var energy = this.carry.energy
-      this.transfer(target, RESOURCE_ENERGY)
-      target.memory.call_for_energy = 0
-      this.clearTarget()
-      if (this.carry.energy <= 0) {
-        this.setMode('idle')
-      }
-    }
 
-    if ((target.carry && target.carry.energy && target.carry.energy >= target.carryCapacity) || (target.energyCapacity && target.energy >= target.energyCapacity) || (target.storeCapacity && target.store[RESOURCE_ENERGY] >= target.storeCapacity)) {
+    if(this.getCloseAndAction(target, this.dumpResources(target), 1)) {
+      target.resetCallForEnergy()
       this.clearTarget()
     }
+    this.doFillCloseExtensions() // this will override move
+    if(target.isFull()) this.clearTarget()
   }
-  if(this.carry.energy <= 0) {
-    this.setMode('idle')
-  }
+  if(this.isEmpty()) this.setMode('idle')
 }
 
-Creep.prototype.doFill = function() {
-  if(!this.memory.target_miner || this.memory.target_miner === null) {
-    this.setMode('idle')
-    return false;
+Creep.prototype.pickupDropped = function() {
+  var dropped = Finder.findDropedEnergy(this.room.name)
+  if(_.size(dropped) > 0) {
+    this.getCloseAndAction(dropped[0], this.pickup(dropped[0]), 1)
+    if(this.isFull()) this.setMode('idle')
+    return true
   }
-  if(!Game.getObjectById(this.memory.target_miner.id)) {
-    Log.warn(this.name + " is missing their miner, reassigning")
-    this.setMode('idle')
-    delete this.memory.target_miner
-  } else {
-    var miner = Game.getObjectById(this.memory.target_miner.id);
-    if(miner.memory && miner.memory.role) { // is a creep miner
- /*     if (!miner.memory.mode === 'broadcast') {
-        // get more energy from a different miner
-        delete this.memory.target_miner
-        this.setMode('idle')
-      }*/
-    // } else {
-      miner.transfer(this, RESOURCE_ENERGY)
-      this.withdraw(miner, RESOURCE_ENERGY)
-      delete this.memory.target_miner
-      miner.setMode('idle')
-      this.setMode('idle')
-    } else {
-      this.withdraw(miner, RESOURCE_ENERGY)
-      delete this.memory.target_miner
-      this.setMode('idle')
-    }
-    if(this.memory.target_miner && !this.pos.inRangeTo(Game.getObjectById(this.memory.target_miner.id).pos, 1)) {
-      Log.warn("No longer in range")
-      this.setMode('idle')
-      delete this.memory.target_miner
-    }
-
-  }
-  delete this.memory.target_miner
 }
 
 Creep.prototype.doPickup = function() {
-  var droped = Finder.findDropedEnergy(this.room.name)
-  if(_.size(droped) > 0) {
-    if(this.moveCloseTo(droped[0].pos.x, droped[0].pos.y, 1)) {
-      this.pickup(droped[0])
-      this.setMode('idle')
+  if(this.pickupDropped()) return true;
+  if(this.needsTarget()) this.setTarget(Targeting.findEnergySource(this.pos, this.room, this.memory.role))
+  if(this.hasTarget()) {
+    var target = this.target()
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
+      target.transfer(this, RESOURCE_ENERGY)
+      this.withdraw(target, RESOURCE_ENERGY)
     }
-    return true
+    if(target.isEmpty()) this.clearTarget()
   }
-  if(this.carry.energy < this.carryCapacity) {
-    if(!this.memory.target_miner) {
-      if(this.memory.role == 'carrier') {
-        this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room, 'pickup')
-      } else {
-        this.memory.target_miner = Targeting.findEnergySource(this.pos, this.room, 'grab')
-      }
-    }
-    // Log.info(this.memory.target_miner)
-    if(this.memory.target_miner && this.moveCloseTo(this.memory.target_miner.pos.x, this.memory.target_miner.pos.y, 1)) {
-      this.setMode('fill')
-    } else if (!this.memory.target_miner && this.carry.energy > 0 && this.memory.role !== 'builder') {
-      this.setMode('transfer')
-    }
-  } else { // this.carry.energy >= this.carryCapacity
-    this.setMode('idle')
+  if(this.isFull()) this.setMode('idle')
+}
+
+Creep.prototype.doFillCloseExtensions = function() {
+  var target = Targeting.findCloseExtension(this.pos)
+  if(target) {
+    console.log(target.id)
+    target.resetCallForEnergy()
+    this.dumpResources(target)
   }
 }

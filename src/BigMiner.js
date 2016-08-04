@@ -2,17 +2,15 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 18:58:02
+* @Last Modified time: 2016-08-03 21:36:22
 */
 
 'use strict';
 
 Creep.prototype.assignBigMinerTasks = function() {
   if(this.freshCreep()) this.killSmallMiners() // first tick
-  if(this.modeIs('idle')) {
-    if(this.hasRoom()) this.setMode('big-mine')
-    if(this.isFull()) this.setMode('send')
-  }
+  if(this.hasRoom()) this.setMode('big-mine')
+  if(this.isFull()) this.setMode('big-send')
 }
 
 Creep.prototype.doBigMine = function() {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-08 22:31:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:07:06
+* @Last Modified time: 2016-08-03 20:40:26
 */
 
 'use strict';
@@ -61,4 +61,16 @@ EnergyStructure.prototype.doWaitEnergy = function() {
     delete this.memory.call_for_energy
     this.setMode('idle')
   }
+}
+
+EnergyStructure.prototype.isEmpty = function() {
+  return this.storedEnergy() === 0
+}
+
+EnergyStructure.prototype.isFull = function() {
+  return this.storedEnergy() >= this.possibleEnergy()
+}
+
+EnergyStructure.prototype.resetCallForEnergy = function() {
+  delete this.memory.call_for_energy
 }

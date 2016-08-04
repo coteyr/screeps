@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 19:13:11
+* @Last Modified time: 2016-08-03 21:22:21
 */
 
 'use strict';
@@ -14,8 +14,6 @@ Creep.prototype.assignBuilderTasks = function() {
     if(this.room.controller.level >= 2 && this.hasRoom()) this.setMode('pickup')
     if(this.hasSome()) this.setMode('build')
   }
-  if(this.isEmpty()) this.setMode('idle');
-
 }
 
 Creep.prototype.doBuild = function() {
@@ -26,6 +24,7 @@ Creep.prototype.doBuild = function() {
   } else {
     this.setMode('repair');
   }
+  if(this.isEmpty()) this.setMode('idle');
 }
 
 Creep.prototype.doRepair = function() {
@@ -38,6 +37,7 @@ Creep.prototype.doRepair = function() {
   } else {
     this.setMode('upgrade')
   }
+  if(this.isEmpty()) this.setMode('idle');
 }
 
 

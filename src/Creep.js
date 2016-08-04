@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 19:14:06
+* @Last Modified time: 2016-08-03 21:15:33
 */
 
 'use strict';
@@ -14,8 +14,11 @@ Creep.prototype.tick = function(){
     if(this.memory.role && this.memory.role.startsWith('exo-')) {
       this.assignExoTasks()
     } else {
-      var functionName = ('assign_' + this.memory.role + '_tasks').toCamel()
-      Caller(this, functionName)
+      if(this.modeIs('idle')) {
+        this.clearTarget()
+        var functionName = ('assign_' + this.memory.role + '_tasks').toCamel()
+        Caller(this, functionName)
+      }
     }
     if(this.ticksToLive < 100 && (this.room.name === this.memory.home || !this.memory.home)) { // && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
       this.setMode('recycle')
@@ -43,6 +46,7 @@ Creep.prototype.doWork = function() {
     Log.error(this.name + " HAS AN ERROR")
     Log.error(error.message)
     Log.error("Role: " + this.memory.role + " Mode: " + this.mode())
+    Log.error(JSON.stringify(this.memory))
     this.room.resetMemory();
   }
 }
@@ -149,6 +153,7 @@ Creep.prototype.getCloseAndAction = function(target, action, range) {
   if(!range) range = 1
   if(this.moveCloseTo(target.pos.x, target.pos.y, range)) {
     action
+    return true
   }
 }
 
@@ -157,4 +162,13 @@ Creep.prototype.dumpResources = function(target) {
   Object.keys(this.carry).forEach(function(key, index) {
       creep.transfer(target, key)
   }, this.carry);
+}
+
+Creep.prototype.callForEnergy = function() {
+  if(!this.memory.call_for_energy) this.memory.call_for_energy = 0
+  this.memory.call_for_energy += 5
+}
+
+Creep.prototype.resetCallForEnergy = function() {
+  delete this.memory.call_for_energy
 }

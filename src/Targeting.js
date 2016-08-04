@@ -2,15 +2,16 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 19:12:02
+* @Last Modified time: 2016-08-03 21:19:52
 */
 
 'use strict';
 
 var Targeting = {
-  getTransferTarget: function(objects, pos) {
+  getTransferTarget: function(pos, room) {
     var result;
     var biggest = 0;
+    var objects = _.union({}, room.myCreeps(), room.memory.my_spawns, room.memory.my_extensions, room.memory.my_towers, room.memory.my_storages)
     // This may be doable with _.maxBy()
     Object.keys(objects).forEach(function(key, index) {
       var target = Game.getObjectById(objects[key].id);
@@ -131,7 +132,7 @@ var Targeting = {
       mode = 'none'
     }
     var objects = []
-    if (mode === 'pickup') {
+    if (mode === 'carrier') {
     _.union({}, room.memory.my_containers).forEach(function(value) {
       objects.push(Game.getObjectById(value.id));
     })
@@ -195,7 +196,17 @@ var Targeting = {
         return structure.hits < structure.hitsMax * 0.75 && structure.structureType !== 'constructedWall'
       }})
     pos.findClosestByRange(locations);
+  },
+
+  findCloseExtension: function(pos, range){
+    if(!range) range = 1
+    var canidates = pos.findInRange(FIND_STRUCTURES, range, {filter: function(e){
+      return e.structureType === STRUCTURE_EXTENSION && e.storedEnergy() <= e.possibleEnergy()
+    }})
+    if(_.size(canidates) > 0) return canidates[0]
   }
+
+
 
 }
 module.exports = Targeting;
