@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-04 00:12:21
+* @Last Modified time: 2016-08-12 22:13:55
 */
 
 'use strict';
@@ -33,6 +33,10 @@ Creep.prototype.doTransfer = function() {
     }
     // this will override move
     if(target.isFull()) this.clearTarget()
+
+  } else {
+    var spawn = Finder.findSpawn(this.room.name)
+    if(this.moveCloseTo(spawn.pos.x, spawn.pos.y, 1)) this.setMode('idle')
   }
   if(this.isEmpty()) this.setMode('idle')
 }
@@ -65,6 +69,7 @@ Creep.prototype.doFillCloseExtensions = function() {
   if(target && target.hasRoom()) {
     target.resetCallForEnergy()
     this.dumpResources(target)
+    if(this.isEmpty()) this.setMode('idle')
     return true
   }
 }

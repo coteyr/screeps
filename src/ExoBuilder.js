@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-07-29 02:14:37
+* @Last Modified time: 2016-08-10 15:28:48
 */
 
 'use strict';
@@ -28,10 +28,13 @@ Creep.prototype.assignRemoteExoBuilderTasks = function() {
     // this.setMode('mine')
   } else if (this.modeIs('idle')) {
     if (this.carry.energy === 0 && !this.room.carrierReady()) {
+      this.clearTarget()
       this.setMode('mine')
     } else if (this.carry.energy === 0 && this.room.carrierReady()) {
+      this.clearTarget()
       this.setMode('pickup')
     } else {
+      this.clearTarget()
       this.setMode('build')
     }
   }

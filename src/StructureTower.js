@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 11:22:25
+* @Last Modified time: 2016-08-11 12:02:28
 */
 
 'use strict';
@@ -25,7 +25,7 @@ StructureTower.prototype.doWork = function() {
 
 StructureTower.prototype.doAttackInvaders = function() {
   if (this.needsTarget()) {
-    var hostiles = this.pos.findInRange(FIND_HOSTILE_CREEPS, 16)/*, {filter: function(creep){
+    var hostiles = this.pos.findInRange(FIND_HOSTILE_CREEPS, 20)/*, {filter: function(creep){
       return  true;
     }});*/
     if(hostiles.length > 0) {
@@ -52,7 +52,7 @@ StructureTower.prototype.doRepairs = function() {
    if(target) {
      this.repair(target)
    } else {
-    if(this.storedEnergy() >= 0.90 * this.possibleEnergy()) {
+    if(this.room.buildWalls() && this.storedEnergy() >= 0.90 * this.possibleEnergy()) {
       var smallest = 0
       var targets = this.room.find(FIND_STRUCTURES, {filter: function(s){
         return s.structureType === 'constructedWall' || s.structureType === 'rampart'

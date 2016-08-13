@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 09:16:07
+* @Last Modified time: 2016-08-12 22:42:37
 */
 
 'use strict';
@@ -35,12 +35,6 @@ module.exports.loop = function () {
       creep.tick();
     });*/
     Log.tick();
-    Memory.stats["gclLevel"] = Game.gcl.level
-    Memory.stats['gclProgress'] = Game.gcl.progress
-    Memory.stats['gclProgressTotal'] = Game.gcl.progressTotal
     Memory.stats['totalCreeps'] = _.size(Game.creeps)
-    Memory.stats["cpuTotal"] = Game.cpu.limit
-    Memory.stats["cpuBucket"] = Game.cpu.bucket
-    Memory.stats["cpuUsed"] = Game.cpu.getUsed() //should be last
     });
   };

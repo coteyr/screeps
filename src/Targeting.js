@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-04 00:13:30
+* @Last Modified time: 2016-08-12 22:11:28
 */
 
 'use strict';
@@ -35,7 +35,6 @@ var Targeting = {
 
   nearestHostalCreep: function(pos) {
     var target = pos.findClosestByRange(FIND_HOSTILE_CREEPS)
-    console.log(JSON.stringify(target))
     return target;
   },
 
@@ -71,13 +70,9 @@ var Targeting = {
   nearestHostalSpread: function(pos) {
     var structures = pos.findClosestByPath(FIND_STRUCTURES, {filter: {
       function(object) {
-        console.log('g')
-        console.log(Memory.ignores)
-        console.log(_.includes(Memory.spread_targets, object.id))
         // return !_.includes(Memory.ignores, object.id)
       }
     }})
-    console.log(structures)
     if (_.size(structures)) {
       Memory.spread_targets.push(structures[0].id)
       return structures[0]
@@ -110,7 +105,6 @@ var Targeting = {
         return !_.includes(Memory.ignores, object.id)
       }
     }})
-    console.log(structures)
     if (_.size(structures)) {
       return structures[0]
     }

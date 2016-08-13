@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 12:34:55
+* @Last Modified time: 2016-08-12 23:12:40
 */
 
 'use strict';
@@ -13,12 +13,15 @@ StructureSpawn.prototype.setExoCount = function(role){
    this.memory['current-' + role] = Finder.findExoCreepCount(role, this, this.room.name)
 }
 
-StructureSpawn.prototype.setMaxExoCount = function(role, arrayName, multiplyer) {
-  if(this.room.exoOperations() && this.room.memory[arrayName]) {
-    this.memory["max-" + role] = _.size(this.room.memory[arrayName]) * multiplyer
-  } else {
-    this.memory["max-" + role] = 0
+StructureSpawn.prototype.setMaxExoCount = function(role, arrayName) {
+  if (!role) {
+    Log.error('Can not find role: ' + role)
+    return 0;
   }
+  var functionName = ("get_" + role + '_multi').toCamel()
+  var max = eval('EXOROLES.' + functionName + '(this.room)')
+  this.memory['max-' + role] = (max * _.size(this.room.memory[arrayName]))
+  return this.memory['max-' + role]
 }
 
 StructureSpawn.prototype.getExoCount = function(role) {
@@ -55,6 +58,7 @@ Creep.prototype.assignExoTasks = function() {
 }
 
 Creep.prototype.getOffExits = function() {
+  if(!this.modeIs('move-out')) {
   if(this.pos.y >= 47) {
     this.move(TOP)
     return false
@@ -70,6 +74,7 @@ Creep.prototype.getOffExits = function() {
   if (this.pos.x <= 3) {
     this.move(RIGHT)
     return false
+  }
   }
   return true
 }
@@ -163,7 +168,6 @@ Creep.prototype.gotoRoom = function(roomName) {
   }
   if(this.memory.waypoints && this.memory.waypoints[0] === this.room.name) {
     this.memory.waypoints.shift()
-    console.log('3hhta')
     if(_.size(this.memory.waypoints) <= 0) {
       delete this.memory.waypoints
     }

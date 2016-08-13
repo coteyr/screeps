@@ -2,14 +2,14 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 06:03:52
+* @Last Modified time: 2016-08-12 22:00:30
 */
 
 'use strict';
 
 var Finder = {
   findCreeps: function(role, roomName) {
-    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.room.name === roomName && !creep.modeIs('recycle') && creep.ticksToLive >= 300);
+    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === roomName && !creep.modeIs('recycle') && creep.ticksToLive >= 300);
   },
   findAllCreeps: function(role) {
     return _.filter(Game.creeps, (creep) => creep.memory.role === role);
@@ -18,13 +18,18 @@ var Finder = {
     return _.size(Finder.findCreeps(role, spawn.room.name));
   },
   findCreepCount: function(role, spawn) {
-      return _.size(Finder.findCreeps(role, spawn.room.name)) + _.filter(spawn.memory.spawn_queue, {'role': role}).length;
+      return _.size(Finder.findCreeps(role, spawn.room.name)) + _.filter(Memory.spawn_queue, {'role': role, room: spawn.room.name}).length;
   },
   findAllCreepCount: function(role, spawn) {
     return _.size(Finder.findAllCreeps(role)) + _.filter(spawn.memory.spawn_queue, {'role': role}).length;
   },
   findExoCreepCount: function(role, spawn, home) {
-    return _.size(_.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === home)) + _.size(_.filter(spawn.memory.spawn_queue, {'role': role}))
+    return _.size(_.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === home)) + _.size(_.filter(Memory.spawn_queue, {'role': role, room: spawn.room.name}))
+  },
+  findSquad: function(roomName){
+    return _.filter(Game.creeps, function(c){
+      return c.room.name == roomName && c.isExoCreep() && (c.memory.role === 'exo-attacker' || c.memory.role === 'exo-tank' || c.memory.role === 'exo-healer')
+    });
   },
   findMiningCreeps: function(id, roomName) {
     return _.filter(Game.creeps, function(c){
@@ -79,6 +84,55 @@ var Finder = {
   findStorage: function(roomName) {
     var room = Game.rooms[roomName]
     return room.memory.my_storages[0]
+  },
+  findSourcePosition: function(roomName) {
+    var room = Game.rooms[roomName]
+    var result = null
+    var biggest = 0
+    room.find(FIND_SOURCES).forEach(function(source){
+      if(source.energy > biggest) {
+
+        // May need to add some exclusive checking
+        // This is a CPU HOG
+        var count = 0
+        room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
+          if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
+            count += 1;
+          }
+        })
+        var creeps = _.filter(Game.creeps, (creep) => creep.memory.target === source.id);
+        if(_.size(creeps) < count) {
+          result = source
+          biggest = source.energy
+        }
+      }
+    })
+    return result
+  },
+  findSourcePositionCount: function(roomName) {
+    var room = Game.rooms[roomName]
+    var count = 0
+    room.find(FIND_SOURCES).forEach(function(source){
+      room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
+        if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
+          count += 1;
+        }
+      })
+    })
+    return count
+  },
+  findSourceCount: function(roomName) {
+    var room = Game.rooms[roomName]
+    return _.size(room.find(FIND_SOURCES))
+  },
+  findSpawn: function(roomName){
+    var room = Game.rooms[roomName]
+    var target = room.find(FIND_MY_SPAWNS)
+    if(_.size(target) > 0) return target[0]
+  },
+  hasHostals: function (roomName) {
+    var room = Game.rooms[roomName]
+    return _.size(room.find(FIND_HOSTILE_CREEPS)) > 0
   }
 
 }

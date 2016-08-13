@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-04 12:43:12
+* @Last Modified time: 2016-08-12 23:04:32
 */
 
 'use strict';
@@ -11,6 +11,7 @@
 Room.prototype.tick = function() {
   if(!Memory.stats) Memory.stats = {}
   Log.debug('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
+  this.clearMiningSpots();
   this.refreshData();
   this.tickStuff();
   /*this.tickExtensions();
@@ -21,6 +22,7 @@ Room.prototype.tick = function() {
   this.tickCreeps(); //keep this separate
   //this.cleanPaths();
   this.report();
+
   return true;
 };
 Room.prototype.tickStuff = function() {
@@ -43,9 +45,6 @@ Room.prototype.tickCreeps = function() {
   });
 }
 
-Room.prototype.exoOperations = function() {
-  return this.energyCapacityAvailable >= 1300
-}
 
 Room.prototype.resetMemory = function() {
   var spawns = this.find(FIND_MY_SPAWNS);
@@ -98,6 +97,14 @@ Room.prototype.cleanCreeps = function() {
       delete Memory.creeps[name];
     }
   }
+}
+
+Room.prototype.clearMiningSpots = function() {
+  this.find(FIND_SOURCES).forEach(function(source){
+    source.pos.findInRange(FIND_MY_CREEPS, 1).forEach( function(creep) {
+      if(creep.modeIs('idle')) creep.move(Memory.dance_move)
+    })
+  })
 }
 
 Room.prototype.addExoTarget = function(arrayName, target) {
@@ -174,6 +181,14 @@ Room.prototype.removeResponder = function(room_name) {
   this.removeExoTarget('responder', room_name)
 }
 
+Room.prototype.addSapper = function(room_name) {
+  this.addExoTarget('sapper', room_name)
+}
+
+Room.prototype.removeSapper = function(room_name) {
+  this.removeExoTarget('sapper', room_name)
+}
+
 Room.prototype.list = function(arrayName) {
   var array = this.memory[arrayName] || []
   console.log('<span style="#00FFFF">Values for ' + arrayName + "</span>")
@@ -211,7 +226,8 @@ Room.prototype.needsConstruction = function() {
 }
 
 Room.prototype.sourceCount = function() {
-  return _.size(this.find(FIND_SOURCES))
+  //return Finder.findSourcePositionCount(this.name)
+  return Finder.findSourceCount(this.name)
 }
 
 Room.prototype.carrierReady = function() {
@@ -244,14 +260,37 @@ Room.prototype.addDemo = function(id) {
 Room.prototype.removeDemo = function(id) {
   this.removeExoTarget('demos', id)
 }
+
 Room.prototype.excavatorReady = function() {
   return this.controller.level >= 6 // and there are minerals and an extractor
 }
 
 Room.prototype.isFull = function() {
-  return this.energyAvailable >= this.energyCapacity
+  return this.energyAvailable >= this.energyCapacityAvailable
 }
 
 Room.prototype.hasRoom = function() {
   return !this.isFull()
+}
+
+Room.prototype.buildWalls = function() {
+  return this.memory.build_walls
+}
+
+Room.prototype.setBuildWalls = function(value) {
+  this.memory.build_walls = value;
+}
+
+Room.prototype.setTactic = function(value) {
+  this.memory.tactic = value
+}
+
+Room.prototype.tactic = function() {
+  if(!this.memory.tactic) this.memory.tactic = "Drain Tower"
+  return this.memory.tactic
+}
+
+Room.prototype.hasTactic = function() {
+  if(!this.memory.tactic) return false
+  return true
 }
