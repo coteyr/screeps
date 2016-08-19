@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-12 22:13:55
+* @Last Modified time: 2016-08-19 04:42:42
 */
 
 'use strict';
@@ -31,12 +31,11 @@ Creep.prototype.doTransfer = function() {
       target.resetCallForEnergy()
       this.clearTarget()
     }
-    // this will override move
     if(target.isFull()) this.clearTarget()
 
   } else {
     var spawn = Finder.findSpawn(this.room.name)
-    if(this.moveCloseTo(spawn.pos.x, spawn.pos.y, 1)) this.setMode('idle')
+    if(spawn && this.moveCloseTo(spawn.pos.x, spawn.pos.y, 1)) this.setMode('idle')
   }
   if(this.isEmpty()) this.setMode('idle')
 }
@@ -48,6 +47,7 @@ Creep.prototype.pickupDropped = function() {
     if(this.isFull()) this.setMode('idle')
     return true
   }
+  return false
 }
 
 Creep.prototype.doPickup = function() {
@@ -56,8 +56,8 @@ Creep.prototype.doPickup = function() {
   if(this.hasTarget()) {
     var target = this.target()
     if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) {
-      target.transfer(this, RESOURCE_ENERGY)
-      this.withdraw(target, RESOURCE_ENERGY)
+      if(target.transfer) target.transfer(this, RESOURCE_ENERGY)
+      if(target.withdraw) this.withdraw(target, RESOURCE_ENERGY)
     }
     if(target.isEmpty()) this.clearTarget()
   }

@@ -2,28 +2,28 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:40:25
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-12 23:01:39
+* @Last Modified time: 2016-08-19 04:43:48
 */
 
 'use strict';
 
 var Log = {
   debug: function(message, room, creep) {
-    if (logLevel >= 5) this.buildMessage('#444444', message, room, creep)
+    if (logLevel >= 5) this.buildMessage('ltgray', message, room, creep)
   },
   info: function(message, room, creep) {
-    if (logLevel >= 4) this.buildMessage('#66D9EF', message, room, creep)
+    if (logLevel >= 4) this.buildMessage('blue', message, room, creep)
   },
 
   warn: function(message, room, creep) {
-    if (logLevel >= 3) this.buildMessage('#E6961F', message, room, creep)
+    if (logLevel >= 3) this.buildMessage('yellow', message, room, creep)
   },
   error: function(message, room, creep) {
-    if (logLevel >= 2) this.buildMessage('#D8232E', message, room, creep)
+    if (logLevel >= 2) this.buildMessage('red', message, room, creep)
   },
 
   critical: function(message, room, creep) {
-    if (logLevel >= 1) this.buildMessage('#FF0000', message, room, creep)
+    if (logLevel >= 1) this.buildMessage('red', message, room, creep)
   },
 
   tick: function() {
@@ -37,7 +37,8 @@ var Log = {
         body += "<tr><th>CPU</th><td>" + Game.cpu.getUsed().toFixed(2) + ' of ' + Game.cpu.limit.toFixed(2) + "</td><td>" + this.progressBar(Game.cpu.getUsed(), Game.cpu.limit) + "</td></tr>"
         body += "<tr><th>Bucket</th><td>" + Game.cpu.bucket + ' of 10000' + "</td><td>" + this.progressBar(Game.cpu.bucket, 10000) + "</td></tr>"
         body += "<tr><th>GCL Progress</th><td>" + Game.gcl.progress.toFixed(2) + ' of ' + Game.gcl.progressTotal.toFixed(2) + "</td><td>" + this.progressBar(Game.gcl.progress,  Game.gcl.progressTotal) + "</td></tr>"
-        body += "<tr><td>Spawn Queue</th><td>" + _.size(Memory.spawn_queue) + "</td><td></td></tr>"
+        body += "<tr><th>Spawn Queue</th><td>" + _.size(Memory.spawn_queue) + "</td><td></td></tr>"
+        body += "<tr><th>Creep Count</th><td>" + _.size(Memory.creeps) + "</td><td></td></tr>"
         Object.keys(Game.rooms).forEach(function(key, index) {
           var room = Game.rooms[key]
           if(room.controller && room.controller.my) {
@@ -49,7 +50,8 @@ var Log = {
         body += "</tbody></table>"
         console.log(body)
       } else {
-        console.log('<font color="#00DD00">TICK: ' + Game.time + '</font> ' + '<span style="color: #63D9CF">CPU: ' + Game.cpu.getUsed().toFixed(2) + ' of ' + Game.cpu.limit + ' Bucket: ' + Game.cpu.bucket + '</span>');
+        console.log(this.colorizer('green', 'TICK: ') + this.colorizer('yellow', Game.time + ' ') + this.colorizer('green', 'CPU: ') + this.colorizer('yellow', Game.cpu.getUsed().toFixed(2) + ' of ' + Game.cpu.limit.toFixed(2) + ' ') + this.colorizer('green',  'Bucket: ') + this.colorizer('yellow', Game.cpu.bucket))
+        console.log(this.colorizer('green', 'Energy Harvested: ') + this.colorizer('yellow', Memory.harvest_this_tick + ' ') + this.colorizer('green', 'Average Energy Per Tick: ') + this.colorizer('yellow', Memory.harvest_average.toFixed(2)))
       }
     }
   },
@@ -69,10 +71,29 @@ var Log = {
 
   buildMessage(color, message, room, creep){
     var msg = ""
-    if (room && room.name) msg += "<span style='color: #67559E'>" + room.name + "</span> "
-    if (creep && creep.name) msg += "<span style='color: #26943C'>" + creep.name + "</span> "
-    msg += "<span style='color: " + color + "'>" + message + "</span>"
+    if (room && room.name) msg += this.colorizer('green', room.name + " ")
+    if (creep && creep.name) msg += this.colorizer('yellow', creep.name + " ")
+    msg += this.colorizer(color, message)
     console.log(msg)
+  },
+  colorizer(tcolor, message) {
+    // ltgray  #a9b7c6
+    // yellow #ffe56d
+    // gray   #777777
+    // red    #f93842
+    // blue   #5d80b2
+    // green  #65fd62
+    // purple #b99cfb
+    // white  #ffffff
+    var color = '#A9B7C6'
+    if(tcolor === 'yellow') color = "#FFE56D"
+    if(tcolor === 'gray')   color = "#777777"
+    if(tcolor === 'red')    color = "#F93842"
+    if(tcolor === 'blue')   color = "#5D80B2"
+    if(tcolor === 'green')  color = '#65FD62'
+    if(tcolor === 'purple') color = '#B99CFB'
+    if(tcolor === 'while')  color = '#FFFFFF'
+    return "<span style='color: " + color + ";'>" + message + "</span>"
   }
 }
 module.exports = Log;

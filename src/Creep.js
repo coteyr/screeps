@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-11 02:49:53
+* @Last Modified time: 2016-08-19 04:41:12
 */
 
 'use strict';
@@ -15,6 +15,7 @@ Creep.prototype.tick = function(){
     this.checkForAging()
     this.doWork();
     this.idlersCatch() //can't be part of doIdle
+    // this.spreadMiners() // if there are too many miners on a spot move them.
   }
 }
 
@@ -41,6 +42,18 @@ Creep.prototype.assignTasks = function() {
 }
 
 Creep.prototype.assignLocalTasks = function() {
+  if(this.room.name !== this.memory.home) {
+    this.setMode('go-home')
+  }
+  if(this.mode() != 'transition') {
+    delete this.memory.exit_dir
+    delete this.memory.exit
+  }
+  if(this.mode() != 'transition' && this.mode() != 'leave' && this.mode() !== 'respond') {
+    this.getOffExits()
+    this.getOffRamparts()
+  }
+
   if(this.modeIs('idle')) {
     if(this.memory.role !== 'miner' && this.memory.role !== 'big-miner') this.clearTarget()
     var functionName = ('assign_' + this.memory.role + '_tasks').toCamel()
@@ -63,6 +76,7 @@ Creep.prototype.doWork = function() {
   } catch(error) {
     Log.error(this.name + " HAS AN ERROR")
     Log.error(error.message)
+    Log.error("Line: " + error.stack)
     Log.error("Role: " + this.memory.role + " Mode: " + this.mode())
     Log.error(JSON.stringify(this.memory))
     this.room.resetMemory();
@@ -95,14 +109,18 @@ Creep.prototype.moveCloseTo = function(x, y, range) {
 
 Creep.prototype.doRecycle = function() {
   var me = this;
-  var spots = _.filter(this.room.memory.my_containers, function(object) {
+  var locations = _.filter(this.room.memory.my_containers, function(object) {
       var structure = Game.getObjectById(object.id)
        return structure.storedEnergy() < structure.possibleEnergy() - me.carry.energy;
   })
+  var spots = []
+  locations.forEach(function(a){
+    spots.push(Game.getObjectById(a.id))
+  })
   if (_.size(spots) >= 1) {
-    if (this.moveCloseTo(spots[0].pos.x, spots[0].pos.y , 0)) {
-       this.suicide()
-    }
+    var spot = me.pos.findClosestByRange(spots)
+    console.log(JSON.stringify(spot))
+    this.getCloseAndAction(spot, 0, this.suicide())
   } else {
     Log.warn(this.name + " has no where to die. Idling")
     this.setMode('idle')
@@ -159,4 +177,48 @@ Creep.prototype.callForEnergy = function() {
 
 Creep.prototype.resetCallForEnergy = function() {
   delete this.memory.call_for_energy
+}
+
+Creep.prototype.hasPart = function(part) {
+  var doI = false
+  this.body.forEach(function(b) {
+    if (b.type === part) doI = true
+  })
+  return doI
+}
+
+Creep.prototype.countPart = function(part) {
+  var count = 0
+  this.body.forEach(function(b) {
+    if (b.type === part) count += 1
+  })
+  return count
+}
+Creep.prototype.orignalHarvest = Creep.prototype.harvest
+
+Creep.prototype.harvest = function(target) {
+  var did = this.orignalHarvest(target)
+  if(did === 0) {
+    var count = this.countPart('work')
+    Memory.harvest_this_tick += count * 2
+  }
+
+  return did
+}
+
+/*Creep.prototype.orignalTransfer = Creep.prototype.transfer
+
+Creep.prototype.transfer = function(target, resourceType, amount) {
+ if(resourceType === RESOURCE_ENERGY && target.structureType === 'extension' || target.structureType === 'spawner') {
+    if(!amount) {
+      amount = Math.min(this.carry.energy, target.energyCapacity - target.energy);
+    }
+    this.room.addEnergy(amount)
+  }
+  return this.orignalTransfer(target, resourceType, amount)
+}*/
+Creep.prototype.getOffRamparts = function() {
+  if(Targeting.findRampartUnderneath(this.pos)) {
+    this.moveCloseTo(25, 25, 5)
+  }
 }

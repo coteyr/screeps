@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-12 22:11:28
+* @Last Modified time: 2016-08-18 20:19:16
 */
 
 'use strict';
@@ -100,11 +100,11 @@ var Targeting = {
   },
 
   nearByStructures: function(pos) {
-    var structures = pos.findInRange(FIND_STRUCTURES, 1, {filter: {
+    var structures = pos.findInRange(FIND_STRUCTURES, 1)/*, {filter: {
       function(object) {
         return !_.includes(Memory.ignores, object.id)
       }
-    }})
+    }})*/
     if (_.size(structures)) {
       return structures[0]
     }
@@ -116,7 +116,7 @@ var Targeting = {
     })
     var miner = pos.findClosestByRange(creeps)
     if (miner) {
-      miner.setMode('broadcast')
+      // miner.setMode('broadcast')
     }
     return miner
   },
@@ -164,16 +164,7 @@ var Targeting = {
   },
 
   findEnergySource: function(pos, room, mode) {
-    if(!mode) {
-      mode = 'grab'
-    }
-    var miner = Targeting.findFullMiner(pos, room)
-    if (miner) {
-      return miner
-    } else {
       return Targeting.findEnergyBuffer(pos, room, mode)
-    }
-
   },
 
   findCloseContainer: function(pos, range) {
@@ -187,16 +178,29 @@ var Targeting = {
 
   findClosestRepairTarget: function(pos, room){
     var locations = room.find(FIND_STRUCTURES, {filter: function(structure) {
-      if(_.includes(room.demos, structure.id)) return false
-        return structure.hits < structure.hitsMax * 0.75 && structure.structureType !== 'constructedWall'
+      //if(_.includes(room.demos, structure.id)) return false
+      return structure.hits < (structure.hitsMax * 0.75) && structure.structureType !== 'constructedWall'
       }})
-    pos.findClosestByRange(locations);
+    return pos.findClosestByRange(locations);
   },
 
   findCloseExtension: function(pos, range){
     if(!range) range = 1
     var canidates = pos.findInRange(FIND_STRUCTURES, range, {filter: function(e){
       return e.structureType === STRUCTURE_EXTENSION && e.hasRoom()
+    }})
+    if(_.size(canidates) > 0) return canidates[0]
+  },
+
+  findRoadUnderneath: function(pos){
+    var canidates = pos.findInRange(FIND_STRUCTURES, 0, {filter: function(e){
+      return e.structureType === STRUCTURE_ROAD
+    }})
+    if(_.size(canidates) > 0) return canidates[0]
+  },
+  findRampartUnderneath: function(pos){
+    var canidates = pos.findInRange(FIND_STRUCTURES, 0, {filter: function(e){
+      return e.structureType === STRUCTURE_RAMPART
     }})
     if(_.size(canidates) > 0) return canidates[0]
   }

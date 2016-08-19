@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-05 13:25:26
+* @Last Modified time: 2016-08-17 16:52:22
 */
 
 'use strict';
@@ -35,7 +35,11 @@ Creep.prototype.doRepair = function() {
     this.getCloseAndAction(target, this.repair(target))
     if(target.hits >= target.hitsMax) this.clearTarget()
   } else {
-    this.setMode('upgrade')
+    if(this.room.controller.my) {
+      this.setMode('upgrade')
+    } else {
+      this.setMode('idle')
+    }
   }
   if(this.isEmpty()) this.setMode('idle');
 }

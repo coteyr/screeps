@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-12 23:12:40
+* @Last Modified time: 2016-08-18 20:36:19
 */
 
 'use strict';
@@ -13,15 +13,22 @@ StructureSpawn.prototype.setExoCount = function(role){
    this.memory['current-' + role] = Finder.findExoCreepCount(role, this, this.room.name)
 }
 
-StructureSpawn.prototype.setMaxExoCount = function(role, arrayName) {
+StructureSpawn.prototype.setMaxExoCount = function(role, arrayName, scope) {
   if (!role) {
     Log.error('Can not find role: ' + role)
     return 0;
   }
   var functionName = ("get_" + role + '_multi').toCamel()
-  var max = eval('EXOROLES.' + functionName + '(this.room)')
+  var max = eval(scope + '.' + functionName + '(this.room)')
   this.memory['max-' + role] = (max * _.size(this.room.memory[arrayName]))
   return this.memory['max-' + role]
+}
+StructureSpawn.prototype.setMaxExoArmyCount = function(role, arrayName, multiplyer) {
+  if(this.room.memory[arrayName]) {
+    this.memory["max-" + role] = _.size(this.room.memory[arrayName]) * multiplyer
+  } else {
+    this.memory["max-" + role] = 0
+  }
 }
 
 StructureSpawn.prototype.getExoCount = function(role) {
@@ -35,6 +42,7 @@ StructureSpawn.prototype.getMaxExoCount = function(role) {
 
 Creep.prototype.assignExoTasks = function() {
   this.setupExoMemory()
+  if(this.modeIs('idle')) this.clearTarget()
   if(this.mode() != 'transition' && this.mode() != 'leave' && this.mode() !== 'respond') {
     this.getOffExits()
   }
@@ -52,35 +60,23 @@ Creep.prototype.assignExoTasks = function() {
   } else {
     // I have no clue where I am
     this.assignTravelTasks()
-
   }
 
 }
 
 Creep.prototype.getOffExits = function() {
-  if(!this.modeIs('move-out')) {
-  if(this.pos.y >= 47) {
-    this.move(TOP)
-    return false
+  if(!this.modeIs('move-out') && !this.modeIs('attack')) {
+    if(this.pos.y >= 47 || this.pos.x >= 47 || this.pos.y <= 3 || this.pos.x <= 3) {
+      this.moveCloseTo(25, 25, 10)
+      return false
+    }
+    return true
   }
-  if (this.pos.x >= 47) {
-    this.move(LEFT)
-    return false
-  }
-  if (this.pos.y <= 3) {
-    this.move(BOTTOM)
-    return false
-  }
-  if (this.pos.x <= 3) {
-    this.move(RIGHT)
-    return false
-  }
-  }
-  return true
 }
 
 
 Creep.prototype.assignTravelTasks = function() {
+
   if(!this.modeIs('transition')){
     var functionName = ("assign_travel_" + this.memory.role + "_tasks").toCamel()
     Caller(this, functionName)
@@ -89,6 +85,7 @@ Creep.prototype.assignTravelTasks = function() {
 
 Creep.prototype.assignRemoteExoTasks = function() {
   if(!this.modeIs('transition')){
+    if(this.modeIs('transfer')) this.setMode('idle')
     var functionName = ("assign_remote_" + this.memory.role + "_tasks").toCamel()
     Caller(this, functionName)
   }
@@ -112,15 +109,15 @@ Creep.prototype.setupExoMemory = function() {
 
 Creep.prototype.chooseExoTarget = function(arrayName) {
   if(!this.memory.exo_target) {
-    var choice = this.room.memory["last_" + arrayName + "_choice"] || 0
-    if (_.size(this.room.memory[arrayName]) > 0) {
-      this.memory.exo_target = this.room.memory[arrayName][choice]
+    var choice = Game.rooms[this.memory.home].memory["last_" + arrayName + "_choice"] || 0
+    if (_.size(Game.rooms[this.memory.home].memory[arrayName]) > 0) {
+      this.memory.exo_target = Game.rooms[this.memory.home].memory[arrayName][choice]
     }
     choice += 1
-    if(choice > _.size(this.room.memory[arrayName]) - 1) {
+    if(choice > _.size(Game.rooms[this.memory.home].memory[arrayName]) - 1) {
       choice = 0
     }
-    this.room.memory["last_" + arrayName + "_choice"] = choice
+    Game.rooms[this.memory.home].memory["last_" + arrayName + "_choice"] = choice
   }
 }
 
@@ -192,3 +189,9 @@ Creep.prototype.gotoRoom = function(roomName) {
   }
 
 }
+
+Creep.prototype.doLeave = function() {
+  this.gotoRoom(this.memory.exo_target)
+  this.clearTarget()
+}
+

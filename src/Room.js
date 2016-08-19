@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-12 23:04:32
+* @Last Modified time: 2016-08-19 12:20:58
 */
 
 'use strict';
@@ -111,6 +111,7 @@ Room.prototype.addExoTarget = function(arrayName, target) {
   var array = this.memory[arrayName] || []
   array.push(target)
   this.memory[arrayName] = array
+  global.listGoals()
 }
 Room.prototype.removeExoTarget = function(arrayName, target) {
   var array = this.memory[arrayName] || []
@@ -120,6 +121,8 @@ Room.prototype.removeExoTarget = function(arrayName, target) {
     }
   }
   this.memory[arrayName] = array
+  global.clearSpawnQueue()
+  global.listGoals()
 }
 
 Room.prototype.addHarvest = function(room_name) {
@@ -127,6 +130,9 @@ Room.prototype.addHarvest = function(room_name) {
 }
 Room.prototype.addReserve = function(room_name) {
   this.addExoTarget('reserve', room_name)
+}
+Room.prototype.removeReserve = function(roomName) {
+  this.removeExoTarget('reserve', roomName)
 }
 Room.prototype.addClaim = function(room_name) {
   this.addExoTarget('claim', room_name)
@@ -139,6 +145,9 @@ Room.prototype.removeClaim = function(room_name) {
 }
 Room.prototype.addBuild = function(room_name) {
   this.addExoTarget('build', room_name)
+}
+Room.prototype.removeBuild = function(roomName){
+  this.removeExoTarget('build', roomName)
 }
 
 Room.prototype.addAttack = function(room_name) {
@@ -293,4 +302,8 @@ Room.prototype.tactic = function() {
 Room.prototype.hasTactic = function() {
   if(!this.memory.tactic) return false
   return true
+}
+
+Room.prototype.maxEnergy = function() {
+  return Finder.findSourceCount(this.name) * 3000
 }

@@ -2,14 +2,14 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-12 22:00:30
+* @Last Modified time: 2016-08-19 16:10:28
 */
 
 'use strict';
 
 var Finder = {
   findCreeps: function(role, roomName) {
-    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === roomName && !creep.modeIs('recycle') && creep.ticksToLive >= 300);
+    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === roomName && !creep.modeIs('recycle') && creep.ticksToLive >= 150);
   },
   findAllCreeps: function(role) {
     return _.filter(Game.creeps, (creep) => creep.memory.role === role);
@@ -55,7 +55,7 @@ var Finder = {
   findDropedEnergy: function(roomName) {
     var room = Game.rooms[roomName]
     var dropped = room.find(FIND_DROPPED_RESOURCES, {filter: function(r) {
-      return r.resourceType === 'energy'
+      return r.resourceType === 'energy' && r.amount > 100
     }})
     return dropped
   },
@@ -85,29 +85,48 @@ var Finder = {
     var room = Game.rooms[roomName]
     return room.memory.my_storages[0]
   },
-  findSourcePosition: function(roomName) {
+  findSourcePosition: function(roomName, role) {
     var room = Game.rooms[roomName]
     var result = null
     var biggest = 0
+    var backup = null
+    var used = 1000
     room.find(FIND_SOURCES).forEach(function(source){
+      var creeps = _.filter(Game.creeps, (creep) => creep.memory.target === source.id);
       if(source.energy > biggest) {
 
         // May need to add some exclusive checking
         // This is a CPU HOG
-        var count = 0
-        room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
-          if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
-            count += 1;
+        if(role == 'miner') {
+
+          if(_.size(creeps) <= 0) {
+            result = source
+            biggest = source.energy
           }
-        })
-        var creeps = _.filter(Game.creeps, (creep) => creep.memory.target === source.id);
-        if(_.size(creeps) < count) {
-          result = source
-          biggest = source.energy
+        } else {
+          var count = 0
+          room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
+            if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
+              count += 1;
+            }
+          })
+          var creeps = _.filter(Game.creeps, (creep) => creep.memory.target === source.id);
+          if(_.size(creeps) < count) {
+            result = source
+            biggest = source.energy
+          }
         }
       }
+      if(_.size(creeps) <= used) {
+        used = _.size(creeps)
+        backup = source
+      }
     })
-    return result
+    if(result) {
+      return result
+    } else {
+      return backup
+    }
   },
   findSourcePositionCount: function(roomName) {
     var room = Game.rooms[roomName]

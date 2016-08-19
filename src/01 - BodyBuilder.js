@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-08-09 16:50:51
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-10 00:40:16
+* @Last Modified time: 2016-08-17 06:56:01
 */
 
 'use strict';
@@ -21,7 +21,7 @@ var BodyBuilder = {
     var result = []
 
     var weight = parts.tough + parts.carry + parts.claim + parts.work + parts.ranged + parts.heal + parts.attack
-    if(auto_move) {
+    if(auto_move && !parts.move) {
       if(local) {
         parts.move = Math.floor(weight / 2)
       } else {
@@ -43,9 +43,12 @@ var BodyBuilder = {
         cost += 10
       }
     }
-
+    cost = cost - (parts.move * 50)
     for (var i = 0; i < Number(parts.move); i++) {
-      result.push(MOVE)
+      if(cost < energy) {
+        result.push(MOVE)
+        cost += 50
+      }
     }
 
     for (var i = 0; i < Number(parts.carry); i++) {
@@ -73,6 +76,20 @@ var BodyBuilder = {
     }
 
     return result
+  },
+  getCost: function(body) {
+    var cost = 0
+    body.forEach(function(part){
+      if(part === MOVE) cost += 50
+      if(part === WORK) cost += 100
+      if(part === CARRY) cost += 50
+      if(part === ATTACK) cost += 80
+      if(part === RANGED_ATTACK) cost += 150
+      if(part === HEAL) cost += 250
+      if(part === CLAIM) cost += 600
+      if(part === TOUGH) cost += 10
+    })
+    return cost
   }
 }
 

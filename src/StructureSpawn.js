@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-12 22:12:44
+* @Last Modified time: 2016-08-15 20:24:40
 */
 
 'use strict';
@@ -19,6 +19,7 @@ StructureSpawn.prototype.tick = function() {
 
   this.refreshData();
   Memory.stats["room." + this.room.name + ".spawnQueue"] = _.size(this.memory.spawn_queue)
+  if(Game.time % 10 == 0) this.isStarving()
 
 
 }
@@ -80,8 +81,14 @@ StructureSpawn.prototype.refreshData = function() {
     var spawn = this
     EXOROLES.getRoles(this.room.energyCapacityAvailable).forEach(function(role) {
       spawn.setExoCount(role.role)
-      spawn.setMaxExoCount(role.role, role.arrayName)
+      spawn.setMaxExoCount(role.role, role.arrayName, 'EXOROLES')
     })
+    if(this.room.hasTactic()) {
+      ARMY[this.room.tactic()].roles.forEach(function(role) {
+        spawn.setExoCount(role.role)
+        spawn.setMaxExoArmyCount(role.role, role.arrayName, role.multiplyer)
+      })
+    }
     ROLES.getRoles(this.room.energyCapacityAvailable).forEach(function(role) {
       spawn.setCount(role.role)
       spawn.setMaxCount(role.role)
@@ -173,7 +180,7 @@ StructureSpawn.prototype.spawnCreeps = function() {
     }
   })
   if(this.room.hasTactic()) {
-    ARMY[this.room.tactic()].forEach(function(role) {
+    ARMY[this.room.tactic()].roles.forEach(function(role) {
       if (spawner.getExoCount(role.role) < spawner.getMaxExoCount(role.role)) {
         spawner.addToSpawnQueue(role.role, role.body, role.priority)
       }
@@ -211,14 +218,22 @@ StructureSpawn.prototype.spawnFromQueue = function() {
       if(!global.globalSpawn()) {
         var newArray = _.filter(array, function(c) { return c.room === spawner.room.name })
         creep = newArray[0]
+      } else {
+        array - _.sortBy(array, function(a){
+          var o = a.priority;
+          if(a.room !== spawner.room.name) o+= 500
+          return o
+        })
+        var newArray = _.filter(array, function(c) { return BodyBuilder.getCost(c.body) <= spawner.room.energyCapacityAvailable })
+        creep = newArray[0]
       }
+      if(!creep) return false
       Log.info("Trying to Spawn a " + creep.role + " in " + this.room.name)
       if (this.canCreateCreep(creep.body) === 0 && !this.spawning){ // && this.canCreateCreep(creep.body)){
         _.remove(array, function(c) {
-          console.log(c.id + " : " + creep.id)
           return c.id === creep.id
         })
-        this.spawnACreep(creep.role, creep.body)
+        this.spawnACreep(creep.role, creep.body, creep.room)
 
       } else if(this.canCreateCreep(creep.body) == ERR_INVALID_ARGS) {
         _.remove(array, function(c) {
@@ -234,4 +249,27 @@ StructureSpawn.prototype.spawnFromQueue = function() {
 StructureSpawn.prototype.clearSpawn = function() {
   delete Memory.spawn_queue
   Memory.spawn_queue = []
+}
+
+StructureSpawn.prototype.isStarving = function() {
+  var spawner = this
+  var roomQueue
+  if(!global.globalSpawn()) {
+    roomQueue = _.filter(Memory.spawn_queue, function(c) { return c.room === spawner.room.name })
+  } else {
+    roomQueue =  _.filter(Memory.spawn_queue, function(c) { return BodyBuilder.getCost(c.body) <= spawner.room.energyCapacityAvailable })
+  }
+  var totalCostOfQueue = 0
+  var totalPartsInQueue = 0
+  roomQueue.forEach(function(q){
+    totalCostOfQueue += BodyBuilder.getCost(q.body)
+    totalPartsInQueue += _.size(q.body)
+  })
+  // Log.warn("Spawner " + this.name + " is going to starve the room! ", this, this.room)
+  if(totalCostOfQueue > (this.room.maxEnergy() * 5 * 0.85)) {
+    Log.warn("Energy consumption is greater then 85% of room: " + totalCostOfQueue + " of " +  (this.room.maxEnergy() * 5), this, this.room)
+  }
+  if(totalPartsInQueue > 500) {
+    Log.warn("It will take longer to spawn all creeps then the first spawned creep would live! " + totalPartsInQueue)
+  }
 }
