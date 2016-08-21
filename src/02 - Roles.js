@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-18 20:24:12
+* @Last Modified time: 2016-08-21 13:58:38
 */
 
 'use strict';
@@ -36,7 +36,8 @@ var ROLES = {
       { role: 'carrier',   priority: 3, body: {carry: 8} },
       { role: 'builder',   priority: 4, body: {work: 2, carry: 4} },
       { role: 'upgrader',  priority: 4, body: {work: 2, carry: 5} },
-      { role: 'demo',      priority: 5, body: {work: 8, carry: 4} }
+      { role: 'demo',      priority: 5, body: {work: 8, carry: 4} },
+      { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} }
     ]},
     {min: 1800, max: 2300, roles: [
       { role: 'harvester', priority: 1, body: {work: 5, carry: 5} },
@@ -44,7 +45,8 @@ var ROLES = {
       { role: 'carrier',   priority: 3, body: {carry: 8} },
       { role: 'builder',   priority: 4, body: {work: 2, carry: 4} },
       { role: 'upgrader',  priority: 4, body: {work: 2, carry: 5} },
-      { role: 'demo',      priority: 5, body: {work: 8, carry: 4} }
+      { role: 'demo',      priority: 5, body: {work: 8, carry: 4} },
+      { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} }
     ]},
     {min: 2300, max: 9000, roles: [
       { role: 'harvester', priority: 1, body: {work: 5, carry: 5} },
@@ -54,7 +56,8 @@ var ROLES = {
       { role: 'demo',      priority: 5, body: {work: 8, carry: 4} },
       { role: 'big-miner', priority: 2, body: {work: 14, carry: 8} },
       { role: 'excavator', priority: 6, body: {work: 6, carry: 6} },
-      { role: 'hauler',    priority: 6, body: {carry: 6} }
+      { role: 'hauler',    priority: 6, body: {carry: 6} },
+      { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} }
 
     ]}
   ],
@@ -109,6 +112,10 @@ var ROLES = {
   getMinerMulti: function(room){
     if (room.carrierReady() && room.energyCapacity() < 2300) return room.sourceCount()
     return 0
+  },
+  getMassUpgraderMulti: function(room){
+    if(room.storage && room.storage.storedEnergy() > 10000) return 1
+    return 0
   }
 
 
@@ -143,20 +150,20 @@ var EXOROLES = {
       {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {heal: 1, attack: 2, ranged: 2, tough: 10} },
       {role: 'exo-claimer',   arrayName: 'claim',   priority: 200, body: {claim: 2} },
       {role: 'exo-reserver',  arrayName: 'reserve',  priority: 200, body: {claim: 2} },
-      {role: 'exo-miner',     arrayName: 'mine',    priority: 200, body: {work: 4, carry: 1} },
-      {role: 'exo-carrier',   arrayName: 'carry',   priority: 200, body: {work: 1, carry: 10, move: 6} },
+      {role: 'exo-miner',     arrayName: 'mine',    priority: 200, body: {work: 5, carry: 1} },
+      {role: 'exo-carrier',   arrayName: 'carry',   priority: 200, body: {work: 1, carry: 15, move: 8} },
       {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 200, body: {ranged: 5, work: 2, carry: 2} }
     ]},
     {min: 1800, max: 2300, roles: [
-      {role: 'exo-builder',   arrayName: 'build',   priority: 200, body: {work: 2, carry: 2} },
-      {role: 'exo-harvester', arrayName: 'harvest', priority: 200, body: {work: 3, carry: 6} },
-      {role: 'exo-theif',     arrayName: 'steal',   priority: 200, body: {work: 4, carry: 4} },
+      {role: 'exo-builder',   arrayName: 'build',   priority: 201, body: {work: 2, carry: 2} },
+      {role: 'exo-harvester', arrayName: 'harvest', priority: 202, body: {work: 3, carry: 6} },
+      {role: 'exo-theif',     arrayName: 'steal',   priority: 205, body: {work: 4, carry: 4} },
       {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {heal: 1, attack: 2, ranged: 2, tough: 10} },
       {role: 'exo-claimer',   arrayName: 'claim',   priority: 200, body: {claim: 2} },
       {role: 'exo-reserver',  arrayName: 'reserve',  priority: 200, body: {claim: 2} },
-      {role: 'exo-miner',     arrayName: 'mine',    priority: 200, body: {work: 4, carry: 1} },
-      {role: 'exo-carrier',   arrayName: 'carry',   priority: 200, body: {work: 1, carry: 10} },
-      {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 200, body: {ranged: 5, work: 2, carry: 2} }
+      {role: 'exo-miner',     arrayName: 'mine',    priority: 203, body: {work: 5, carry: 1} },
+      {role: 'exo-carrier',   arrayName: 'carry',   priority: 204, body: {work: 3, carry: 18, move: 11} },
+      {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 206, body: {ranged: 2, work: 2, carry: 3, move: 10, heal: 2} }
     ]},
     {min: 2300, max: 9000, roles: [
       {role: 'exo-builder',   arrayName: 'build',   priority: 200, body: {work: 2, carry: 2} },
@@ -178,7 +185,7 @@ var EXOROLES = {
     return roles
   },
   getExoBuilderMulti: function(room){
-    return 4
+    return 2
   },
   getExoHarvesterMulti: function(room){
     return 2
@@ -196,10 +203,10 @@ var EXOROLES = {
     return 1
   },
   getExoCarrierMulti: function(room){
-    return 4
+    return 2
   },
   getExoCarryMulti: function(room){
-    return 4
+    return 1
   },
   getExoResponderMulti: function(room){
     return 2

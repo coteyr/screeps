@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-17 17:54:25
+* @Last Modified time: 2016-08-20 20:05:45
 */
 
 'use strict';
@@ -19,7 +19,10 @@ Creep.prototype.doMine = function() {
   if(this.hasTarget()){
     var target = this.target()
     this.getCloseAndAction(target, this.harvest(target), 1)
-    if(target.energy <= 20) this.setMode('idle')
+    if(target.energy <= 20){
+      this.setMode('idle')
+      this.clearTarget()
+    }
     if((this.memory.role === 'miner' || this.memory.role === 'exo-miner') && this.carry.energy > 1) {
       var drop = Targeting.findCloseContainer(this.pos, 1)
       if(drop) {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-18 20:19:16
+* @Last Modified time: 2016-08-21 14:14:41
 */
 
 'use strict';
@@ -181,7 +181,22 @@ var Targeting = {
       //if(_.includes(room.demos, structure.id)) return false
       return structure.hits < (structure.hitsMax * 0.75) && structure.structureType !== 'constructedWall'
       }})
-    return pos.findClosestByRange(locations);
+    if(_.size(locations > 0)) {
+      return pos.findClosestByRange(locations);
+    } else {
+      var smallest = 0
+      var targets = room.find(FIND_STRUCTURES, {filter: function(s){
+        return s.structureType === 'constructedWall' || s.structureType === 'rampart'
+      }})
+      var target = null
+      targets.forEach(function(t){
+        if((t.hitsMax - t.hits) > smallest) {
+          target = t
+          smallest = t.hitsMax - t.hits
+        }
+      })
+      return target
+    }
   },
 
   findCloseExtension: function(pos, range){

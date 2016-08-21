@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-19 04:41:12
+* @Last Modified time: 2016-08-21 01:34:43
 */
 
 'use strict';
@@ -89,12 +89,21 @@ Creep.prototype.doNoop = function() {
   this.setMode('idle')
 }
 
-Creep.prototype.moveCloseTo = function(x, y, range) {
+Creep.prototype.moveCloseTo = function(x, y, range, creep) {
   if(!range) {
     range = 0
   }
-  var distance = this.pos.getRangeTo(x, y)
-  if(distance <= range) return true
+  if(!creep) {
+    if(this.memory.there && this.memory.there > Game.time) return true
+    var distance = this.pos.getRangeTo(x, y)
+    if(distance <= range) {
+      this.memory.there = Game.time + 5
+      return true
+    }
+  } else {
+    var distance = this.pos.getRangeTo(x, y)
+    if(distance <= range) return true
+  }
   if(this.fatigue) { // Don't do pathing if I can't even move
     Log.debug('Creep is too tired to move ', this.room, this)
     return false

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-19 12:20:58
+* @Last Modified time: 2016-08-20 15:55:17
 */
 
 'use strict';
@@ -11,7 +11,7 @@
 Room.prototype.tick = function() {
   if(!Memory.stats) Memory.stats = {}
   Log.debug('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
-  this.clearMiningSpots();
+  // this.clearMiningSpots();
   this.refreshData();
   this.tickStuff();
   /*this.tickExtensions();
@@ -77,7 +77,7 @@ Room.prototype.refreshData = function() {
     this.resetMemory();
     Memory.stats["room." + this.name + ".idlers"] = 0
     Memory.stats["room." + this.name + ".bad_moves"] = 0
-    this.clearPaths()
+    // this.clearPaths()
   }
   this.memory.refresh_count -= 1;
 }
@@ -207,18 +207,7 @@ Room.prototype.list = function(arrayName) {
 }
 
 Room.prototype.report = function() {
-  var roomName = this.name
-  Report.addRoomValue(this.name, 'energyAvailable', this.energyAvailable)
-  Report.addRoomValue(this.name, 'energyCapacityAvailable', this.energyCapacity())
-  var array =['harvester', 'builder', 'carrier', 'miner', 'upgrader', 'demo', 'ranger', 'swarmer']
-  array.forEach(function(role){
-    Report.addRoomValue(roomName, role + 'Count', Finder.findCreeps(role, roomName).length)
-  })
-  if (this.controller && this.controller.my) {
-    Report.addRoomValue(this.name, 'level', this.controller.level)
-    Report.addRoomValue(this.name, 'progress', this.controller.progress)
-    Report.addRoomValue(this.name, 'progressTotal', this.controller.progressTotal)
-  }
+
 }
 
 Room.prototype.energyCapacity = function() {
@@ -250,11 +239,11 @@ Room.prototype.getExitTo = function(roomName) {
   return this.memory['exit_from_' + this.name + "_to_" + roomName]
 }
 
-Room.prototype.clearPaths = function() {
+/*Room.prototype.clearPaths = function() {
   Log.info('Clearing Path Cache for ' + this.name)
   delete this.memory.paths
   this.memory.paths = {}
-}
+}*/
 
 Room.prototype.needsDemolition = function() {
   return _.size(this.memory.demos) > 0

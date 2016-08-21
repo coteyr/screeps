@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:31:08
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-10 20:56:30
+* @Last Modified time: 2016-08-20 19:42:02
 */
 
 'use strict';
@@ -44,6 +44,7 @@ RoomObject.prototype.modeIs = function(mode) {
 RoomObject.prototype.setTarget = function(target) {
   if(target && target.id){
     this.memory.target = target.id
+    delete this.memory.there
   } else if(target) {
     Log.error(this.name + " in " + this.room.name + ": Set Target expects and object with an id!")
   }
@@ -57,6 +58,7 @@ RoomObject.prototype.target = function() {
 }
 RoomObject.prototype.clearTarget = function() {
   delete this.memory.target
+  delete this.memory.there
 }
 RoomObject.prototype.hasTarget = function() {
   if(this.memory.target) {

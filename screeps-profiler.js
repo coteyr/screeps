@@ -14,7 +14,24 @@ function setupProfiler() {
     profile(duration, filter) {
       setupMemory('profile', duration || 100, filter);
     },
+    background(filter) {
+      setupMemory('background', false, filter);
+    },
+    restart() {
+      if (Profiler.isProfiling()) {
+        const filter = Memory.profiler.filter;
+        let duration = false;
+        if (!!Memory.profiler.disableTick) {
+          // Calculate the original duration, profile is enabled on the tick after the first call,
+          // so add 1.
+          duration = Memory.profiler.disableTick - Memory.profiler.enabledTick + 1;
+        }
+        const type = Memory.profiler.type;
+        setupMemory(type, duration, filter);
+      }
+    },
     reset: resetMemory,
+    output: Profiler.output,
   };
 
   overloadCPUCalc();
@@ -22,12 +39,13 @@ function setupProfiler() {
 
 function setupMemory(profileType, duration, filter) {
   resetMemory();
+  const disableTick = Number.isInteger(duration) ? Game.time + duration : false;
   if (!Memory.profiler) {
     Memory.profiler = {
       map: {},
       totalTime: 0,
       enabledTick: Game.time + 1,
-      disableTick: Game.time + duration,
+      disableTick,
       type: profileType,
       filter,
     };
@@ -50,6 +68,11 @@ function overloadCPUCalc() {
 function getFilter() {
   return Memory.profiler.filter;
 }
+
+const functionBlackList = [
+  'getUsed', // Let's avoid wrapping this... may lead to recursion issues and should be inexpensive.
+  'constructor', // es6 class constructors need to be called with `new`
+];
 
 function wrapFunction(name, originalFunction) {
   return function wrappedFunction() {
@@ -83,10 +106,12 @@ function hookUpPrototypes() {
 function profileObjectFunctions(object, label) {
   const objectToWrap = object.prototype ? object.prototype : object;
 
-  Object.keys(objectToWrap).forEach(functionName => {
+  Object.getOwnPropertyNames(objectToWrap).forEach(functionName => {
     const extendedLabel = `${label}.${functionName}`;
     try {
-      if (typeof objectToWrap[functionName] === 'function' && functionName !== 'getUsed') {
+      const isFunction = typeof objectToWrap[functionName] === 'function';
+      const notBlackListed = functionBlackList.indexOf(functionName) === -1;
+      if (isFunction && notBlackListed) {
         const originalFunction = objectToWrap[functionName];
         objectToWrap[functionName] = profileFunction(originalFunction, extendedLabel);
       }
@@ -116,7 +141,12 @@ const Profiler = {
     Game.notify(Profiler.output());
   },
 
-  output() {
+  output(numresults) {
+    const displayresults = !!numresults ? numresults : 20;
+    if (!Memory.profiler || !Memory.profiler.enabledTick) {
+      return 'Profiler not active.';
+    }
+
     const elapsedTicks = Game.time - Memory.profiler.enabledTick + 1;
     const header = 'calls\t\ttime\t\tavg\t\tfunction';
     const footer = [
@@ -124,7 +154,7 @@ const Profiler = {
       `Total: ${Memory.profiler.totalTime.toFixed(2)}`,
       `Ticks: ${elapsedTicks}`,
     ].join('\t');
-    return [].concat(header, Profiler.lines().slice(0, 20), footer).join('\n');
+    return [].concat(header, Profiler.lines().slice(0, displayresults), footer).join('\n');
   },
 
   lines() {
@@ -191,7 +221,10 @@ const Profiler = {
   },
 
   isProfiling() {
-    return enabled && !!Memory.profiler && Game.time <= Memory.profiler.disableTick;
+    if (!enabled || !Memory.profiler) {
+      return false;
+    }
+    return !Memory.profiler.disableTick || Game.time <= Memory.profiler.disableTick;
   },
 
   type() {
@@ -244,11 +277,9 @@ module.exports = {
     hookUpPrototypes();
   },
 
-  registerObject(object, label) {
-    return profileObjectFunctions(object, label);
-  },
+  output: Profiler.output,
 
-  registerFN(fn, functionName) {
-    return profileFunction(fn, functionName);
-  },
+  registerObject: profileObjectFunctions,
+  registerFN: profileFunction,
+  registerClass: profileObjectFunctions,
 };

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-18 20:36:19
+* @Last Modified time: 2016-08-21 14:32:08
 */
 
 'use strict';
@@ -147,10 +147,12 @@ Creep.prototype.doTransition = function() {
       } else if(this.pos.y > this.memory.exit.y) {
         this.move(BOTTOM)
       } else if(this.pos.y < this.memory.exit.y) {
-        this.move(TOP)
+        this.move(TOP_RIGHT)
       }
     } else {
-      this.move(this.memory.exit_dir)
+      var dir = this.memory.exit_dir + 1
+      if(dir > 8) dir = 1
+      this.move(dir)
     }
   }
   }
@@ -179,7 +181,7 @@ Creep.prototype.gotoRoom = function(roomName) {
       this.memory.exit_dir = exitDir
       this.memory.old_room = this.room.name
     }
-    if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
+    if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 0)) {
       this.moveTo(this.memory.exit.x, this.memory.exit.y)
       this.memory.goto_room = roomName
       this.setMode('transition')

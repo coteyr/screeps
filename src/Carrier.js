@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-19 04:42:42
+* @Last Modified time: 2016-08-21 01:45:22
 */
 
 'use strict';
@@ -28,16 +28,19 @@ Creep.prototype.doTransfer = function() {
     if(this.doFillCloseExtensions()) return true
     var target = this.target()
     if(this.getCloseAndAction(target, this.dumpResources(target), 1)) {
-      target.resetCallForEnergy()
+      if (target.resetCallForEnergy) target.resetCallForEnergy()
       this.clearTarget()
     }
-    if(target.isFull()) this.clearTarget()
+    if(target.isFull && target.isFull()) this.clearTarget()
 
   } else {
     var spawn = Finder.findSpawn(this.room.name)
     if(spawn && this.moveCloseTo(spawn.pos.x, spawn.pos.y, 1)) this.setMode('idle')
   }
-  if(this.isEmpty()) this.setMode('idle')
+  if(this.isEmpty()) {
+    this.setMode('idle')
+    this.clearTarget()
+  }
 }
 
 Creep.prototype.pickupDropped = function() {
@@ -67,7 +70,7 @@ Creep.prototype.doPickup = function() {
 Creep.prototype.doFillCloseExtensions = function() {
   var target = Targeting.findCloseExtension(this.pos)
   if(target && target.hasRoom()) {
-    target.resetCallForEnergy()
+    if(target.resetCallForEnergy) target.resetCallForEnergy()
     this.dumpResources(target)
     if(this.isEmpty()) this.setMode('idle')
     return true
