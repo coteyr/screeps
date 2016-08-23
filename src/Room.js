@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-20 15:55:17
+* @Last Modified time: 2016-08-21 16:43:27
 */
 
 'use strict';
@@ -10,6 +10,7 @@
 
 Room.prototype.tick = function() {
   if(!Memory.stats) Memory.stats = {}
+  Finder.findAll(this)
   Log.debug('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
   // this.clearMiningSpots();
   this.refreshData();

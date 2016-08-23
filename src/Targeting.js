@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-21 14:14:41
+* @Last Modified time: 2016-08-22 21:48:31
 */
 
 'use strict';
@@ -36,6 +36,22 @@ var Targeting = {
   nearestHostalCreep: function(pos) {
     var target = pos.findClosestByRange(FIND_HOSTILE_CREEPS)
     return target;
+  },
+  nearestFriendlyCreep: function(pos){
+    var target = pos.findClosestByRange(FIND_MY_CREEPS)
+    return target
+  },
+  nearestTankCreep: function(pos){
+    var targets = pos.findInRange(FIND_MY_CREEPS, 5)
+    var lowest = 1
+    var target
+    targets.forEach(function(t){
+      if ((t.hits / t.hitsMax) < lowest && t.tookDamage()) {
+        lowest = (t.hits / t.hitsMax)
+        target = t
+      }
+    })
+    return target
   },
 
   nearestHostalSpawn: function(pos) {

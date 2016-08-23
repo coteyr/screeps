@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-21 13:58:38
+* @Last Modified time: 2016-08-22 19:38:00
 */
 
 'use strict';
@@ -163,6 +163,7 @@ var EXOROLES = {
       {role: 'exo-reserver',  arrayName: 'reserve',  priority: 200, body: {claim: 2} },
       {role: 'exo-miner',     arrayName: 'mine',    priority: 203, body: {work: 5, carry: 1} },
       {role: 'exo-carrier',   arrayName: 'carry',   priority: 204, body: {work: 3, carry: 18, move: 11} },
+      /*{role: 'exo-sapper',    arrayName: 'sapper',  priority: 206, body: {attack: 16, tough: 31, move: 2} }*/
       {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 206, body: {ranged: 2, work: 2, carry: 3, move: 10, heal: 2} }
     ]},
     {min: 2300, max: 9000, roles: [

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-21 01:34:43
+* @Last Modified time: 2016-08-23 03:32:04
 */
 
 'use strict';
@@ -14,18 +14,10 @@ Creep.prototype.tick = function(){
     this.assignTasks()
     this.checkForAging()
     this.doWork();
-    this.idlersCatch() //can't be part of doIdle
-    // this.spreadMiners() // if there are too many miners on a spot move them.
   }
 }
 
-Creep.prototype.idlersCatch = function(){
-  // Essentially 90% of the time idle is set between tasks and there is no real reason to
-  // waste a tick just to switch modes. This gives us a second chance. But if we are really idle then
-  // move around some to not cause traffic jams
-  // if (this.modeIs('idle')) this.assignTasks()
-  // if (this.modeIs('idle')) this.move(Memory.dance_move) // check idle a second time cause it may have changed
-}
+
 
 Creep.prototype.checkForAging = function() {
   if(this.ticksToLive < 100 && (this.room.name === this.memory.home || !this.memory.home) && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
@@ -53,7 +45,7 @@ Creep.prototype.assignLocalTasks = function() {
     this.getOffExits()
     this.getOffRamparts()
   }
-
+  if(this.memory.role === 'miner') this.sayStuff(SAY_MINER)
   if(this.modeIs('idle')) {
     if(this.memory.role !== 'miner' && this.memory.role !== 'big-miner') this.clearTarget()
     var functionName = ('assign_' + this.memory.role + '_tasks').toCamel()
@@ -230,4 +222,11 @@ Creep.prototype.getOffRamparts = function() {
   if(Targeting.findRampartUnderneath(this.pos)) {
     this.moveCloseTo(25, 25, 5)
   }
+}
+
+Creep.prototype.sayStuff = function(sayings) {
+  if(!this.memory.say_spot) this.memory.say_spot = 0
+  this.say(sayings[this.memory.say_spot], true)
+  this.memory.say_spot += 1
+  if(this.memory.say_spot > (_.size(sayings) - 1)) this.memory.say_spot = 0
 }

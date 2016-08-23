@@ -2,12 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-20 16:33:59
+* @Last Modified time: 2016-08-22 22:06:25
 */
 
 'use strict';
 
 Creep.prototype.assignMinerTasks = function() {
+  this.sayStuff(SAY_MINER)
   if(this.modeIs('idle')) {
     if(this.carry.energy < this.carryCapacity) {
       this.setMode('mine');
