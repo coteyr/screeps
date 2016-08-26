@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-18 20:35:50
+* @Last Modified time: 2016-08-24 21:27:58
 */
 
 'use strict';
@@ -36,9 +36,13 @@ Creep.prototype.assignRemoteExoMinerTasks = function() {
     if (this.carry.energy < this.carryCapacity) {
       this.setMode('mine')
     } else if (this.carry.energy >= this.carryCapacity) {
-      this.setMode('send')
+      this.setMode('plop')
     }
   }
 }
 
+Creep.prototype.doPlop = function() {
+  this.drop(RESOURCE_ENERGY)
+  this.setMode('idle')
+}
 

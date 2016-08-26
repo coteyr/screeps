@@ -2,13 +2,12 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-22 22:06:25
+* @Last Modified time: 2016-08-24 01:20:11
 */
 
 'use strict';
 
 Creep.prototype.assignMinerTasks = function() {
-  this.sayStuff(SAY_MINER)
   if(this.modeIs('idle')) {
     if(this.carry.energy < this.carryCapacity) {
       this.setMode('mine');
@@ -28,17 +27,6 @@ Creep.prototype.doSend = function() {
     this.getCloseAndAction(containers[0], this.transfer(containers[0], RESOURCE_ENERGY), 1) // this.setMode('idle'
   } else {
     this.setMode('transfer')
-   /* var found = this.room.lookForAtArea(LOOK_CREEPS, this.pos.y - 1, this.pos.x - 1 , this.pos.y + 1, this.pos.x + 1, true);
-    Log.debug(JSON.stringify(found));
-    var me = this;
-    if(found.length > 1) {
-      _.filter(found, (f) => f.creep.memory.role != 'miner' && f.creep.memory.role != 'harvester').some(function(f) {
-        me.transfer(f.creep, RESOURCE_ENERGY);
-        me.setMode('idle')
-        // f.creep.memory.mode = 'transfer'
-        // f.creep.memory.mode = 'idle'
-      })
-    }*/
   }
   if(this.carry.energy == 0) {
     this.setMode('idle')

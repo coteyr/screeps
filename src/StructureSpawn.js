@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-15 20:24:40
+* @Last Modified time: 2016-08-24 01:34:45
 */
 
 'use strict';
@@ -12,7 +12,7 @@ StructureSpawn.prototype.tick = function() {
   Log.debug('Ticking Spawn: ' + this.name + ' Mode: ' + this.mode() + " - " + this.memory.refresh_count);
   this.promoteCreeps();
   this.assignMode();
-  if(!this.spawning) {
+  if(!this.spawning && Game.time % 5 == 0) {
     this.spawnCreeps();
   }
   this.doWork();

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-21 14:32:08
+* @Last Modified time: 2016-08-26 00:16:09
 */
 
 'use strict';
@@ -19,8 +19,15 @@ StructureSpawn.prototype.setMaxExoCount = function(role, arrayName, scope) {
     return 0;
   }
   var functionName = ("get_" + role + '_multi').toCamel()
-  var max = eval(scope + '.' + functionName + '(this.room)')
-  this.memory['max-' + role] = (max * _.size(this.room.memory[arrayName]))
+  var multi = eval(scope + '.' + functionName + '(this.room)')
+  var max = 0
+  if(role == 'reserver') {
+    max = 0
+  } else {
+    max += multi * _.size(this.room.memory[arrayName])
+  }
+
+  this.memory['max-' + role] = max
   return this.memory['max-' + role]
 }
 StructureSpawn.prototype.setMaxExoArmyCount = function(role, arrayName, multiplyer) {
@@ -104,6 +111,7 @@ Creep.prototype.setupExoMemory = function() {
   if(this.mode() != 'transition') {
     delete this.memory.exit_dir
     delete this.memory.exit
+    delete this.memory.old_room
   }
 }
 
@@ -140,19 +148,26 @@ Creep.prototype.doTransition = function() {
     }
   } else {
     if (this.memory.exit) {
-      if(this.pos.x > this.memory.exit.x) {
+      console.log('pp')
+      this.moveTo(this.memory.exit.x, this.memory.exit.y)
+      /*if(this.pos.x > this.memory.exit.x) {
         this.move(LEFT)
-      } else if(this.pos.x < this.memory.exit.x) {
-        this.move(RIGHT)
-      } else if(this.pos.y > this.memory.exit.y) {
-        this.move(BOTTOM)
-      } else if(this.pos.y < this.memory.exit.y) {
-        this.move(TOP_RIGHT)
       }
+      if(this.pos.x < this.memory.exit.x) {
+        this.move(RIGHT)
+      }
+       if(this.pos.y > this.memory.exit.y) {
+        this.move(BOTTOM)
+      }
+      if(this.pos.y < this.memory.exit.y) {
+        this.move(TOP)
+      }*/
     } else {
-      var dir = this.memory.exit_dir + 1
-      if(dir > 8) dir = 1
-      this.move(dir)
+      console.log('ts')
+      var exitDir = this.room.getExitTo(roomName);
+      var exit = this.pos.findClosestByRange(this.memory.exit_dir);
+      this.moveTo(exit)
+      console.log(JSON.stringify(exit))
     }
   }
   }
@@ -181,11 +196,11 @@ Creep.prototype.gotoRoom = function(roomName) {
       this.memory.exit_dir = exitDir
       this.memory.old_room = this.room.name
     }
-    if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 0)) {
+    if(this.memory.exit && this.moveCloseTo(this.memory.exit.x, this.memory.exit.y, 1)) {
       this.moveTo(this.memory.exit.x, this.memory.exit.y)
       this.memory.goto_room = roomName
       this.setMode('transition')
-      delete this.memory.exit
+      // delete this.memory.exit
       // delete this.memory.exit_dir
     }
   }

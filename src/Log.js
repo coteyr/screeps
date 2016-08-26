@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:40:25
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-19 04:43:48
+* @Last Modified time: 2016-08-26 01:48:38
 */
 
 'use strict';
@@ -24,6 +24,9 @@ var Log = {
 
   critical: function(message, room, creep) {
     if (logLevel >= 1) this.buildMessage('red', message, room, creep)
+  },
+  alert: function(message, room, creep) {
+    this.buildMessage('purple', "<h1>" + message + "</h1>", room, creep)
   },
 
   tick: function() {

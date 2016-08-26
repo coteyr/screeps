@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-21 14:33:04
+* @Last Modified time: 2016-08-25 07:02:34
 */
 
 'use strict';
@@ -20,7 +20,10 @@ Creep.prototype.assignTravelExoCarrierTasks = function() {
 }
 
 Creep.prototype.assignHomeExoCarrierTasks = function(){
-  this.assignHomeExoHarvesterTasks()
+  if(this.modeIs('idle')) {
+    if(this.hasSome()) this.setMode('store')
+    if(this.isEmpty()) this.setMode('leave')
+  }
 }
 
 
@@ -37,20 +40,24 @@ Creep.prototype.assignRemoteExoCarrierTasks = function() {
 }
 
 Creep.prototype.doTakeHome = function() {
-  var container = Targeting.findCloseContainer(this.pos, 1)
-  if(container && container.hits < container.hitsMax) {
-    this.repair(container)
-  } else {
-    var road = Targeting.findRoadUnderneath(this.pos)
-    if(road && road.hits < road.hitsMax) {
-      this.repair(road)
-    } else {
-      this.doGoHome()
-    }
-  }
+  var road = Targeting.findRoadUnderneath(this.pos)
+  if(road && road.hits < road.hitsMax) this.repair(road)
+  this.doGoHome()
   if(this.isEmpty()) {
     this.setMode('idle')
   }
 
+}
+
+Creep.prototype.doStore = function() {
+  var container = this.pos.findClosestByRange(FIND_STRUCTURES, {filter: function(c) { return c.structureType === STRUCTURE_CONTAINER && c.hasRoom() }}) // {structureType: STRUCTURE_CONTAINER}}) // function(c) {
+  if (container) {
+    this.getCloseAndAction(container, this.transfer(container, RESOURCE_ENERGY), 1) // this.setMode('idle'
+  } else {
+    this.setMode('transfer')
+  }
+  if(this.isEmpty()) this.setMode('idle')
+  delete this.memory.exit_dir
+  delete this.memory.exit
 }
 

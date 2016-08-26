@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-22 19:38:00
+* @Last Modified time: 2016-08-26 01:34:19
 */
 
 'use strict';
@@ -105,7 +105,7 @@ var ROLES = {
   },
 
   getCarrierMulti: function(room) {
-    if (room.carrierReady()) return room.sourceCount() * 1.5
+    if (room.carrierReady()) return room.sourceCount() * 3
     return 0
   },
 
@@ -127,13 +127,15 @@ var EXOROLES = {
       {role: 'exo-builder', arrayName: 'build', priority: 200, body: {work: 1, carry: 2}},
       {role: 'exo-harvester', arrayName: 'harvest', priority: 200, body: {work: 1, carry: 2}},
       {role: 'exo-theif', arrayName: 'steal', priority: 200, body: {work: 2, carry: 1}},
-      {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {attack: 2, tough: 4}}
+      {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {attack: 2, tough: 4}},
+      {role: 'exo-scout', arrayName: 'scout', priority: 200, body: {move: 1} }
     ]},
     {min: 550, max: 800, roles: [
       {role: 'exo-builder', arrayName: 'build', priority: 200, body: {work: 1, carry: 2}},
       {role: 'exo-harvester', arrayName: 'harvest', priority: 200, body: {work: 1, carry: 2}},
       {role: 'exo-theif', arrayName: 'steal', priority: 200, body: {work: 2, carry: 1}},
-      {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {attack: 2, tough: 4}}
+      {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {attack: 2, tough: 4}},
+      {role: 'exo-scout', arrayName: 'scout', priority: 200, body: {move: 1} }
     ]},
     {min: 800, max: 1300, roles: [
       {role: 'exo-builder', arrayName: 'build', priority: 203, body: {work: 1, carry: 2}},
@@ -141,18 +143,20 @@ var EXOROLES = {
       {role: 'exo-theif', arrayName: 'steal', priority: 205, body: {work: 2, carry: 1}},
       {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {attack: 2, tough: 4}},
       {role: 'exo-miner', arrayName: 'mine', priority: 201, body: {work: 3, carry: 1}},
-      {role: 'exo-carrier', arrayName: 'carry', priority: 202, body: {work: 1, carry: 8, move: 5}}
+      {role: 'exo-carrier', arrayName: 'carry', priority: 202, body: {work: 1, carry: 8, move: 5}},
+      {role: 'exo-scout', arrayName: 'scout', priority: 200, body: {move: 1} }
     ]},
     {min: 1300, max: 1800, roles: [
-      {role: 'exo-builder',   arrayName: 'build',   priority: 200, body: {work: 2, carry: 2} },
-      {role: 'exo-harvester', arrayName: 'harvest', priority: 200, body: {work: 3, carry: 6} },
-      {role: 'exo-theif',     arrayName: 'steal',   priority: 200, body: {work: 4, carry: 4} },
+      {role: 'exo-builder',   arrayName: 'build',   priority: 202, body: {work: 2, carry: 2} },
+      {role: 'exo-harvester', arrayName: 'harvest', priority: 201, body: {work: 3, carry: 6} },
+      {role: 'exo-theif',     arrayName: 'steal',   priority: 204, body: {work: 4, carry: 4} },
       {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {heal: 1, attack: 2, ranged: 2, tough: 10} },
       {role: 'exo-claimer',   arrayName: 'claim',   priority: 200, body: {claim: 2} },
       {role: 'exo-reserver',  arrayName: 'reserve',  priority: 200, body: {claim: 2} },
-      {role: 'exo-miner',     arrayName: 'mine',    priority: 200, body: {work: 5, carry: 1} },
-      {role: 'exo-carrier',   arrayName: 'carry',   priority: 200, body: {work: 1, carry: 15, move: 8} },
-      {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 200, body: {ranged: 5, work: 2, carry: 2} }
+      {role: 'exo-miner',     arrayName: 'mine',    priority: 201, body: {work: 7, carry: 1} },
+      {role: 'exo-carrier',   arrayName: 'carry',   priority: 202, body: {work: 1, carry: 15, move: 8} },
+      {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 203, body: {ranged: 5, work: 2, carry: 2} },
+      {role: 'exo-scout',     arrayName: 'scout',   priority: 200, body: {move: 1} }
     ]},
     {min: 1800, max: 2300, roles: [
       {role: 'exo-builder',   arrayName: 'build',   priority: 201, body: {work: 2, carry: 2} },
@@ -161,10 +165,11 @@ var EXOROLES = {
       {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {heal: 1, attack: 2, ranged: 2, tough: 10} },
       {role: 'exo-claimer',   arrayName: 'claim',   priority: 200, body: {claim: 2} },
       {role: 'exo-reserver',  arrayName: 'reserve',  priority: 200, body: {claim: 2} },
-      {role: 'exo-miner',     arrayName: 'mine',    priority: 203, body: {work: 5, carry: 1} },
-      {role: 'exo-carrier',   arrayName: 'carry',   priority: 204, body: {work: 3, carry: 18, move: 11} },
+      {role: 'exo-miner',     arrayName: 'mine',    priority: 201, body: {work: 7, carry: 1} },
+      {role: 'exo-carrier',   arrayName: 'carry',   priority: 202, body: {work: 1, carry: 22, move: 12} },
       /*{role: 'exo-sapper',    arrayName: 'sapper',  priority: 206, body: {attack: 16, tough: 31, move: 2} }*/
-      {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 206, body: {ranged: 2, work: 2, carry: 3, move: 10, heal: 2} }
+      {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 206, body: {ranged: 2, work: 2, carry: 3, move: 10, heal: 2} },
+      {role: 'exo-scout',     arrayName: 'scout', priority: 199, body: {move: 1} }
     ]},
     {min: 2300, max: 9000, roles: [
       {role: 'exo-builder',   arrayName: 'build',   priority: 200, body: {work: 2, carry: 2} },
@@ -172,10 +177,11 @@ var EXOROLES = {
       {role: 'exo-theif',     arrayName: 'steal',   priority: 200, body: {work: 4, carry: 4} },
       {role: 'exo-responder', arrayName: 'respond', priority: 200, body: {heal: 1, attack: 2, ranged: 2, tough: 10} },
       {role: 'exo-claimer',   arrayName: 'claim',   priority: 200, body: {claim: 2} },
-      {role: 'exo-reserver',  arrayName: 'reserve',  priority: 200, body: {claim: 2} },
+      {role: 'exo-reserver',  arrayName: 'reserve', priority: 200, body: {claim: 2} },
       {role: 'exo-miner',     arrayName: 'mine',    priority: 200, body: {work: 4, carry: 1} },
       {role: 'exo-carrier',   arrayName: 'carry',   priority: 200, body: {carry: 10} },
-      {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 200, body: {ranged: 5, work: 2, carry: 2} }
+      {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 200, body: {ranged: 5, work: 2, carry: 2} },
+      {role: 'exo-scout',     arrayName: 'scout',   priority: 199, body: {move: 1} }
     ]}
   ],
   getRoles: function(energy) {
@@ -207,13 +213,16 @@ var EXOROLES = {
     return 2
   },
   getExoCarryMulti: function(room){
-    return 1
+    return 2
   },
   getExoResponderMulti: function(room){
     return 2
   },
   getExoSapperMulti: function(room){
     return 8
+  },
+  getExoScoutMulti: function(room){
+    return 1
   }
 }
 

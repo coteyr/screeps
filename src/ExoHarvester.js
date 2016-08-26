@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-13 18:31:17
+* @Last Modified time: 2016-08-25 19:14:08
 */
 
 'use strict';
@@ -21,7 +21,7 @@ Creep.prototype.assignTravelExoHarvesterTasks = function() {
 }
 
 Creep.prototype.assignHomeExoHarvesterTasks = function() {
-  if(this.mode() !== 'transition') {
+  if(this.modeIs('idle')) {
       if(!this.isEmpty() && this.room.hasRoom()) this.setMode('transfer');
       if(_.size(this.room.find(FIND_CONSTRUCTION_SITES)) >= 5 && !this.isEmpty() && this.room.isFull()) this.setMode('build')
       if(_.size(this.room.find(FIND_CONSTRUCTION_SITES)) < 5 && !this.isEmpty() && this.room.isFull()) this.setMode('upgrade');
@@ -34,7 +34,7 @@ Creep.prototype.assignRemoteExoHarvesterTasks = function() {
     // this.setMode('mine')
   } else {
     if (this.carry.energy < this.carryCapacity && this.carryCapacity > 0) {
-      this.setMode('mine')
+      this.setMode('exo-mine')
     } else if (this.carry.energy >= this.carryCapacity && this.carryCapacity > 0) {
       this.setMode('go-home')
       this.clearTarget();
@@ -42,4 +42,9 @@ Creep.prototype.assignRemoteExoHarvesterTasks = function() {
       this.setMode('idle')
     }
   }
+}
+
+Creep.prototype.doExoMine = function(){
+  this.setTarget(this.memory.source_target)
+  this.doMine()
 }

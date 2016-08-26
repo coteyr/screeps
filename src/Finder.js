@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-22 08:15:41
+* @Last Modified time: 2016-08-26 00:09:19
 */
 
 'use strict';
@@ -82,6 +82,9 @@ var Finder = {
   findExoCreepCount: function(role, spawn, home) {
     return _.size(_.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === home)) + _.size(_.filter(Memory.spawn_queue, {'role': role, room: spawn.room.name}))
   },
+  findExoCreepAssignedToTarget: function(role, targetRoomName) {
+    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.exo_target == targetRoomName)
+  },
   findSquad: function(roomName){
     return _.filter(Game.creeps, function(c){
       return c.room.name == roomName && c.isExoCreep() && (c.memory.role === 'exo-attacker' || c.memory.role === 'exo-tank' || c.memory.role === 'exo-healer')
@@ -137,6 +140,7 @@ var Finder = {
   },
   findSourcePosition: function(roomName, role) {
     var room = Game.rooms[roomName]
+    if(!room) return false
     var result = null
     var biggest = 0
     var backup = null
@@ -202,7 +206,13 @@ var Finder = {
   hasHostals: function (roomName) {
     var room = Game.rooms[roomName]
     return _.size(room.find(FIND_HOSTILE_CREEPS)) > 0
+  },
+  findRoads: function(roomName) {
+    var room = Game.rooms[roomName]
+    return _.filter(this.unbox(room, 'structures'), (s) => s.structureType === STRUCTURE_ROAD)
   }
+
+
 
 }
 

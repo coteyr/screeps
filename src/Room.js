@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-21 16:43:27
+* @Last Modified time: 2016-08-26 01:48:47
 */
 
 'use strict';
@@ -151,6 +151,14 @@ Room.prototype.removeBuild = function(roomName){
   this.removeExoTarget('build', roomName)
 }
 
+Room.prototype.addScout = function(roomName) {
+  this.addExoTarget('scout', roomName)
+}
+
+Room.prototype.removeScout = function(roomName) {
+  this.removeExoTarget('scout', roomName)
+}
+
 Room.prototype.addAttack = function(room_name) {
   this.addExoTarget('attack', room_name)
 }
@@ -296,4 +304,12 @@ Room.prototype.hasTactic = function() {
 
 Room.prototype.maxEnergy = function() {
   return Finder.findSourceCount(this.name) * 3000
+}
+
+Room.prototype.hasRoads = function() {
+  return _.size(Finder.findRoads(this.name)) > 5
+}
+
+Room.prototype.hasHostiles = function() {
+  return _.size(Finder.findHostiles)
 }

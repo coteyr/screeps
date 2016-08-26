@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-22 21:48:31
+* @Last Modified time: 2016-08-26 00:33:24
 */
 
 'use strict';
@@ -17,9 +17,13 @@ var Targeting = {
       var target = Game.getObjectById(objects[key].id);
       if(target.memory) {
         if (target.memory.call_for_energy) {
-          if (target.memory.call_for_energy >= biggest) {
-            result = target;
-            biggest = target.memory.call_for_energy
+          if(_.size(_.filter(Game.creeps, {filter: function(c){
+            return c.target === target.id
+          }})) === 0) {
+            if (target.memory.call_for_energy >= biggest) {
+              result = target;
+              biggest = target.memory.call_for_energy
+            }
           }
         } else {
           // target.memory.call_for_energy = 0
@@ -30,6 +34,7 @@ var Targeting = {
        Log.warn("No Memory for: " + target.id)
       }
     }, objects);
+    if(!result && room.storage) return room.storage
     return result
   },
 
@@ -194,10 +199,12 @@ var Targeting = {
 
   findClosestRepairTarget: function(pos, room){
     var locations = room.find(FIND_STRUCTURES, {filter: function(structure) {
-      //if(_.includes(room.demos, structure.id)) return false
-      return structure.hits < (structure.hitsMax * 0.75) && structure.structureType !== 'constructedWall'
+      if(_.includes(room.demos, structure.id)) return false
+      return structure.hits < (structure.hitsMax * 0.75)  && structure.structureType !== 'constructedWall'
       }})
-    if(_.size(locations > 0)) {
+    console.log(_.size(locations))
+    if(_.size(locations) > 0) {
+      console.log('returning a non-wall')
       return pos.findClosestByRange(locations);
     } else {
       var smallest = 0
