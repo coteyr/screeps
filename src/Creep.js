@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-24 01:21:23
+* @Last Modified time: 2016-08-26 09:48:16
 */
 
 'use strict';
@@ -166,7 +166,10 @@ Creep.prototype.getCloseAndAction = function(target, action, range) {
 Creep.prototype.dumpResources = function(target) {
   var creep = this
   Object.keys(this.carry).forEach(function(key, index) {
-      if(creep.carry[key] > 0) creep.transfer(target, key)
+      if(creep.carry[key] > 0) {
+        creep.transfer(target, key)
+        creep.drop(key)
+      }
   }, this.carry);
 }
 

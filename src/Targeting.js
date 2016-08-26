@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 00:33:24
+* @Last Modified time: 2016-08-26 09:24:43
 */
 
 'use strict';
@@ -229,18 +229,17 @@ var Targeting = {
     }})
     if(_.size(canidates) > 0) return canidates[0]
   },
-
-  findRoadUnderneath: function(pos){
+  findStructureUnderneath: function(pos, structureType) {
     var canidates = pos.findInRange(FIND_STRUCTURES, 0, {filter: function(e){
-      return e.structureType === STRUCTURE_ROAD
+      return e.structureType === structureType
     }})
     if(_.size(canidates) > 0) return canidates[0]
   },
+  findRoadUnderneath: function(pos){
+    return this.findStructureUnderneath(pos, STRUCTURE_ROAD)
+  },
   findRampartUnderneath: function(pos){
-    var canidates = pos.findInRange(FIND_STRUCTURES, 0, {filter: function(e){
-      return e.structureType === STRUCTURE_RAMPART
-    }})
-    if(_.size(canidates) > 0) return canidates[0]
+    return this.findStructureUnderneath(pos, STRUCTURE_RAMPART)
   }
 
 

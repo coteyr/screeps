@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-08-09 16:50:51
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-17 06:56:01
+* @Last Modified time: 2016-08-26 09:01:59
 */
 
 'use strict';
@@ -93,4 +93,4 @@ var BodyBuilder = {
   }
 }
 
-module.exports = BodyBuilder;
+module.exports = BodyBuilder

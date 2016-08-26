@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-24 01:20:11
+* @Last Modified time: 2016-08-26 11:24:03
 */
 
 'use strict';
@@ -26,9 +26,7 @@ Creep.prototype.doSend = function() {
   if (_.size(containers) > 0) {
     this.getCloseAndAction(containers[0], this.transfer(containers[0], RESOURCE_ENERGY), 1) // this.setMode('idle'
   } else {
-    this.setMode('transfer')
+    this.dumpResources()
   }
-  if(this.carry.energy == 0) {
-    this.setMode('idle')
-  }
+  if(this.carry.energy == 0) this.setMode('idle')
 }
