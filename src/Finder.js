@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 22:30:24
+* @Last Modified time: 2016-08-26 22:39:57
 */
 
 'use strict';
@@ -157,13 +157,7 @@ var Finder = {
             biggest = source.energy
           }
         } else {
-          var count = 0
-          room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
-            if (spot.terrain === 'plain' || spot.terrain === 'swamp') {
-              count += 1;
-            }
-          })
-          var creeps = _.filter(Game.creeps, (creep) => creep.memory.target === source.id);
+          var count = findSourcePositionCount(roomName)
           if(_.size(creeps) < count) {
             result = source
             biggest = source.energy
@@ -186,7 +180,7 @@ var Finder = {
     var count = 0
     room.find(FIND_SOURCES).forEach(function(source){
       room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
-        if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
+        if (spot.terrain === 'plain' || spot.terrain === 'swamp') {
           count += 1;
         }
       })
