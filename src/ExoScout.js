@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 06:15:00
+* @Last Modified time: 2016-08-26 14:21:15
 */
 
 'use strict';
@@ -35,10 +35,10 @@ Creep.prototype.doScout = function() {
   this.moveCloseTo(25, 25, 10)
   var home = Game.rooms[this.memory.home]
   if(this.room.controller){
-    if(this.room.controller.reservation.ticksToEnd < 2500) {
+    if(!this.room.controller.reservation || this.room.controller.reservation.ticksToEnd < 2500) {
       this.autoAddExo('reserve', home, this.room)
     }
-    if(this.room.controller.reservation.ticksToEnd > 4000) {
+    if(this.room.controller.reservation && this.room.controller.reservation.ticksToEnd > 4000) {
       this.autoRemoveExo('reserve', home, this.room)
     }
   }
