@@ -28,4 +28,5 @@ ratings:
   - "**.rb"
 exclude_paths:
   - "screeps-profiler.js"
-  - "src/02 - Roles.js"
+  - "src/03 - Roles.js"
+

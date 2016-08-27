@@ -1,5 +1,7 @@
 # screeps
-My Screeps setup. A fun way to stay sharp on non-browser based javascript stuff
+My Screeps setup. A fun way to stay sharp on non-browser based javascript stuff. My goal is to create a code base / AI that can handle the game on it's own with little interference from the outside. Currently I want to manually place structures, but other then that the code base should do all the work.
+
+
 <a href="https://codeclimate.com/github/coteyr/screeps"><img src="https://codeclimate.com/github/coteyr/screeps/badges/gpa.svg" /></a>
 
 # A few notes
