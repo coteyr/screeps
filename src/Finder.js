@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 00:09:19
+* @Last Modified time: 2016-08-26 22:30:24
 */
 
 'use strict';
@@ -37,13 +37,13 @@ var Finder = {
   findAll: function(room) {
     if(!room.memory.objects) room.memory.objects = {}
     this.findEachTick(room)
-    if(Game.time % 500 == 0) { //infrequent
+    if(Game.time % 500 === 0) { //infrequent
       var objs = room.find(FIND_STRUCTURES)
       this.box(room, 'structures', objs)
       objs = room.find(FIND_FLAGS)
       this.box(room, 'flags', objs)
     }
-    if(Game.time % 5000 == 0) { //almost never
+    if(Game.time % 5000 === 0) { //almost never
       this.box(room, 'my-spawns', room.find(FIND_MY_SPAWNS))
       this.box(room, 'hostile-spawns', room.find(FIND_HOSTILE_SPAWNS))
       this.box(room, 'sources', room.find(FIND_SOURCES))
@@ -83,11 +83,11 @@ var Finder = {
     return _.size(_.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === home)) + _.size(_.filter(Memory.spawn_queue, {'role': role, room: spawn.room.name}))
   },
   findExoCreepAssignedToTarget: function(role, targetRoomName) {
-    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.exo_target == targetRoomName)
+    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.exo_target === targetRoomName)
   },
   findSquad: function(roomName){
     return _.filter(Game.creeps, function(c){
-      return c.room.name == roomName && c.isExoCreep() && (c.memory.role === 'exo-attacker' || c.memory.role === 'exo-tank' || c.memory.role === 'exo-healer')
+      return c.room.name === roomName && c.isExoCreep() && (c.memory.role === 'exo-attacker' || c.memory.role === 'exo-tank' || c.memory.role === 'exo-healer')
     });
   },
   findMiningCreeps: function(id, roomName) {
@@ -151,8 +151,7 @@ var Finder = {
 
         // May need to add some exclusive checking
         // This is a CPU HOG
-        if(role == 'miner') {
-
+        if(role === 'miner') {
           if(_.size(creeps) <= 0) {
             result = source
             biggest = source.energy
@@ -160,7 +159,7 @@ var Finder = {
         } else {
           var count = 0
           room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
-            if (spot.terrain == 'plain' || spot.terrain == 'swamp') {
+            if (spot.terrain === 'plain' || spot.terrain === 'swamp') {
               count += 1;
             }
           })
