@@ -2,49 +2,33 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 00:16:09
+* @Last Modified time: 2016-08-27 15:45:58
 */
 
 'use strict';
 
 let ExoCreep = function(){};
 
-StructureSpawn.prototype.setExoCount = function(role){
-   this.memory['current-' + role] = Finder.findExoCreepCount(role, this, this.room.name)
-}
-
-StructureSpawn.prototype.setMaxExoCount = function(role, arrayName, scope) {
-  if (!role) {
-    Log.error('Can not find role: ' + role)
-    return 0;
-  }
-  var functionName = ("get_" + role + '_multi').toCamel()
-  var multi = eval(scope + '.' + functionName + '(this.room)')
-  var max = 0
-  if(role == 'reserver') {
-    max = 0
-  } else {
-    max += multi * _.size(this.room.memory[arrayName])
-  }
-
-  this.memory['max-' + role] = max
-  return this.memory['max-' + role]
-}
-StructureSpawn.prototype.setMaxExoArmyCount = function(role, arrayName, multiplyer) {
-  if(this.room.memory[arrayName]) {
-    this.memory["max-" + role] = _.size(this.room.memory[arrayName]) * multiplyer
-  } else {
-    this.memory["max-" + role] = 0
-  }
-}
-
 StructureSpawn.prototype.getExoCount = function(role) {
   // return this.memory['current-' + role] || Finder.findExoCreepCount(role, this, this.room.name)
   return Finder.findExoCreepCount(role, this, this.room.name)
 }
 
-StructureSpawn.prototype.getMaxExoCount = function(role) {
-  return this.memory["max-" + role] || 0
+StructureSpawn.prototype.getMaxExoCount = function(role, scope) {
+  //return this.memory["max-" + role] || 0
+  var functionName = ("get_" + role.role + '_multi').toCamel()
+  var multi = eval(scope + '.' + functionName + '(this.room)')
+  var max = 0
+  max += multi * _.size(this.room.memory[role.arrayName])
+  return max
+}
+StructureSpawn.prototype.getMaxExoArmyCount = function(role, scope) {
+  //return this.memory["max-" + role] || 0
+  var functionName = ("get_" + role.role + '_multi').toCamel()
+  var multi = role.multiplyer
+  var max = 0
+  max += multi * _.size(this.room.memory[role.arrayName])
+  return max
 }
 
 Creep.prototype.assignExoTasks = function() {

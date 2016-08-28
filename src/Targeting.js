@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 09:24:43
+* @Last Modified time: 2016-08-27 02:58:21
 */
 
 'use strict';
@@ -191,6 +191,12 @@ var Targeting = {
   findCloseContainer: function(pos, range) {
     var results = pos.findInRange(FIND_STRUCTURES, range, {filter: {structureType: STRUCTURE_CONTAINER}})
     if(_.size(results) > 0) return results[0]
+  },
+  findClosestContainer: function(pos, room) {
+    var spots = _.filter(Finder.unbox(room, 'structures'), (s) => s.structureType === STRUCTURE_CONTAINER)
+    if (_.size(spots) >= 1) {
+      return pos.findClosestByRange(spots)
+    }
   },
 
   findClosestConstruction: function(pos){

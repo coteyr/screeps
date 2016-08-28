@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 13:31:58
+* @Last Modified time: 2016-08-27 12:44:40
 */
 
 'use strict';
@@ -20,7 +20,7 @@ Creep.prototype.tick = function(){
 
 
 Creep.prototype.checkForAging = function() {
-  if(this.ticksToLive < 100 && (this.room.name === this.memory.home || !this.memory.home) && _.size(this.room.find(FIND_STRUCTURES, {filter: {structureType: STRUCTURE_CONTAINER}})) > 0) {
+  if(this.ticksToLive < 100 && (this.room.name === this.memory.home || !this.memory.home) && Finder.findContainerCount(this.room.name)) {
     this.setMode('recycle')
   }
 }
@@ -41,7 +41,7 @@ Creep.prototype.assignLocalTasks = function() {
     delete this.memory.exit_dir
     delete this.memory.exit
   }
-  if(this.mode() != 'transition' && this.mode() != 'leave' && this.mode() !== 'respond') {
+  if(this.mode() !== 'transition' && this.mode() !== 'leave' && this.mode() !== 'respond') {
     this.getOffExits()
     this.getOffRamparts()
   }
@@ -108,18 +108,8 @@ Creep.prototype.moveCloseTo = function(x, y, range, creep) {
 
 
 Creep.prototype.doRecycle = function() {
-  var me = this;
-  var locations = _.filter(this.room.memory.my_containers, function(object) {
-      var structure = Game.getObjectById(object.id)
-       return structure.storedEnergy() < structure.possibleEnergy() - me.carry.energy;
-  })
-  var spots = []
-  locations.forEach(function(a){
-    spots.push(Game.getObjectById(a.id))
-  })
-  if (_.size(spots) >= 1) {
-    var spot = me.pos.findClosestByRange(spots)
-    console.log(JSON.stringify(spot))
+  var spot = Targeting.findClosestContainer(this.pos, this.room)
+  if(spot){
     this.getCloseAndAction(spot, 0, this.suicide())
   } else {
     Log.warn(this.name + " has no where to die. Idling")
@@ -167,8 +157,12 @@ Creep.prototype.dumpResources = function(target) {
   var creep = this
   Object.keys(this.carry).forEach(function(key, index) {
       if(creep.carry[key] > 0) {
-        creep.transfer(target, key)
-        // creep.drop(key)
+        if(target) {
+          creep.transfer(target, key)
+          if(target.isFull()) creep.drop(key)
+        } else {
+          creep.drop(key)
+        }
       }
   }, this.carry);
 }

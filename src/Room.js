@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 01:48:47
+* @Last Modified time: 2016-08-27 14:52:45
 */
 
 'use strict';
@@ -76,8 +76,6 @@ Room.prototype.refreshData = function() {
   if(this.memory.refresh_count <= 0 || !this.memory.refresh_count) {
     this.memory.refresh_count = 500;
     this.resetMemory();
-    Memory.stats["room." + this.name + ".idlers"] = 0
-    Memory.stats["room." + this.name + ".bad_moves"] = 0
     // this.clearPaths()
   }
   this.memory.refresh_count -= 1;

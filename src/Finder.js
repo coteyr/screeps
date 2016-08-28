@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 22:39:57
+* @Last Modified time: 2016-08-27 15:38:56
 */
 
 'use strict';
@@ -63,7 +63,7 @@ var Finder = {
 
   },
   findCreeps: function(role, roomName) {
-    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === roomName && !creep.modeIs('recycle') && creep.ticksToLive >= 150);
+    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === roomName && !creep.modeIs('recycle') && creep.ticksToLive >= 150 && !creep.memory.er);
     //var room = Game.rooms[room]
     //room.objects[my-creeps
   },
@@ -71,7 +71,7 @@ var Finder = {
     return _.filter(Game.creeps, (creep) => creep.memory.role === role);
   },
   findRealCreepCount: function(role, spawn) {
-    return _.size(Finder.findCreeps(role, spawn.room.name));
+    return _.size(_.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === spawn.room.name && !creep.modeIs('recycle') && creep.ticksToLive >= 150));
   },
   findCreepCount: function(role, spawn) {
       return _.size(Finder.findCreeps(role, spawn.room.name)) + _.filter(Memory.spawn_queue, {'role': role, room: spawn.room.name}).length;
@@ -124,15 +124,6 @@ var Finder = {
     var room = Game.rooms[roomName]
     var caches = _.filter(this.unbox(room, 'structures'), (s) => s.structureType === STRUCTURE_CONTAINER && s.storedResources() >= 100)
     return pos.findClosestByRange(caches)
-    /*var objects = []
-    _.union({}, room.memory.my_containers).forEach(function(value) {
-      objects.push(Game.getObjectById(value.id));
-    })
-    var buffer = pos.findClosestByRange(objects, {filter: function(object) {
-      var structure = Game.getObjectById(object.id)
-        return structure.structureType === 'container' && structure.storedResources() >= 100
-    }});
-    return buffer;*/
   },
   findStorage: function(roomName) {
     var room = Game.rooms[roomName]
@@ -157,7 +148,7 @@ var Finder = {
             biggest = source.energy
           }
         } else {
-          var count = findSourcePositionCount(roomName)
+          var count = Finder.findSourcePositionCount(roomName)
           if(_.size(creeps) < count) {
             result = source
             biggest = source.energy
@@ -190,6 +181,10 @@ var Finder = {
   findSourceCount: function(roomName) {
     var room = Game.rooms[roomName]
     return _.size(room.find(FIND_SOURCES))
+  },
+  findContainerCount: function(roomName) {
+    var room = Game.rooms[roomName]
+    return _.size(_.filter(this.unbox(room, 'structures'), (s) => s.structureType === STRUCTURE_ROAD))
   },
   findSpawn: function(roomName){
     var room = Game.rooms[roomName]

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-11 07:00:59
+* @Last Modified time: 2016-08-27 15:44:08
 */
 
 'use strict';
@@ -38,6 +38,7 @@ Creep.prototype.doRespond = function() {
       this.rangedMassAttack()
     } else if(range <= 1) {
       this.moveTo(25, 25)
+      this.rangedMassAttack()
       this.heal(this)
     }
 
