@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-27 15:44:08
+* @Last Modified time: 2016-08-28 01:16:04
 */
 
 'use strict';
@@ -25,7 +25,8 @@ Creep.prototype.assignRemoteExoResponderTasks = function () {
 }
 
 Creep.prototype.doRespond = function() {
-  var target = Targeting.nearestHostalCreep(this.pos)
+  this.kiteAttack()
+  /*var target = Targeting.nearestHostalCreep(this.pos)
   var range = this.pos.getRangeTo(target)
   if(this.hits < (this.hitsMax * 0.50)) range = range - 5  // run away for healing
   if(target) {
@@ -40,7 +41,7 @@ Creep.prototype.doRespond = function() {
       this.moveTo(25, 25)
       this.rangedMassAttack()
       this.heal(this)
-    }
+    }*/
 
   /*var critical = this.pos.findClosestByRange(FIND_MY_CREEPS, {
     filter: function(object) {
@@ -66,7 +67,7 @@ Creep.prototype.doRespond = function() {
         this.heal(this)
         this.rangedMassAttack()
         //this.heal(this)
-      }*/
+      }*//*
     } else {
       var patient = this.pos.findClosestByRange(FIND_MY_CREEPS, {
         filter: function(object) {
@@ -88,5 +89,5 @@ Creep.prototype.doRespond = function() {
         }
       }
     }
-  //}
+  //}*/
 }

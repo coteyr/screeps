@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-27 15:45:58
+* @Last Modified time: 2016-08-28 02:10:55
 */
 
 'use strict';
@@ -39,6 +39,8 @@ Creep.prototype.assignExoTasks = function() {
   }
   if(this.room.name === this.memory.home && this.ticksToLive <= 300) {
     this.setMode('recycle')
+  } else if (this.modeIs('recover')) {
+
   } else if(this.room.name === this.memory.exo_target) {
     // I am in the remote room
     this.assignRemoteExoTasks()
@@ -97,7 +99,25 @@ Creep.prototype.setupExoMemory = function() {
     delete this.memory.exit
     delete this.memory.old_room
   }
+  this.recoverUnused()
 }
+
+Creep.prototype.recoverUnused = function() {
+  var home = Game.rooms[this.memory.home]
+  var target = this.memory.exo_target
+  var arrayName = ''
+  if(ARMY[home.tactic()] && ARMY[home.tactic()].roles[this.memory.role]) arrayName = ARMY[home.tactic()].roles[this.memory.role].arrayName
+  var  roles = _.filter(ARMY[home.tactic()].roles, (r) => r.role == this.memory.role)
+  if(_.size(roles) > 0) {
+    var role = roles[0]
+    if(_.indexOf(home.memory[role.arrayName], target) === -1){
+      // no longer an option
+      console.log('retes')
+      this.setMode('recover')
+    }
+  }
+}
+
 
 Creep.prototype.chooseExoTarget = function(arrayName) {
   if(!this.memory.exo_target) {
@@ -196,3 +216,10 @@ Creep.prototype.doLeave = function() {
   this.clearTarget()
 }
 
+Creep.prototype.doRecover = function() {
+  if(this.room.name == this.memory.home) {
+    this.doRecycle()
+  } else {
+    this.gotoRoom(this.memory.home)
+  }
+}

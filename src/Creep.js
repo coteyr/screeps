@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-27 12:44:40
+* @Last Modified time: 2016-08-28 01:16:22
 */
 
 'use strict';
@@ -159,9 +159,9 @@ Creep.prototype.dumpResources = function(target) {
       if(creep.carry[key] > 0) {
         if(target) {
           creep.transfer(target, key)
-          if(target.isFull()) creep.drop(key)
+          if(target.isFull() && target.structureType == STRUCTURE_CONTAINER) creep.drop(key)
         } else {
-          creep.drop(key)
+          //creep.drop(key)
         }
       }
   }, this.carry);

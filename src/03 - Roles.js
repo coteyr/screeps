@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-27 15:31:03
+* @Last Modified time: 2016-08-28 01:55:56
 */
 
 'use strict';
@@ -236,11 +236,11 @@ var ARMY = {
     { role: 'exo-attacker', arrayName: 'attack',   multiplyer: 5, priority: 100, body: BodyBuilder.buildBody({ranged: 2, attack: 2, move: 6, tough: 2}, 800, false, false, false)}
 
     ], rally: 9},
-  'Drain Tower': [
+  "Drain Tower": {roles: [
     { role: 'exo-tank',      arrayName: 'attack',  multiplyer: 2,  priority: 100, body: BodyBuilder.buildBody({heal: 1, work: 1}, 1300, true, true, false) },
     { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 5,  priority: 110, body: BodyBuilder.buildBody({ attack: 2, ranged: 1, tough: 5}, 1300, true, false, false) },
     { role: 'exo-healer',    arrayName: 'attack',  multiplyer: 4,  proiorty: 120, body: BodyBuilder.buildBody({ heal: 2 }, 1300, true, false, false) }
-  ],
+  ]},
   'Heavy Drain Tower': [],
   'Thick Walls': [],
   'swarm': {roles: [
