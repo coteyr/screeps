@@ -2,21 +2,43 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 11:24:03
+* @Last Modified time: 2016-08-30 18:34:27
 */
 
 'use strict';
 
-Creep.prototype.assignMinerTasks = function() {
-  if(this.modeIs('idle')) {
-    if(this.carry.energy < this.carryCapacity) {
-      this.setMode('mine');
-    } else {
-      this.setMode('send');
-    }
-  }
+// Target -> Position -> [Mine -> Dump -> Mine] -> Recycle
+
+let MinerCreep = function(){}
+_.merge(MinerCreep.prototype, StateMachine.prototype, RecyclableCreep.prototype);
+
+MinerCreep.prototype.tickCreep = function() {
+  console.log('Ticking Miner')
+  this.checkState()
+  this.recycleState()
 }
 
+MinerCreep.prototype.checkState = function() {
+  if(!this.state()) this.setState('target') // this.memory.state = 'target'
+  if(this.stateIs('target')) { //this.memory.state === 'target') {
+    this.setTarget(Finder.findSourcePosition(this.room.name, this.memory.role))
+    if(this.hasTarget()) this.setState('position')
+  }
+  if(this.stateIs('position')) {
+    var target = this.target()
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) this.setState('mine')
+  }
+  if(this.stateIs('mine')) {
+    var target = this.target()
+    this.harvest(target)
+    if(this.hasSome()) this.setState('dump')
+  }
+  if(this.stateIs('dump')) {
+    var drop = Targeting.findCloseContainer(this.pos, 1)
+    this.dumpResources(drop)
+    this.setState('mine')
+  }
+}
 
 Creep.prototype.doSend = function() {
   var containers = this.pos.findInRange(FIND_STRUCTURES, 3, {filter: function(c) { return c.structureType === STRUCTURE_CONTAINER && c.hasRoom() }}) // {structureType: STRUCTURE_CONTAINER}}) // function(c) {

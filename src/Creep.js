@@ -2,18 +2,23 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 10:27:52
+* @Last Modified time: 2016-08-30 16:27:50
 */
 
 'use strict';
 
 Creep.prototype.tick = function(){
-  this.setHome()
-  if(!this.spawning) {
-    Log.debug('Ticking creep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.mode(), this.room, this);
-    this.assignTasks()
-    this.checkForAging()
-    this.doWork();
+  if(this.memory.role == 'miner') {
+    _.merge(Creep.prototype, MinerCreep.prototype);
+    this.tickCreep()
+  } else {
+    this.setHome()
+    if(!this.spawning) {
+      Log.debug('Ticking creep: ' + this.name + " Role: " + this.memory.role + " Mode: " + this.mode(), this.room, this);
+      this.assignTasks()
+      this.checkForAging()
+      this.doWork();
+    }
   }
 }
 

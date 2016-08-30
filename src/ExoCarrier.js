@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-25 07:02:34
+* @Last Modified time: 2016-08-30 14:02:48
 */
 
 'use strict';
@@ -50,9 +50,9 @@ Creep.prototype.doTakeHome = function() {
 }
 
 Creep.prototype.doStore = function() {
-  var container = this.pos.findClosestByRange(FIND_STRUCTURES, {filter: function(c) { return c.structureType === STRUCTURE_CONTAINER && c.hasRoom() }}) // {structureType: STRUCTURE_CONTAINER}}) // function(c) {
+  var container = this.pos.findClosestByRange(FIND_STRUCTURES, {filter: function(c) { return c.structureType === STRUCTURE_CONTAINER}}) // {structureType: STRUCTURE_CONTAINER}}) // function(c) {
   if (container) {
-    this.getCloseAndAction(container, this.transfer(container, RESOURCE_ENERGY), 1) // this.setMode('idle'
+    if(this.moveCloseTo(container.pos.x, container.pos.y, 1)) this.dumpResources(container)
   } else {
     this.setMode('transfer')
   }
