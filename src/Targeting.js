@@ -2,13 +2,40 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-27 02:58:21
+* @Last Modified time: 2016-08-30 04:48:16
 */
 
 'use strict';
 
 var Targeting = {
+  getMax(array, filter) {
+    var biggest = 0
+    var element
+    array.forEach(function(a) {
+      if(filter(a) > biggest) {
+        biggest = filter(a)
+        element = a
+      }
+    })
+    return element
+  },
   getTransferTarget: function(pos, room) {
+    // spawner -> tower -> extensions -> storage
+    var spawn = Finder.findSpawn(room.name)
+    if(spawn.hasRoom()) return spawn
+
+    var extension = Targeting.findClosestNotFullExtension(pos, room.name)
+    if(extension && extension.hasRoom()) return extension
+
+    var towers = Finder.findTowers(room.name)
+    var tower = this.getMax(towers, function(t) { return t.energyCapacity - t.energy })
+    if(tower && tower.hasRoom()) return tower
+
+    if(room.storage) return room.storage
+
+
+  },
+  /*getTransferTarget: function(pos, room) {
     var result;
     var biggest = 0;
     var objects = _.union({}, room.myCreeps(), room.memory.my_spawns, room.memory.my_extensions, room.memory.my_towers, room.memory.my_storages)
@@ -36,7 +63,7 @@ var Targeting = {
     }, objects);
     if(!result && room.storage) return room.storage
     return result
-  },
+  },*/
 
   nearestHostalCreep: function(pos) {
     var target = pos.findClosestByRange(FIND_HOSTILE_CREEPS)
@@ -142,46 +169,11 @@ var Targeting = {
     return miner
   },
 
-  findEnergyBuffer: function(pos, room, mode) {
-    if(!mode) {
-      mode = 'none'
-    }
-    var objects = []
-    if (mode === 'carrier') {
-    _.union({}, room.memory.my_containers).forEach(function(value) {
-      objects.push(Game.getObjectById(value.id));
-    })
-    } else {
-      _.union({}, room.memory.my_containers, room.memory.my_storages).forEach(function(value) {
-        objects.push(Game.getObjectById(value.id));
-      })
-    }
-    var buffer = pos.findClosestByRange(objects, {filter: function(object) {
-      var structure = Game.getObjectById(object.id)
-      // if (mode === 'pickup') {
-      //  return structure.structureType !== 'storage' && structure.storedEnergy() >= 300
-      //} else {
-        return structure.storedEnergy() >= 300;
-      //}
-    }});
-    if(buffer) {
-      return buffer;
-    } else {
-      objects = []
-      _.union({}, room.memory.my_storages).forEach(function(value) {
-        objects.push(Game.getObjectById(value.id));
-      })
-      buffer = pos.findClosestByRange(objects, {filter: function(object) {
-      var structure = Game.getObjectById(object.id)
-      // if (mode === 'pickup') {
-      //  return structure.structureType !== 'storage' && structure.storedEnergy() >= 300
-      //} else {
-        return structure.storedEnergy() >= 300;
-      //}
-    }});
-    }
-    return buffer
-
+  findEnergyBuffer: function(pos, room, mode = 'none') {
+    var targets = _.filter(Finder.unbox(room, 'structures'), (s) => s.structureType === STRUCTURE_CONTAINER && s.storedEnergy() > 100)
+    var buffer = pos.findClosestByRange(targets)
+    if(buffer) return buffer
+    if(mode != 'carrier' && room.storage) return room.storage
   },
 
   findEnergySource: function(pos, room, mode) {
@@ -246,6 +238,16 @@ var Targeting = {
   },
   findRampartUnderneath: function(pos){
     return this.findStructureUnderneath(pos, STRUCTURE_RAMPART)
+  },
+  findMyCloseCreeps: function(pos, range = 5) {
+    return pos.findInRange(FIND_MY_CREEPS, range)
+  },
+  findClosestNotFullExtension: function(pos, roomName) {
+    var canidates = Finder.findExtensions(roomName)
+    return pos.findClosestByRange(canidates, {filter: function(e) { return e.hasRoom() }})
+  },
+  findClosestDroppedEnergy: function(pos, roomName) {
+    return pos.findClosestByRange(Finder.findDropedEnergy(roomName))
   }
 
 

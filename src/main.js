@@ -2,11 +2,11 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-24 01:26:31
+* @Last Modified time: 2016-08-28 10:38:03
 */
 
 'use strict';
-var profiler = require('screeps-profiler');
+var RAM = {}
 
 String.prototype.toCamel = function(){
   return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');}).replace(/(\-[a-z])/g, function($1){return $1.toUpperCase().replace('-','');});
@@ -17,10 +17,9 @@ String.prototype.toUnderscore = function(){
 
 var logLevel = 4;
 
-profiler.enable();
 module.exports.loop = function () {
-  global.resetUsedCPU()
- profiler.wrap(function() {
+  RAM = {}
+  //global.resetUsedCPU()
   Alarm.tick()
   if(!Memory.harvest_total) Memory.harvest_total = 0
   if(!Memory.harvest_count) Memory.harvest_count = 0
@@ -35,22 +34,19 @@ module.exports.loop = function () {
   }
 
 
-  Memory.spread_targets = []
-  var choices = [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT];
+  //Memory.spread_targets = []
+  /*var choices = [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT];
   var choice = choices[Math.floor(Math.random()*choices.length)];
-  Memory.dance_move = choice
-  Object.keys(Game.rooms).forEach(function(key, index) {
+  Memory.dance_move = choice*/
+  _.each(Object.keys(Game.rooms), function(room) {
+    Game.rooms[room].tick()
+  })
+  /*Object.keys(Game.rooms).forEach(function(key, index) {
     this[key].tick();
-    global.logUsedCPU(this[key])
-  }, Game.rooms);
-    //new Spawner(Game.spawns.Spawn1).tick();
-    /*_.filter(Game.creeps).forEach(function(creep) {
-      creep.tick();
-    });*/
+    //global.logUsedCPU(this[key])
+  }, Game.rooms);*/
     Memory.harvest_total += Memory.harvest_this_tick
     Memory.harvest_count += 1
     Memory.harvest_average = Memory.harvest_total / Memory.harvest_count
     Log.tick();
-    Memory.stats['totalCreeps'] = _.size(Game.creeps)
-    });
   };

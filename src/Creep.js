@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 01:16:22
+* @Last Modified time: 2016-08-28 10:27:52
 */
 
 'use strict';
@@ -27,7 +27,12 @@ Creep.prototype.checkForAging = function() {
 
 Creep.prototype.assignTasks = function() {
   if(this.isExoCreep()) {
-    this.assignExoTasks()
+    if(Game.cpu.bucket > 500 || Game.cpu.getUsed() <= (Game.cpu.limit * 0.95)) {
+        this.assignExoTasks()
+    } else {
+      Log.warn("Skipping Exo-Tasks to build bucket", this.room, this)
+    }
+
   } else {
     this.assignLocalTasks()
   }
@@ -80,10 +85,7 @@ Creep.prototype.doNoop = function() {
   this.setMode('idle')
 }
 
-Creep.prototype.moveCloseTo = function(x, y, range, creep) {
-  if(!range) {
-    range = 0
-  }
+Creep.prototype.moveCloseTo = function(x, y, range = 0, creep) {
   if(!creep) {
     if(this.memory.there && this.memory.there > Game.time) return true
     var distance = this.pos.getRangeTo(x, y)
@@ -145,8 +147,7 @@ Creep.prototype.hasSome = function() {
   return !this.isEmpty()
 }
 
-Creep.prototype.getCloseAndAction = function(target, action, range) {
-  if(!range) range = 1
+Creep.prototype.getCloseAndAction = function(target, action, range = 1) {
   if(this.moveCloseTo(target.pos.x, target.pos.y, range)) {
     action
     return true
@@ -167,14 +168,7 @@ Creep.prototype.dumpResources = function(target) {
   }, this.carry);
 }
 
-Creep.prototype.callForEnergy = function() {
-  if(!this.memory.call_for_energy) this.memory.call_for_energy = 0
-  this.memory.call_for_energy += 5
-}
 
-Creep.prototype.resetCallForEnergy = function() {
-  delete this.memory.call_for_energy
-}
 
 Creep.prototype.hasPart = function(part) {
   var doI = false
@@ -203,17 +197,6 @@ Creep.prototype.harvest = function(target) {
   return did
 }
 
-/*Creep.prototype.orignalTransfer = Creep.prototype.transfer
-
-Creep.prototype.transfer = function(target, resourceType, amount) {
- if(resourceType === RESOURCE_ENERGY && target.structureType === 'extension' || target.structureType === 'spawner') {
-    if(!amount) {
-      amount = Math.min(this.carry.energy, target.energyCapacity - target.energy);
-    }
-    this.room.addEnergy(amount)
-  }
-  return this.orignalTransfer(target, resourceType, amount)
-}*/
 Creep.prototype.getOffRamparts = function() {
   if(Targeting.findRampartUnderneath(this.pos)) {
     this.moveCloseTo(25, 25, 5)

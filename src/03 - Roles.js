@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 01:55:56
+* @Last Modified time: 2016-08-30 06:41:03
 */
 
 'use strict';
@@ -40,21 +40,21 @@ var ROLES = {
       { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} }
     ]},
     {min: 1800, max: 2300, roles: [
-      { role: 'harvester', priority: 1, body: {work: 5, carry: 5} },
-      { role: 'miner',     priority: 2, body: {work: 5, carry: 1} },
-      { role: 'carrier',   priority: 3, body: {carry: 8} },
-      { role: 'builder',   priority: 4, body: {work: 2, carry: 4} },
-      { role: 'upgrader',  priority: 4, body: {work: 2, carry: 5} },
-      { role: 'demo',      priority: 5, body: {work: 8, carry: 4} },
+      { role: 'harvester',     priority: 1, body: {work: 5, carry: 5} },
+      { role: 'miner',         priority: 2, body: {work: 5, carry: 1} },
+      { role: 'carrier',       priority: 3, body: {carry: 20} },
+      { role: 'builder',       priority: 4, body: {work: 2, carry: 4} },
+      { role: 'upgrader',      priority: 4, body: {work: 2, carry: 5} },
+      { role: 'demo',          priority: 5, body: {work: 8, carry: 4} },
       { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} }
     ]},
     {min: 2300, max: 9000, roles: [
       { role: 'harvester', priority: 1, body: {work: 5, carry: 5} },
-      { role: 'carrier',   priority: 3, body: {carry: 8} },
+      { role: 'carrier',   priority: 3, body: {carry: 20} },
       { role: 'builder',   priority: 4, body: {work: 2, carry: 4} },
       { role: 'upgrader',  priority: 4, body: {work: 2, carry: 5} },
       { role: 'demo',      priority: 5, body: {work: 8, carry: 4} },
-      { role: 'big-miner', priority: 2, body: {work: 14, carry: 8} },
+      { role: 'big-miner', priority: 2, body: {work: 14, carry: 1} },
       { role: 'excavator', priority: 6, body: {work: 6, carry: 6} },
       { role: 'hauler',    priority: 6, body: {carry: 6} },
       { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} }
@@ -105,7 +105,7 @@ var ROLES = {
   },
 
   getCarrierMulti: function(room) {
-    if (room.carrierReady()) return room.sourceCount() * 3
+    if (room.carrierReady()) return room.sourceCount() * 1.25
     return 0
   },
 
@@ -114,7 +114,7 @@ var ROLES = {
     return 0
   },
   getMassUpgraderMulti: function(room){
-    if(room.storage && room.storage.storedEnergy() > 10000) return 1
+    if(room.storage && room.storage.storedEnergy() > 10000) return Math.floor(room.storage.storedEnergy() / 10000)
     return 0
   }
 
@@ -177,8 +177,8 @@ var EXOROLES = {
       {role: 'exo-responder', arrayName: 'responder', priority: 200, body: {heal: 1, attack: 2, ranged: 2, tough: 10} },
       {role: 'exo-claimer',   arrayName: 'claim',   priority: 200, body: {claim: 2} },
       {role: 'exo-reserver',  arrayName: 'reserve', priority: 200, body: {claim: 2} },
-      {role: 'exo-miner',     arrayName: 'mine',    priority: 201, body: {work: 4, carry: 1} },
-      {role: 'exo-carrier',   arrayName: 'carry',   priority: 202, body: {carry: 10} },
+      {role: 'exo-miner',     arrayName: 'mine',    priority: 201, body: {work: 7, carry: 1} },
+      {role: 'exo-carrier',   arrayName: 'carry',   priority: 202, body: {work: 1, carry: 22, move: 12} },
       {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 206, body: {ranged: 5, work: 2, carry: 2} },
       {role: 'exo-scout',     arrayName: 'scout',   priority: 199, body: {move: 1} }
     ]}

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-27 14:52:45
+* @Last Modified time: 2016-08-30 07:16:21
 */
 
 'use strict';
@@ -13,17 +13,9 @@ Room.prototype.tick = function() {
   Finder.findAll(this)
   Log.debug('Ticking Room: ' + this.name + ": " + this.memory.refresh_count);
   // this.clearMiningSpots();
-  this.refreshData();
+  // this.refreshData();
   this.tickStuff();
-  /*this.tickExtensions();
-  this.tickContainers();
-  this.tickStorages();
-  this.tickSpawns();
-  this.tickTowers() */
   this.tickCreeps(); //keep this separate
-  //this.cleanPaths();
-  this.report();
-
   return true;
 };
 Room.prototype.tickStuff = function() {
@@ -221,7 +213,11 @@ Room.prototype.energyCapacity = function() {
   //if(Finder.findCreeps('miner', this.name).length <= 0 && Finder.findCreeps('harvester', this.name).length <= 0 && Finder.findCreeps('big-miner', this.name).length <= 0) {
   //  return 300
   //} else {
-    return this.energyCapacityAvailable
+    if (this.energyCapacityAvailable >= 2300) {
+      return this.energyCapacityAvailable * 0.783
+    } else {
+      return this.energyCapacityAvailable
+    }
   //}
 
 }
@@ -271,7 +267,7 @@ Room.prototype.excavatorReady = function() {
 }
 
 Room.prototype.isFull = function() {
-  return this.energyAvailable >= this.energyCapacityAvailable
+  return this.energyAvailable >= this.energyCapacity()
 }
 
 Room.prototype.hasRoom = function() {
@@ -310,4 +306,8 @@ Room.prototype.hasRoads = function() {
 
 Room.prototype.hasHostiles = function() {
   return _.size(Finder.findHostiles)
+}
+
+Room.prototype.findAPath = function(from, to) {
+  return this.findPath(from, to, {ignoreCreeps: true, ignoreRoads: true, serialize: true})
 }

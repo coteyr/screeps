@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 01:53:50
+* @Last Modified time: 2016-08-30 07:19:44
 */
 
 'use strict';
@@ -12,21 +12,17 @@ StructureSpawn.prototype.tick = function() {
   Log.debug('Ticking Spawn: ' + this.name + ' Mode: ' + this.mode() + " - " + this.memory.refresh_count);
   this.promoteCreeps();
   this.assignMode();
-  if(!this.spawning) {
-    this.spawnCreeps();
-  }
+  this.spawnCreeps();
   this.doWork();
 
   // this.refreshData();
-  Memory.stats["room." + this.room.name + ".spawnQueue"] = _.size(this.memory.spawn_queue)
   if(Game.time % 10 == 0) this.isStarving()
-
-
 }
 StructureSpawn.prototype.promote = function(from, to) {
-  Log.warn("Promoting " +  from + " to " + to)
-    Finder.findCreeps(from, this.room.name).forEach(function(creep) {
+  Log.warn("Promoting " +  from + " to " + to, this.room)
+    Finder.findRealCreeps(from, this.room.name).forEach(function(creep) {
       creep.memory.role = to
+      creep.memory.er = true
       creep.setMode('idle')
     })
 }
@@ -78,29 +74,6 @@ StructureSpawn.prototype.spawnACreep = function(role, body, home, er=false)  {
     Log.error(role + ": " + JSON.stringify(body))
   }
 }
-/*StructureSpawn.prototype.refreshData = function() {
-  if(!this.memory.refresh_count || this.memory.refresh_count <= 0) {
-
-    var spawn = this
-    EXOROLES.getRoles(this.room.energyCapacityAvailable).forEach(function(role) {
-      spawn.setExoCount(role.role)
-      spawn.setMaxExoCount(role.role, role.arrayName, 'EXOROLES')
-    })
-    if(this.room.hasTactic()) {
-      ARMY[this.room.tactic()].roles.forEach(function(role) {
-        spawn.setExoCount(role.role)
-        spawn.setMaxExoArmyCount(role.role, role.arrayName, role.multiplyer)
-      })
-    }
-    ROLES.getRoles(this.room.energyCapacityAvailable).forEach(function(role) {
-      spawn.setCount(role.role)
-      spawn.setMaxCount(role.role)
-    })
-
-    this.memory.refresh_count = 10;
-  }
-  this.memory.refresh_count -= 1;
-}*/
 
 StructureSpawn.prototype.assignMode = function() {
   if(this.modeIs('idle')) {
@@ -112,7 +85,7 @@ StructureSpawn.prototype.assignMode = function() {
   } else if (this.modeIs('spawning') && !this.spawning) {
       this.setMode('idle')
   }
-  if (this.room.energyCapacityAvailable > 300 && Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this) === 0) {
+  if (this.room.energyCapacity() > 300 && Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this) === 0) {
     this.setMode('er-spawn')
   }
 }
@@ -169,17 +142,18 @@ StructureSpawn.prototype.doErSpawn = function() {
 
 }
 
+// Really High CPU Usage. Mostly because it's a lot to go through.
 StructureSpawn.prototype.spawnCreeps = function() {
   // What kind of creep
   var spawner = this
-  ROLES.getRoles(this.room.energyCapacityAvailable).forEach(function(role){
+  ROLES.getRoles(this.room.energyCapacity()).forEach(function(role){
     if(spawner.getCount(role.role) < spawner.getMaxCount(role.role)) {
-      spawner.addToSpawnQueue(role.role, BodyBuilder.buildBody(role.body, spawner.room.energyCapacityAvailable, true, false, true), role.priority)
+      spawner.addToSpawnQueue(role.role, BodyBuilder.buildBody(role.body, spawner.room.energyCapacity(), true, false, true), role.priority)
     }
   })
-  EXOROLES.getRoles(this.room.energyCapacityAvailable).forEach(function(role) {
+  EXOROLES.getRoles(this.room.energyCapacity()).forEach(function(role) {
     if (spawner.getExoCount(role.role) < spawner.getMaxExoCount(role, 'EXOROLES')) {
-      spawner.addToSpawnQueue(role.role, BodyBuilder.buildBody(role.body, spawner.room.energyCapacityAvailable, true, false, false), role.priority)
+      spawner.addToSpawnQueue(role.role, BodyBuilder.buildBody(role.body, spawner.room.energyCapacity(), true, false, false), role.priority)
     }
   })
   if(this.room.hasTactic()) {
@@ -260,7 +234,7 @@ StructureSpawn.prototype.isStarving = function() {
   if(!global.globalSpawn()) {
     roomQueue = _.filter(Memory.spawn_queue, function(c) { return c.room === spawner.room.name })
   } else {
-    roomQueue =  _.filter(Memory.spawn_queue, function(c) { return BodyBuilder.getCost(c.body) <= spawner.room.energyCapacityAvailable })
+    roomQueue =  _.filter(Memory.spawn_queue, function(c) { return BodyBuilder.getCost(c.body) <= spawner.room.energyCapacity() })
   }
   var totalCostOfQueue = 0
   var totalPartsInQueue = 0

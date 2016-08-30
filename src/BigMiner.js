@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-04 00:16:05
+* @Last Modified time: 2016-08-29 18:43:15
 */
 
 'use strict';
@@ -23,7 +23,7 @@ Creep.prototype.doBigMine = function() {
       this.doBigSend()
     }
   }
-  if(this.isFull()) {
+  if(this.hasSome()) {
     this.setMode('big-send')
     this.doBigSend()
   }

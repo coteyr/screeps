@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 02:10:55
+* @Last Modified time: 2016-08-28 03:00:33
 */
 
 'use strict';
@@ -112,7 +112,6 @@ Creep.prototype.recoverUnused = function() {
     var role = roles[0]
     if(_.indexOf(home.memory[role.arrayName], target) === -1){
       // no longer an option
-      console.log('retes')
       this.setMode('recover')
     }
   }

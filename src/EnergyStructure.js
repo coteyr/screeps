@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-08 22:31:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-03 23:29:18
+* @Last Modified time: 2016-08-28 10:26:28
 */
 
 'use strict';
@@ -10,8 +10,6 @@
 let EnergyStructure = function(){};
 
 _.merge(EnergyStructure.prototype, MemoryStructure.prototype);
-
-EnergyStructure.prototype.energyCallModifier = 0.01 // really low by default
 
 EnergyStructure.prototype.tick = function() {
   this.setupMemory();
@@ -40,11 +38,9 @@ EnergyStructure.prototype.doWork = function() {
 }
 
 EnergyStructure.prototype.doWaitEnergy = function() {
-    this.callForEnergy()
-    if(this.isFull()) {
-      this.setMode('idle')
-      this.resetCallForEnergy()
-    }
+  if(this.isFull()) {
+    this.setMode('idle')
+  }
 }
 
 EnergyStructure.prototype.isEmpty = function() {
@@ -57,13 +53,4 @@ EnergyStructure.prototype.isFull = function() {
 
 EnergyStructure.prototype.hasRoom = function() {
   return !this.isFull()
-}
-
-EnergyStructure.prototype.resetCallForEnergy = function() {
-  delete this.memory.call_for_energy
-}
-
-EnergyStructure.prototype.callForEnergy = function() {
-  if(!this.memory.call_for_energy) this.memory.call_for_energy = 0
-  this.memory.call_for_energy += this.energyCallModifier
 }

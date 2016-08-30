@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-21 05:48:36
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 06:03:30
+* @Last Modified time: 2016-08-28 09:05:21
 */
 
 'use strict';
@@ -103,4 +103,11 @@ global.addAlarm = function(ticks, message, command){
   Alarm.addAlarm(ticks, message, command)
 }
 
+global.reap = function(role) {
+  Finder.findAllCreeps(role).forEach(function(c) {
+    var o = Game.getObjectById(c.id)
+    o.suicide()
+  })
+  global.clearSpawnQueue()
+}
 

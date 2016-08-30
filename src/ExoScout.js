@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 14:21:15
+* @Last Modified time: 2016-08-29 05:07:07
 */
 
 'use strict';
@@ -32,7 +32,11 @@ Creep.prototype.assignRemoteExoScoutTasks = function() {
 }
 
 Creep.prototype.doScout = function() {
-  this.moveCloseTo(25, 25, 10)
+  if(this.room.controller) {
+    this.moveCloseTo(this.room.controller.pos.x, this.room.controller.pos.y, 2)
+  } else {
+    this.moveCloseTo(25, 25, 5)
+  }
   var home = Game.rooms[this.memory.home]
   if(this.room.controller){
     if(!this.room.controller.reservation || this.room.controller.reservation.ticksToEnd < 2500) {
