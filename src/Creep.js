@@ -2,14 +2,20 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-30 16:27:50
+* @Last Modified time: 2016-08-31 01:10:16
 */
 
 'use strict';
 
 Creep.prototype.tick = function(){
   if(this.memory.role == 'miner') {
-    _.merge(Creep.prototype, MinerCreep.prototype);
+    _.merge(Creep.prototype, MinerCreep.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'carrier') {
+    _.merge(Creep.prototype, CarrierCreep.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'builder') {
+    _.merge(Creep.prototype, BuilderCreep.prototype)
     this.tickCreep()
   } else {
     this.setHome()

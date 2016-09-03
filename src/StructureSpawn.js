@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-30 07:19:44
+* @Last Modified time: 2016-09-02 17:32:58
 */
 
 'use strict';
@@ -10,7 +10,7 @@ _.merge(StructureSpawn.prototype, EnergyStructure.prototype);
 
 StructureSpawn.prototype.tick = function() {
   Log.debug('Ticking Spawn: ' + this.name + ' Mode: ' + this.mode() + " - " + this.memory.refresh_count);
-  this.promoteCreeps();
+  // this.promoteCreeps();
   this.assignMode();
   this.spawnCreeps();
   this.doWork();
@@ -85,8 +85,12 @@ StructureSpawn.prototype.assignMode = function() {
   } else if (this.modeIs('spawning') && !this.spawning) {
       this.setMode('idle')
   }
-  if (this.room.energyCapacity() > 300 && Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this) === 0) {
-    this.setMode('er-spawn')
+  if (Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this) === 0) {
+    this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK], this.room.name, true)
+  }
+  console.log(Finder.findRealCreepCount('carrier', this))
+  if (Finder.findRealCreepCount('carrier', this) === 0) {
+    this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY], this.room.name, true)
   }
 }
 
@@ -149,6 +153,8 @@ StructureSpawn.prototype.spawnCreeps = function() {
   ROLES.getRoles(this.room.energyCapacity()).forEach(function(role){
     if(spawner.getCount(role.role) < spawner.getMaxCount(role.role)) {
       spawner.addToSpawnQueue(role.role, BodyBuilder.buildBody(role.body, spawner.room.energyCapacity(), true, false, true), role.priority)
+    } else if(spawner.getCount(role.role) > spawner.getMaxCount(role.role)){
+      spawner.retireCreep(role.role)
     }
   })
   EXOROLES.getRoles(this.room.energyCapacity()).forEach(function(role) {
@@ -163,6 +169,19 @@ StructureSpawn.prototype.spawnCreeps = function() {
       }
     })
   }
+}
+
+StructureSpawn.prototype.retireCreep = function(role) {
+  var creeps = Finder.findRealCreeps(role, this.room.name)
+  var age = 1500
+  var creep
+  creeps.forEach(function(c){
+    if(c.ticksToLive < age) {
+      age = c.ticksToLIve
+      creep = c
+    }
+  })
+  if(creep) creep.suicide()
 }
 
 StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {

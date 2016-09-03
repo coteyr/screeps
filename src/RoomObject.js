@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:31:08
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-20 19:42:02
+* @Last Modified time: 2016-09-02 18:01:00
 */
 
 'use strict';
@@ -23,11 +23,11 @@ RoomObject.prototype.setMode = function(mode) {
     if(mode !== 'idle') {
       delete this.memory.path
     }
-    if(typeof this.say != "undefined") {
+    /*if(typeof this.say != "undefined") {
       this.say(mode)
     } else {
       Log.debug("Setting Mode: " + mode + " for " + this.id)
-    }
+    }*/
   }
 }
 
@@ -46,7 +46,7 @@ RoomObject.prototype.setTarget = function(target) {
     this.memory.target = target.id
     delete this.memory.there
   } else if(target) {
-    Log.error(this.name + " in " + this.room.name + ": Set Target expects and object with an id!")
+    Log.error(this.name + " in " + this.room.name + ": Set Target expects and object with an id! Got: " + JSON.stringify(target))
   }
 }
 RoomObject.prototype.target = function() {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-30 18:34:27
+* @Last Modified time: 2016-08-31 00:53:01
 */
 
 'use strict';
@@ -13,7 +13,6 @@ let MinerCreep = function(){}
 _.merge(MinerCreep.prototype, StateMachine.prototype, RecyclableCreep.prototype);
 
 MinerCreep.prototype.tickCreep = function() {
-  console.log('Ticking Miner')
   this.checkState()
   this.recycleState()
 }

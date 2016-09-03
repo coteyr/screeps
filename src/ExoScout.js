@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-29 05:07:07
+* @Last Modified time: 2016-09-03 07:56:47
 */
 
 'use strict';
@@ -46,11 +46,13 @@ Creep.prototype.doScout = function() {
       this.autoRemoveExo('reserve', home, this.room)
     }
   }
+
   if(this.room.needsConstruction()) {
     this.autoAddExo('build', home, this.room)
   } else {
     this.autoRemoveExo('build', home, this.room)
   }
+  /*
   if(!this.room.needsConstruction() && this.room.hasRoads()) {
     this.autoAddExo('mine', home, this.room)
     this.autoAddExo('carry', home, this.room)
@@ -66,6 +68,7 @@ Creep.prototype.doScout = function() {
   } else {
     this.autoRemoveExo('responder', home, this.room)
   }
+  */
 }
 
 Creep.prototype.autoAddExo = function(arrayName, home, room, count = 1) {

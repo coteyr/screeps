@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-30 07:10:45
+* @Last Modified time: 2016-09-02 17:58:04
 */
 
 'use strict';
@@ -28,6 +28,7 @@ var Finder = {
     }
   },
   findEachTick: function(room) {
+    console.log("ioeny:" + room)
     var creeps = room.find(FIND_CREEPS)
     var objs = _.filter(creeps, function(c) { return c.my })
     this.box(room, 'my-creeps', objs)
@@ -112,6 +113,19 @@ var Finder = {
     })
     return largest;
   },
+  findExclusiveDropedEnergy: function(roomName) {
+    var room = Game.rooms[roomName]
+    var dropped = _.filter(this.unbox(room, 'dropped-resources'), (r) => r.resourceType === RESOURCE_ENERGY && r.amount > 300)
+    var result
+    dropped.some(function(blob){
+      var creeps = _.filter(Game.creeps, (creep) => creep.memory.target === blob.id);
+      if(_.size(creeps) <= 0){
+        result = blob
+        return true
+      }
+    })
+    return result
+  },
   findDropedEnergy: function(roomName) {
     var room = Game.rooms[roomName]
     var dropped = _.filter(this.unbox(room, 'dropped-resources'), (r) => r.resourceType === RESOURCE_ENERGY && r.amount > 300)
@@ -137,6 +151,18 @@ var Finder = {
     return room.storage
   },
   findSourcePosition: function(roomName, role) {
+    var room = Game.rooms[roomName]
+    if(!room) return false
+    var sources = _.filter(Finder.unbox(room, 'sources'), function(s){
+      if(role === 'miner') {
+        return _.size(_.filter(Finder.findCreeps('miner', roomName), (c) => c.memory.target === s.id)) <= 0
+      } else {
+        return s.energy >= 100
+      }
+    })
+  if (_.size(sources) > 0) return sources[0]
+  },
+  /*findSourcePosition: function(roomName, role) {
     var room = Game.rooms[roomName]
     if(!room) return false
     var result = null
@@ -172,7 +198,7 @@ var Finder = {
     } else {
       return backup
     }
-  },
+  },*/
   findSourcePositionCount: function(roomName) {
     var room = Game.rooms[roomName]
     var count = 0
@@ -217,6 +243,10 @@ var Finder = {
   findExtensions: function(roomName) {
     var room = Game.rooms[roomName]
     return _.filter(this.unbox(room, 'structures'), function(s){ return s.structureType === STRUCTURE_EXTENSION })
+  },
+  findStructure: function(roomName, structureType) {
+    var room = Game.rooms[roomName]
+    return _.first(_.filter(this.unbox(room, 'structures'), function(s){ return s.structureType === structureType }))
   }
 
 

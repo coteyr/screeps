@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-30 04:48:16
+* @Last Modified time: 2016-09-01 21:16:05
 */
 
 'use strict';
@@ -22,14 +22,14 @@ var Targeting = {
   getTransferTarget: function(pos, room) {
     // spawner -> tower -> extensions -> storage
     var spawn = Finder.findSpawn(room.name)
-    if(spawn.hasRoom()) return spawn
+    if(spawn && spawn.hasRoom()) return spawn
 
     var extension = Targeting.findClosestNotFullExtension(pos, room.name)
     if(extension && extension.hasRoom()) return extension
 
     var towers = Finder.findTowers(room.name)
     var tower = this.getMax(towers, function(t) { return t.energyCapacity - t.energy })
-    if(tower && tower.hasRoom()) return tower
+    if(tower && tower.hasRoom() && tower.storedEnergy() <= (tower.possibleEnergy() * 0.80)) return tower
 
     if(room.storage) return room.storage
 

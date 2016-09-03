@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-30 07:16:21
+* @Last Modified time: 2016-09-02 17:59:10
 */
 
 'use strict';
@@ -213,11 +213,11 @@ Room.prototype.energyCapacity = function() {
   //if(Finder.findCreeps('miner', this.name).length <= 0 && Finder.findCreeps('harvester', this.name).length <= 0 && Finder.findCreeps('big-miner', this.name).length <= 0) {
   //  return 300
   //} else {
-    if (this.energyCapacityAvailable >= 2300) {
-      return this.energyCapacityAvailable * 0.783
-    } else {
+    //if (this.energyCapacityAvailable > 2300) {
+    //  return this.energyCapacityAvailable * 0.783
+    //} else {
       return this.energyCapacityAvailable
-    }
+   // }
   //}
 
 }
@@ -263,7 +263,15 @@ Room.prototype.removeDemo = function(id) {
 }
 
 Room.prototype.excavatorReady = function() {
-  return this.controller.level >= 6 // and there are minerals and an extractor
+  if(this.controller.level >= 6) {
+    var min = Finder.findMineral(this.name)
+    if(min && min.mineralAmount > 0) {
+      if(Finder.findStructure(this.name, STRUCTURE_EXTRACTOR)) {
+        return true
+      }
+    }
+  }
+  return false
 }
 
 Room.prototype.isFull = function() {

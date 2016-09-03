@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-04 00:08:53
+* @Last Modified time: 2016-09-02 01:27:53
 */
 
 'use strict';
@@ -22,6 +22,7 @@ Creep.prototype.doExcavate = function() {
 }
 
 Creep.prototype.doStash = function() {
-  var container = Targeting.findCloseContainer(this.pos, 1)[0]
-  this.dumpResources(container)
+  var container = Targeting.findClosestContainer(this.pos, this.room)
+  if(container) this.dumpResources(container)
+  this.setMode('idle')
 }

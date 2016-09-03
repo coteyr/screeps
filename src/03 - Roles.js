@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-30 06:41:03
+* @Last Modified time: 2016-09-03 08:11:13
 */
 
 'use strict';
@@ -50,13 +50,13 @@ var ROLES = {
     ]},
     {min: 2300, max: 9000, roles: [
       { role: 'harvester', priority: 1, body: {work: 5, carry: 5} },
-      { role: 'carrier',   priority: 3, body: {carry: 20} },
-      { role: 'builder',   priority: 4, body: {work: 2, carry: 4} },
+      { role: 'carrier',   priority: 3, body: {carry: 10} },
+      { role: 'builder',   priority: 4, body: {work: 2, carry: 5} },
       { role: 'upgrader',  priority: 4, body: {work: 2, carry: 5} },
-      { role: 'demo',      priority: 5, body: {work: 8, carry: 4} },
+      { role: 'demo',      priority: 5, body: {work: 8, carry: 5} },
       { role: 'big-miner', priority: 2, body: {work: 14, carry: 1} },
-      { role: 'excavator', priority: 6, body: {work: 6, carry: 6} },
-      { role: 'hauler',    priority: 6, body: {carry: 6} },
+      { role: 'excavator', priority: 6, body: {work: 6, carry: 1} },
+      { role: 'hauler',    priority: 6, body: {carry: 10} },
       { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} }
 
     ]}
@@ -105,7 +105,7 @@ var ROLES = {
   },
 
   getCarrierMulti: function(room) {
-    if (room.carrierReady()) return room.sourceCount() * 1.25
+    if (room.carrierReady()) return room.sourceCount() * 1 + _.size(Finder.findDropedEnergy(room.name))
     return 0
   },
 
@@ -159,7 +159,7 @@ var EXOROLES = {
       {role: 'exo-scout',     arrayName: 'scout',   priority: 199, body: {move: 1} }
     ]},
     {min: 1800, max: 2300, roles: [
-      {role: 'exo-builder',   arrayName: 'build',   priority: 203, body: {work: 2, carry: 2} },
+      {role: 'exo-builder',   arrayName: 'build',   priority: 203, body: {work: 5, carry: 2} },
       {role: 'exo-harvester', arrayName: 'harvest', priority: 201, body: {work: 3, carry: 6} },
       {role: 'exo-theif',     arrayName: 'steal',   priority: 205, body: {work: 4, carry: 4} },
       {role: 'exo-responder', arrayName: 'responder', priority: 198, body: {heal: 1, attack: 2, ranged: 2, tough: 10} },
@@ -191,7 +191,7 @@ var EXOROLES = {
     return roles
   },
   getExoBuilderMulti: function(room){
-    return 2
+    return 1
   },
   getExoHarvesterMulti: function(room){
     return 2

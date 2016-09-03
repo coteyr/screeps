@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-08-30 17:05:51
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-30 18:32:41
+* @Last Modified time: 2016-08-31 06:04:45
 */
 
 'use strict';
@@ -20,7 +20,7 @@ RecyclableCreep.prototype.recycleState = function() {
   }
   if(this.stateIs('retire')) {
     var target = this.target()
-    if(this.moveCloseTo(target.x, target.y, 0)) this.setState('suicide')
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 0)) this.setState('suicide')
   }
   if(this.stateIs('suicide')) this.suicide()
 }

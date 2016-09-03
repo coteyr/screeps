@@ -2,17 +2,86 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-30 05:35:35
+* @Last Modified time: 2016-09-01 20:30:33
 */
 
 'use strict';
 
-Creep.prototype.assignCarrierTasks = function() {
-  if(this.modeIs('idle')) {
-    if(this.hasRoom()) this.setMode('pickup')
-    if(this.hasSome()) this.setMode('transfer')
-  }
+// [check-dropped -> select -> position -> fill -> choose -> travel -> dump] -> recycle
+//               |->        goto -> pickup      ->|
+
+let CarrierCreep = function() {}
+_.merge(CarrierCreep.prototype, StateMachine.prototype, RecyclableCreep.prototype, LocalCreep.prototype);
+
+
+CarrierCreep.prototype.tickCreep = function() {
+  this.localState()
+  this.checkState()
+  this.recycleState()
 }
+
+CarrierCreep.prototype.checkState = function() {
+  if(!this.state()) this.setState('check-dropped')
+  if(this.stateIs('check-dropped')) {
+    this.clearTarget()
+    this.setTarget(Finder.findExclusiveDropedEnergy(this.room.name))
+    if(this.hasTarget()) {
+      this.setState('goto')
+    } else {
+      this.setState('select')
+    }
+  }
+  if(this.stateIs('goto')){
+    var target = this.target()
+    if(target) {
+      if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) this.setState('pickup')
+    } else {
+      this.clearTarget()
+      this.setState('check-dropped')
+    }
+  }
+  if(this.stateIs('pickup')) {
+    var target = this.target()
+    this.pickup(target)
+    this.setState('choose')
+  }
+  if(this.stateIs('select')) {
+    this.clearTarget()
+    this.setTarget(Targeting.findEnergySource(this.pos, this.room, this.memory.role))
+    if(this.hasTarget()) this.setState('position')
+  }
+  if(this.stateIs('position')) {
+    var target = this.target()
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) this.setState('fill')
+  }
+  if(this.stateIs('fill')) {
+    var target = this.target()
+    if(target.transfer) target.transfer(this, RESOURCE_ENERGY)
+    if(target.withdraw) this.withdraw(target, RESOURCE_ENERGY)
+    if(this.hasSome()) this.setState('choose')
+    if(this.isEmpty()) this.setState('check-dropped')
+  }
+  if(this.stateIs('choose')) {
+    this.clearTarget()
+    this.setTarget(Targeting.getTransferTarget(this.pos, this.room))
+    if(this.hasTarget()) this.setState('travel')
+  }
+  if(this.stateIs('travel')) {
+    var target = this.target()
+    this.doFillCloseExtensions()
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) this.setState('dump')
+  }
+  if(this.stateIs('dump')) {
+    var target = this.target()
+    this.dumpResources(target)
+    this.clearTarget()
+    if(this.hasSome()) this.setState('choose')
+    if(this.isEmpty()) this.setState('check-dropped')
+  }
+
+
+}
+
 Creep.prototype.doWaitEnergy = function() {
   if(this.isFull()) {
     this.setMode('idle')
