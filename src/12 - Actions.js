@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-12 15:47:32
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-12 20:44:50
+* @Last Modified time: 2016-09-13 09:27:20
 */
 
 'use strict';
@@ -10,7 +10,11 @@
 let Actions = {
 
   moveToTarget: function(creep, target, exitState, range = 1) {
-    if(creep.moveCloseTo(target.pos.x, target.pos.y, range)) creep.setState(exitState)
+    if(target) {
+      if(creep.moveCloseTo(target.pos.x, target.pos.y, range)) creep.setState(exitState)
+    } else {
+      creep.setState(exitState)
+    }
   },
   mine: function(creep, target, exitState = 'dump', fill=false) {
     creep.harvest(target)
@@ -24,7 +28,8 @@ let Actions = {
   },
   mineOrGrab: function(creep, target, exitState, fill, failState) {
     if(target) {
-      if(target.ticksToRegeneration) Actions.mine(creep, target, exitState, fill)
+      if(target.ticksToRegeneration && fill) Actions.mine(creep, target, exitState, exitState)
+      if(target.ticksToRegeneration && !fill) Actions.mine(creep, target, exitState, false)
       if(target.resourceType) Actions.pickup(creep, target, exitState)
       if(target.storeCapacity) Actions.grab(creep, target, exitState)
     } else {
@@ -71,6 +76,7 @@ let Actions = {
     if(target) {
       creep.repair(target)
       if(target.hits >= target.hitsMax) creep.setState(exitState)
+      if(!target.hits) creep.setState(failState)
     } else {
       creep.setState(failState)
     }
@@ -78,7 +84,7 @@ let Actions = {
   },
   upgrade: function(creep, exitState) {
     creep.upgradeController(creep.room.controller)
-    if(creep.isEmpty()) this.setState(exitState)
+    if(creep.isEmpty()) creep.setState(exitState)
   }
 
 }

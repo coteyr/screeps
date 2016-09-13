@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-10 15:15:41
+* @Last Modified time: 2016-09-13 09:03:03
 */
 
 'use strict';
@@ -28,7 +28,11 @@ Room.prototype.tickStuff = function() {
   Object.keys(stuff).forEach(function(key, index) {
     var object = Game.getObjectById(this[key].id);
     if(object) {
-      object.tick();
+      try {
+        object.tick();
+      } catch (error) {
+
+      }
     }
   }, stuff);
 }

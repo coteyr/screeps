@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-12 15:33:51
+* @Last Modified time: 2016-09-13 09:39:55
 */
 
 'use strict';
@@ -19,7 +19,7 @@ var ROLES = {
       { role: 'carrier',   priority: 3, body: {carry: 5} },
       { role: 'builder',   priority: 4, body: {work: 2, carry: 2} },
       { role: 'upgrader',  priority: 4, body: {work: 2, carry: 2} },
-      { role: 'demo',      priority: 5, body: {work: 3, carry: 1} },
+      { role: 'demo',      priority: 5, body: {work: 3, carry: 1} }
     ]},
     {min: 800, max: 1300, roles: [
       { role: 'harvester', priority: 1, body: {work: 4, carry: 3} },
@@ -169,8 +169,8 @@ var EXOROLES = {
       {role: 'exo-responder', arrayName: 'responder', priority: 198, body: {heal: 1, attack: 2, ranged: 2, tough: 10} },
       {role: 'exo-claimer',   arrayName: 'claim',   priority: 200, body: {claim: 2} },
       {role: 'exo-reserver',  arrayName: 'reserve', priority: 200, body: {claim: 2} },
-      {role: 'exo-miner',     arrayName: 'mine',    priority: 201, body: {work: 7, carry: 1} },
-      {role: 'exo-carrier',   arrayName: 'carry',   priority: 202, body: {work: 1, carry: 22, move: 12} },
+      {role: 'exo-miner',     arrayName: 'mine',    priority: 101, body: {work: 7, carry: 1} },
+      {role: 'exo-carrier',   arrayName: 'carry',   priority: 102, body: {work: 1, carry: 22, move: 12} },
       {role: 'exo-sapper',    arrayName: 'sapper',  prioirty: 206, body: {ranged: 2, work: 2, carry: 3, move: 10, heal: 2} },
       {role: 'exo-scout',     arrayName: 'scout',   priority: 199, body: {move: 1} }
     ]},
@@ -241,20 +241,20 @@ var ARMY = {
 
     ], rally: 9},
   "Drain Tower": {roles: [
-    { role: 'exo-tank',      arrayName: 'attack',  multiplyer: 2,  priority: 100, body: BodyBuilder.buildBody({heal: 1, work: 1}, 1300, true, true, false) },
+    { role: 'exo-tank',      arrayName: 'attack',  multiplyer: 2,  priority: 103, body: BodyBuilder.buildBody({heal: 1, work: 1}, 1300, true, true, false) },
     { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 5,  priority: 110, body: BodyBuilder.buildBody({ attack: 2, ranged: 1, tough: 5}, 1300, true, false, false) },
     { role: 'exo-healer',    arrayName: 'attack',  multiplyer: 4,  proiorty: 120, body: BodyBuilder.buildBody({ heal: 2 }, 1300, true, false, false) }
   ]},
   'Heavy Drain Tower': [],
   'Thick Walls': [],
   'swarm': {roles: [
-    { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 5, priority: 100, body: BodyBuilder.buildBody({attack: 2, move: 6, tough: 4}, 500, false, false, false)}
+    { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 5, priority: 103, body: BodyBuilder.buildBody({attack: 2, move: 6, tough: 4}, 500, false, false, false)}
   ], rally: 5},
   'kite': {roles: [
-    { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 5, priority: 100, body: BodyBuilder.buildBody({ranged: 2, attack: 2, move: 6, tough: 2}, 800, false, false, false)}
+    { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 5, priority: 103, body: BodyBuilder.buildBody({ranged: 2, attack: 2, move: 6, tough: 2}, 800, false, false, false)}
   ], rally: 5},
   'heavy': [
-    { role: 'exo-tank',      arrayName: 'attack',  multiplyer: 4,  priority: 100, body: BodyBuilder.buildBody({heal: 1, work: 1, move: 10}, 1300, false, true, true) },
+    { role: 'exo-tank',      arrayName: 'attack',  multiplyer: 4,  priority: 103, body: BodyBuilder.buildBody({heal: 1, work: 1, move: 10}, 1300, false, true, true) },
     { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 5,  priority: 110, body: BodyBuilder.buildBody({ attack: 8, move: 10}, 1300, false, true, true) },
     { role: 'exo-healer',    arrayName: 'attack',  multiplyer: 2,  proiorty: 120, body: BodyBuilder.buildBody({ heal: 2, move: 10}, 1300, false, true, true) }
   ],

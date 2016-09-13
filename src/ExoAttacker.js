@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-12 13:12:23
+* @Last Modified time: 2016-09-13 01:06:28
 */
 
 'use strict';
@@ -120,7 +120,7 @@ Creep.prototype.normalAttack = function() {
     console.log('attacking target')
     if(this.attack(target) == ERR_NOT_IN_RANGE) {
       console.log('Not in range')
-      if(this.moveTo(target) == -2) {
+      if(this.moveTo(target, {ignoreDestructibleStructures: true}) == -2) {
         var blocker = Targeting.nearByStructures(this.pos)
         if (blocker) {
           console.log('attacking blocker')
