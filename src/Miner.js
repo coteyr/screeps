@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-31 00:53:01
+* @Last Modified time: 2016-09-12 18:11:52
 */
 
 'use strict';
@@ -18,25 +18,11 @@ MinerCreep.prototype.tickCreep = function() {
 }
 
 MinerCreep.prototype.checkState = function() {
-  if(!this.state()) this.setState('target') // this.memory.state = 'target'
-  if(this.stateIs('target')) { //this.memory.state === 'target') {
-    this.setTarget(Finder.findSourcePosition(this.room.name, this.memory.role))
-    if(this.hasTarget()) this.setState('position')
-  }
-  if(this.stateIs('position')) {
-    var target = this.target()
-    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) this.setState('mine')
-  }
-  if(this.stateIs('mine')) {
-    var target = this.target()
-    this.harvest(target)
-    if(this.hasSome()) this.setState('dump')
-  }
-  if(this.stateIs('dump')) {
-    var drop = Targeting.findCloseContainer(this.pos, 1)
-    this.dumpResources(drop)
-    this.setState('mine')
-  }
+  if(!this.state()) this.setState('target')
+  if(this.stateIs('target')) Actions.targetWithState(this, Finder.findSourcePosition(this.room.name, this.memory.role), 'position')
+  if(this.stateIs('position')) Actions.moveToTarget(this, this.target(), 'mine')
+  if(this.stateIs('mine')) Actions.mine(this, this.target(), 'dump')
+  if(this.stateIs('dump')) Actions.dump(this, Targeting.findCloseContainer(this.pos, 1), 'mine')
 }
 
 Creep.prototype.doSend = function() {

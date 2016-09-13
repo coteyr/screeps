@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-31 17:55:51
+* @Last Modified time: 2016-09-12 20:45:21
 */
 
 'use strict';
@@ -19,61 +19,27 @@ BuilderCreep.prototype.tickCreep = function() {
 }
 
 BuilderCreep.prototype.checkState = function() {
-  if(!this.state()) this.setState('select')
+  if(!this.state()) this.setState('check-dropped')
+  if(this.stateIs('check-dropped')) Actions.targetWithState(this, Finder.findExclusiveDropedEnergy(this.room.name), 'goto', 'select')
+  if(this.stateIs('goto')) Actions.moveToTarget(this, this.target(), 'pickup')
+  if(this.stateIs('pickup')) Actions.pickup(this, this.target(), 'choose')
   if(this.stateIs('select')) {
-    this.clearTarget()
-    this.setTarget(Targeting.findEnergySource(this.pos, this.room, this.memory.role))
-    if(this.hasTarget()) this.setState('travel')
-  }
-  if(this.stateIs('travel')) {
-    var target = this.target()
-    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) this.setState('fill')
-  }
-  if(this.stateIs('fill')) {
-    if(target.transfer) target.transfer(this, RESOURCE_ENERGY)
-    if(target.withdraw) this.withdraw(target, RESOURCE_ENERGY)
-    if(this.hasSome()) this.setState('choose')
-    if(this.isEmpty()) this.setState('select')
-  }
-  if(this.stateIs('choose')){
-    this.clearTarget()
-    this.setTarget(Targeting.findClosestConstruction(this.pos))
-    if(this.hasTarget()) this.setState('position')
-    if(this.needsTarget()) this.setState('pick')
-  }
-  if(this.stateIs('position')) {
-    var target = this.target()
-    if(target) {
-      if(this.moveCloseTo(target.pos.x, target.pos.y, 3)) this.setState('build')
+    if(this.room.carrierReady()) {
+      Actions.targetWithState(this, Targeting.findEnergySource(this.pos, this.room, this.memory.role), 'travel')
     } else {
-      this.setState('select')
+      Actions.targetWithState(this, Finder.findHarvesterPosition(this.room.name, this.memory.role), 'travel')
     }
   }
-  if(this.stateIs('build')) {
-    var target = this.target()
-    if(target) {
-      this.build(target)
-      if(this.isEmpty()) this.setState('select')
-    } else {
-      this.setState('select')
-    }
-  }
-  if(this.stateIs('pick')) {
-    this.clearTarget()
-    this.setTarget(Targeting.findClosestRepairTarget(this.pos, this.room))
-    if(this.hasTarget()) this.setState('travel')
-  }
-  if(this.stateIs('travel')) {
-    var target = this.target()
-    if(this.moveCloseTo(target.pos.x, target.pos.y, 3)) this.setState('repair')
-  }
-  if(this.stateIs('repair')) {
-    var target = this.target()
-    this.repair(target)
-    if(this.isEmpty()) this.setState('select')
-    if(target.hits >= target.hitsMax) this.setState('select')
-  }
-
+  if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'fill')
+  if(this.stateIs('fill')) Actions.mineOrGrab(this, this.target(), 'choose', true, 'select')
+  if(this.stateIs('choose')) Actions.targetWithState(this, Targeting.findClosestConstruction(this.pos), 'position', 'pick')
+  if(this.stateIs('position')) Actions.moveToTarget(this, this.target(), 'build')
+  if(this.stateIs('build')) Actions.build(this, this.target(), 'select', 'select')
+  if(this.stateIs('pick')) Actions.targetWithState(this, Targeting.findClosestRepairTarget(this.pos, this.room, this), 'travel', 'traverse')
+  if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'repair', 3)
+  if(this.stateIs('repair')) Actions.repair(this, this.target(), 'select', 'select')
+  if(this.stateIs('traverse')) Actions.moveToTarget(this, this.room.controller, 'upgrade')
+  if(this.stateIs('upgrade')) Actions.upgrade(this, 'select')
 }
 
 Creep.prototype.doBuild = function() {

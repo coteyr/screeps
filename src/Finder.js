@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-02 17:58:04
+* @Last Modified time: 2016-09-12 12:20:11
 */
 
 'use strict';
@@ -28,7 +28,6 @@ var Finder = {
     }
   },
   findEachTick: function(room) {
-    console.log("ioeny:" + room)
     var creeps = room.find(FIND_CREEPS)
     var objs = _.filter(creeps, function(c) { return c.my })
     this.box(room, 'my-creeps', objs)
@@ -162,7 +161,7 @@ var Finder = {
     })
   if (_.size(sources) > 0) return sources[0]
   },
-  /*findSourcePosition: function(roomName, role) {
+  findHarvesterPosition: function(roomName, role) {
     var room = Game.rooms[roomName]
     if(!room) return false
     var result = null
@@ -172,7 +171,7 @@ var Finder = {
     room.find(FIND_SOURCES).forEach(function(source){
       var creeps = _.filter(Game.creeps, (creep) => creep.memory.target === source.id);
       if(source.energy > biggest) {
-
+        backup = source
         // May need to add some exclusive checking
         // This is a CPU HOG
         if(role === 'miner') {
@@ -181,16 +180,17 @@ var Finder = {
             biggest = source.energy
           }
         } else {
-          var count = Finder.findSourcePositionCount(roomName)
+          var count = 0 //Finder.findSourcePositionCount(roomName)
+          room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
+            if (spot.terrain === 'plain' || spot.terrain === 'swamp') {
+              count += 1;
+            }
+          })
           if(_.size(creeps) < count) {
             result = source
             biggest = source.energy
           }
         }
-      }
-      if(_.size(creeps) <= used) {
-        used = _.size(creeps)
-        backup = source
       }
     })
     if(result) {
@@ -198,7 +198,7 @@ var Finder = {
     } else {
       return backup
     }
-  },*/
+  },
   findSourcePositionCount: function(roomName) {
     var room = Game.rooms[roomName]
     var count = 0
@@ -217,7 +217,7 @@ var Finder = {
   },
   findContainerCount: function(roomName) {
     var room = Game.rooms[roomName]
-    return _.size(_.filter(this.unbox(room, 'structures'), (s) => s.structureType === STRUCTURE_ROAD))
+    return _.size(_.filter(this.unbox(room, 'structures'), (s) => s.structureType === 'container'))
   },
   findSpawn: function(roomName){
     var room = Game.rooms[roomName]
@@ -234,7 +234,13 @@ var Finder = {
   },
   findFlags: function(roomName) {
     var room = Game.rooms[roomName]
-    return this.unbox(room, 'flags')
+    var flags = this.unbox(room, 'flags')
+    if(_.size(flags) === 0) {
+      var objs = room.find(FIND_FLAGS)
+      this.box(room, 'flags', objs)
+      flags = objs
+    }
+    return flags
   },
   findTowers: function(roomName) {
     var room = Game.rooms[roomName]
@@ -244,9 +250,23 @@ var Finder = {
     var room = Game.rooms[roomName]
     return _.filter(this.unbox(room, 'structures'), function(s){ return s.structureType === STRUCTURE_EXTENSION })
   },
-  findStructure: function(roomName, structureType) {
+  findStructures: function(roomName, structureType) {
     var room = Game.rooms[roomName]
-    return _.first(_.filter(this.unbox(room, 'structures'), function(s){ return s.structureType === structureType }))
+    return _.filter(this.unbox(room, 'structures'), function(s){ return s.structureType === structureType })
+  },
+  findHostileStructures: function(roomName) {
+    var room = Game.rooms[roomName]
+    return _.filter(this.unbox(room, 'structures'), function(s){ return s.my === false && s.structureType != STRUCTURE_ROAD && s.structureType != STRUCTURE_CONTROLLER})
+  },
+  findStructure: function(roomName, structureType) {
+   return _.first(this.findStructures(roomName, structureType))
+  },
+  findLabs: function(roomName) {
+    return this.findStructures(roomName, STRUCTURE_LAB)
+  },
+  findConstructionSites: function(roomName) {
+    var room = Game.rooms[roomName]
+    return _.filter(this.unbox(room, 'construction-sites'), function(s){ return s.my })
   }
 
 

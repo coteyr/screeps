@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-11 12:02:28
+* @Last Modified time: 2016-09-12 09:14:35
 */
 
 'use strict';
@@ -40,13 +40,10 @@ StructureTower.prototype.doAttackInvaders = function() {
 
 StructureTower.prototype.doRepairs = function() {
   var tower = this
-   var target = this.pos.findClosestByRange(FIND_STRUCTURES, {
+  if(!tower.room.memory.demos) tower.room.memory.demos = {}
+  var target = this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: function(object){
-          if(_.includes(tower.room.memory.demos, object.id)) {
-            return false
-          } else {
-            return ((object.hits < object.hitsMax / 4 &&  object.structureType !== 'constructedWall' && object.structureType !== 'rampart') || (object.hits < 10000 &&  object.structureType === 'constructedWall') || (object.hits < 10000 && object.structureType === 'rampart'));
-            }
+          return ((object.hits < object.hitsMax / 4 &&  object.structureType !== 'constructedWall' && object.structureType !== 'rampart') || (object.hits < 10000 &&  object.structureType === 'constructedWall') || (object.hits < 10000 && object.structureType === 'rampart'));
         }
     });
    if(target) {

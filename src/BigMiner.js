@@ -2,41 +2,26 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 02:56:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-29 18:43:15
+* @Last Modified time: 2016-09-12 18:12:45
 */
 
 'use strict';
+// select -> position -> [ mine -> dump ]
 
-Creep.prototype.assignBigMinerTasks = function() {
-  if(this.freshCreep()) this.killSmallMiners() // first tick
-  if(this.hasRoom()) this.setMode('big-mine')
-  if(this.isFull()) this.setMode('big-send')
+
+let BigMinerCreep = function() {}
+_.merge(BigMinerCreep.prototype, StateMachine.prototype, RecyclableCreep.prototype, LocalCreep.prototype);
+
+BigMinerCreep.prototype.tickCreep = function() {
+  this.localState()
+  this.checkState()
+  this.recycleState()
 }
 
-Creep.prototype.doBigMine = function() {
-  if(this.needsTarget()) this.setTarget(Finder.findLargestSource(this.room.name))
-  if(this.hasTarget()) {
-    var target = this.target()
-    this.getCloseAndAction(target, this.harvest(target), 1)
-    if(target.energy < 20 && target.ticksToRegeneration > 20) {
-      this.clearTarget()
-      this.doBigSend()
-    }
-  }
-  if(this.hasSome()) {
-    this.setMode('big-send')
-    this.doBigSend()
-  }
-}
-
-Creep.prototype.killSmallMiners = function() {
-  Finder.findCreeps('miner', this.room.name).forEach(function(creep){
-    creep.setMode('recycle')
-  })
-}
-
-Creep.prototype.doBigSend = function() {
-  var container = Targeting.findCloseContainer(this.pos, 1)
-  this.setMode('big-mine')
-  this.dumpResources(container)
+BigMinerCreep.prototype.checkState = function() {
+  if(!this.state()) this.setState('select')
+  if(this.stateIs('select')) Actions.targetWithState(this, Finder.findLargestSource(this.room.name), 'position')
+  if(this.stateIs('position')) Actions.moveToTarget(this, this.target(), 'mine')
+  if(this.stateIs('mine')) Actions.mine(this, this.target())
+  if(this.stateIs('dump')) Actions.dump(this, Targeting.findCloseContainer(this.pos, 1), Actions.chooseState(this, target.energy > 20 || target.ticksToRegeneration < 20, 'mine', 'select'))
 }

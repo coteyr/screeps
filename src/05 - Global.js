@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-21 05:48:36
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 09:05:21
+* @Last Modified time: 2016-09-12 13:42:55
 */
 
 'use strict';
@@ -43,10 +43,28 @@ global.listGoals = function() {
         })
         out += "</tr>"
       }
-  }, Game.rooms);
+  }, Game.rooms)
   out += "</tbody></table>"
   console.log(out)
 
+}
+global.listSales = function() {
+  var out = "<table cellpadding='5' cellspacing='5'><thead><tr><th style='border: 1px solid; padding: 4px'>Room</th><th style='border: 1px solid; padding: 4px'>Sales</th>"
+  Object.keys(Game.rooms).forEach(function(key, index) {
+    var room = Game.rooms[key]
+    if(room.controller && room.controller.my) {
+      out += "<tr><th style='border: 1px solid; padding: 4px'>" + this[key].name + "</th>"
+      out += "<td style='border: 1px solid; padding: 4px; text-align: left;'>"
+      if(!room.memory.sell) room.memory.sell = {}
+      Object.keys(room.memory.sell).forEach(function(resource, index) {
+        out += room.memory.sell[resource].total + " " + resource + ", "
+      }, room.memory.sell)
+      out += "</td></tr>"
+    }
+
+  }, Game.rooms)
+  out += "</tbody></table>"
+  console.log(out)
 }
 
 global.showUsed = function() {
@@ -106,8 +124,16 @@ global.addAlarm = function(ticks, message, command){
 global.reap = function(role) {
   Finder.findAllCreeps(role).forEach(function(c) {
     var o = Game.getObjectById(c.id)
-    o.suicide()
+    if(o.memory.er != true) o.suicide()
   })
   global.clearSpawnQueue()
 }
 
+global.forceTarget = function(id) {
+  for(var name in Memory.creeps) {
+    var creep = Memory.creeps[name]
+    if(creep.role == 'exo-attacker') {
+     creep.target = id
+    }
+  }
+}

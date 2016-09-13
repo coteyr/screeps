@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-10 13:42:20
+* @Last Modified time: 2016-09-09 06:50:20
 */
 
 'use strict';
@@ -25,6 +25,10 @@ Creep.prototype.assignTravelExoTankTasks = function() {
 Creep.prototype.assignHomeExoTankTasks = function() {
   var flag = this.room.find(FIND_FLAGS)[0]
   if(flag && _.size(flag.pos.findInRange(FIND_MY_CREEPS, 5)) >= 6) {
+    this.setMode('move-out')
+  } else if(this.hits < this.hitsMax) {
+    this.heal(this)
+  } else if(!flag) {
     this.setMode('move-out')
   } else if(this.mode() !== 'move-out' && this.mode() != 'transition') {
     this.setMode('rally')

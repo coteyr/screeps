@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-02 17:32:58
+* @Last Modified time: 2016-09-12 13:44:00
 */
 
 'use strict';
@@ -181,7 +181,8 @@ StructureSpawn.prototype.retireCreep = function(role) {
       creep = c
     }
   })
-  if(creep) creep.suicide()
+  if(creep && creep.memory.er != true) creep.suicide()
+  global.clearSpawnQueue()
 }
 
 StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {

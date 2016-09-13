@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-02 17:59:10
+* @Last Modified time: 2016-09-10 15:15:41
 */
 
 'use strict';
@@ -16,8 +16,13 @@ Room.prototype.tick = function() {
   // this.refreshData();
   this.tickStuff();
   this.tickCreeps(); //keep this separate
+  if(Game.time % 1500 == 0) this.memory.energy_spent_on_walls = 0
   return true;
 };
+Room.prototype.upgradeWalls = function() {
+  if(!this.memory.energy_spent_on_walls) this.memory.energy_spent_on_walls = 0
+  return this.memory.energy_spent_on_walls < 500
+}
 Room.prototype.tickStuff = function() {
   var stuff = _.union({}, this.memory.my_storages, this.memory.my_containers, this.memory.my_extensions, this.memory.my_spawns, this.memory.my_towers, this.memory.my_sources)
   Object.keys(stuff).forEach(function(key, index) {
@@ -223,7 +228,7 @@ Room.prototype.energyCapacity = function() {
 }
 
 Room.prototype.needsConstruction = function() {
-  return _.size(this.find(FIND_CONSTRUCTION_SITES)) > 0
+  return _.size(Finder.findConstructionSites(this.name)) > 0
 }
 
 Room.prototype.sourceCount = function() {
@@ -232,7 +237,7 @@ Room.prototype.sourceCount = function() {
 }
 
 Room.prototype.carrierReady = function() {
-  return this.controller && this.controller.level >= 3 && _.size(this.find(FIND_STRUCTURES, {filter: {structureType: 'container'}})) >= this.sourceCount()
+  return Finder.findContainerCount(this.name) >= Finder.findSourceCount(this.name)
 }
 
 Room.prototype.getExitTo = function(roomName) {
@@ -292,6 +297,7 @@ Room.prototype.setBuildWalls = function(value) {
 
 Room.prototype.setTactic = function(value) {
   this.memory.tactic = value
+  global.clearSpawnQueue()
 }
 
 Room.prototype.tactic = function() {
@@ -318,4 +324,11 @@ Room.prototype.hasHostiles = function() {
 
 Room.prototype.findAPath = function(from, to) {
   return this.findPath(from, to, {ignoreCreeps: true, ignoreRoads: true, serialize: true})
+}
+
+Room.prototype.addSellOrder = function(resource, amount) {
+  if(!this.memory.sell) this.memory.sell = {}
+  if(!this.memory.sell[resource]) this.memory.sell[resource] = {total: 0, id: null, cost: 0, state: null}
+  this.memory.sell[resource].total += amount
+  global.listSales()
 }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 03:00:33
+* @Last Modified time: 2016-09-07 10:12:18
 */
 
 'use strict';
@@ -37,9 +37,10 @@ Creep.prototype.assignExoTasks = function() {
   if(this.mode() != 'transition' && this.mode() != 'leave' && this.mode() !== 'respond') {
     this.getOffExits()
   }
-  if(this.room.name === this.memory.home && this.ticksToLive <= 300) {
+  /*if(this.room.name === this.memory.home && this.ticksToLive <= 300) {
     this.setMode('recycle')
-  } else if (this.modeIs('recover')) {
+  } else*/
+   if (this.modeIs('recover')) {
 
   } else if(this.room.name === this.memory.exo_target) {
     // I am in the remote room
@@ -58,7 +59,7 @@ Creep.prototype.assignExoTasks = function() {
 }
 
 Creep.prototype.getOffExits = function() {
-  if(!this.modeIs('move-out') && !this.modeIs('attack')) {
+  if(!this.modeIs('move-out') && !this.modeIs('attack') && !this.modeIs('build')) {
     if(this.pos.y >= 47 || this.pos.x >= 47 || this.pos.y <= 3 || this.pos.x <= 3) {
       this.moveCloseTo(25, 25, 10)
       return false
@@ -177,7 +178,9 @@ Creep.prototype.doTransition = function() {
 }
 
 Creep.prototype.gotoRoom = function(roomName) {
+  if(!Memory.waypoints) Memory.waypoints = {}
   if(!this.memory.waypoints && Memory.waypoints[this.room.name + "-to-" + roomName]) {
+
     this.memory.waypoints = Memory.waypoints[this.room.name + "-to-" + roomName]
   }
   if(!this.memory.waypoints && Memory.waypoints[roomName+ "-to-" + this.room.name]) {

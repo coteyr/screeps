@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-03 07:56:47
+* @Last Modified time: 2016-09-07 12:30:50
 */
 
 'use strict';
@@ -52,6 +52,12 @@ Creep.prototype.doScout = function() {
   } else {
     this.autoRemoveExo('build', home, this.room)
   }
+  if(_.size(Finder.findHostileStructures(this.room.name)) > 0) {
+    this.autoAddExo('steal', home, this.room)
+  }
+  if(_.size(Finder.findHostileStructures(this.room.name)) <= 0) {
+    this.autoRemoveExo('steal', home, this.room)
+  }
   /*
   if(!this.room.needsConstruction() && this.room.hasRoads()) {
     this.autoAddExo('mine', home, this.room)
@@ -72,7 +78,8 @@ Creep.prototype.doScout = function() {
 }
 
 Creep.prototype.autoAddExo = function(arrayName, home, room, count = 1) {
-  var existing = home.memory[arrayName].reduce(function(total,x){return x== room.name ? total+1 : total}, 0)
+  if(!home.memory[arrayName]) home.memory[arrayName] = []
+  var existing = home.memory[arrayName].reduce(function(total,x){return x == room.name ? total+1 : total}, 0)
   if(existing < count){
     home.addExoTarget(arrayName, room.name)
     Log.warn('Adding ' + arrayName + ' from ' + home.name + " to " + room.name)

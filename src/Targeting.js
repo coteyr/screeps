@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-01 21:16:05
+* @Last Modified time: 2016-09-10 03:39:30
 */
 
 'use strict';
@@ -31,9 +31,29 @@ var Targeting = {
     var tower = this.getMax(towers, function(t) { return t.energyCapacity - t.energy })
     if(tower && tower.hasRoom() && tower.storedEnergy() <= (tower.possibleEnergy() * 0.80)) return tower
 
+    var labs = Finder.findLabs(room.name)
+    var lab = this.getMax(labs, function(l) { return l.energyCapacity - l.energy})
+    if(lab && lab.hasRoom()) return lab
+
     if(room.storage) return room.storage
 
 
+  },
+  findMostNeedingHeals: function(pos, room) {
+    var targets = pos.findInRange(FIND_MY_CREEPS, 10, {
+      filter: function(object) {
+          return object.hits < object.hitsMax;
+      }
+    });
+    var lowest = 10000
+    var target
+    targets.forEach(function(creep){
+      if(creep.hits < lowest) {
+        lowest = creep.hits
+        target = creep
+      }
+    })
+    return target
   },
   /*getTransferTarget: function(pos, room) {
     var result;
@@ -173,7 +193,7 @@ var Targeting = {
     var targets = _.filter(Finder.unbox(room, 'structures'), (s) => s.structureType === STRUCTURE_CONTAINER && s.storedEnergy() > 100)
     var buffer = pos.findClosestByRange(targets)
     if(buffer) return buffer
-    if(mode != 'carrier' && room.storage) return room.storage
+    if(room.storage) return room.storage
   },
 
   findEnergySource: function(pos, room, mode) {
@@ -195,16 +215,14 @@ var Targeting = {
     return pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
   },
 
-  findClosestRepairTarget: function(pos, room){
+  findClosestRepairTarget: function(pos, room, creep){
     var locations = room.find(FIND_STRUCTURES, {filter: function(structure) {
       if(_.includes(room.demos, structure.id)) return false
-      return structure.hits < (structure.hitsMax * 0.75)  && structure.structureType !== 'constructedWall'
+      return structure.hits < (structure.hitsMax * 0.75)  && structure.structureType !== 'constructedWall' && structure.structureType !== 'rampart'
       }})
-    console.log(_.size(locations))
     if(_.size(locations) > 0) {
-      console.log('returning a non-wall')
       return pos.findClosestByRange(locations);
-    } else {
+    } else if(room.upgradeWalls()) {
       var smallest = 0
       var targets = room.find(FIND_STRUCTURES, {filter: function(s){
         return s.structureType === 'constructedWall' || s.structureType === 'rampart'
@@ -216,6 +234,11 @@ var Targeting = {
           smallest = t.hitsMax - t.hits
         }
       })
+      if(!creep) {
+        room.memory.energy_spent_on_walls += 150
+      } else {
+        room.memory.energy_spent_on_walls += creep.countPart(CARRY) * 50
+      }
       return target
     }
   },

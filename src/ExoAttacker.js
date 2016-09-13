@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 08:54:24
+* @Last Modified time: 2016-09-12 13:12:23
 */
 
 'use strict';
@@ -13,8 +13,7 @@ Creep.prototype.setupExoAttackerMemory = function() {
 }
 Creep.prototype.assignTravelExoAttackerTasks = function() {
   if (this.mode() !== 'move-out' && this.mode() !== 'transition') {
-    this.setMode('rally')
-
+   this.setMode('rally')
     var flag = Finder.findFlags(this.room.name)[0]
     if(flag) {
       if(Game.rooms[this.memory.exo_target] && this.hits >= this.hitsMax) {
@@ -31,9 +30,12 @@ Creep.prototype.assignHomeExoAttackerTasks = function() {
   var flag = this.room.find(FIND_FLAGS)[0]
   if(flag && _.size(flag.pos.findInRange(FIND_MY_CREEPS, 5)) >= ARMY[this.room.tactic()].rally) {
     this.setMode('move-out')
+  } else if(!flag) {
+    this.setMode('move-out')
   } else if(this.mode() !== 'move-out' && this.mode() != 'transition') {
     this.setMode('rally')
   }
+  //this.setMode('idle')
 }
 
 Creep.prototype.assignRemoteExoAttackerTasks = function() {
@@ -41,7 +43,7 @@ Creep.prototype.assignRemoteExoAttackerTasks = function() {
     if (this.mode() != 'go-home') {
       this.setMode('attack')
     }
-    if (this.hits <= 500) {
+    if (this.hits <= 1) {
       this.setMode('go-home')
     }
   }
@@ -58,9 +60,9 @@ Creep.prototype.doRally = function() {
 
 Creep.prototype.doMoveOut = function() {
   var go = true
-  Finder.findSquad(this.room.name).forEach( function(creep) {
+  /*Finder.findSquad(this.room.name).forEach( function(creep) {
     if(creep.fatigue !== 0) go = false
-  })
+  })*/
   if(go) this.gotoRoom(this.memory.exo_target)
 }
 
@@ -68,8 +70,18 @@ Creep.prototype.doAttack = function() {
   if(Game.rooms[this.memory.home].tactic() === 'swarm') this.normalAttack()
   if(Game.rooms[this.memory.home].tactic() === 'kite') this.kiteAttack()
   if(Game.rooms[this.memory.home].tactic() === 'litewalls') this.kiteAttack()
+  if(Game.rooms[this.memory.home].tactic() === 'noob-tower') this.normalAttack()
+  if(Game.rooms[this.memory.home].tactic() === 'drain') this.drainTower()
+  //this.normalAttack()
 }
-
+Creep.prototype.drainTower = function() {
+  var target = Targeting.findMostNeedingHeals(this.pos, this.room)
+  if(this.heal(target) == ERR_NOT_IN_RANGE) {
+    this.moveTo(target);
+  } else {
+    this.move(BOTTOM_RIGHT)
+  }
+}
 Creep.prototype.kiteAttack = function() {
   var target = Targeting.nearestHostalCreep(this.pos)
   var range = this.pos.getRangeTo(target)
@@ -99,7 +111,7 @@ Creep.prototype.kiteAttack = function() {
 }
 
 Creep.prototype.normalAttack = function() {
-  if(this.needsTarget()) {
+ if(this.needsTarget()) {
     console.log('needs target')
     this.setTarget(Targeting.nearestHostalAnything(this.pos))
   }
@@ -122,7 +134,7 @@ Creep.prototype.normalAttack = function() {
       this.moveCloseTo(25, 25, 5)
     }
   } else {
-    this.setMode('go-home')
+    //this.setMode('go-home')
     //delete Memory.attack
   }
 }

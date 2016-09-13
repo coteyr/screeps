@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-08-30 17:05:51
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-31 06:04:45
+* @Last Modified time: 2016-09-09 04:54:43
 */
 
 'use strict';
@@ -15,12 +15,12 @@ RecyclableCreep.prototype.recycleState = function() {
   if(this.isTooOld()) this.setState('old')
   if(this.stateIs('old')) {
     this.clearTarget()
-    this.setTarget(Targeting.findClosestContainer(this.pos, this.room))
+    this.setTarget(Finder.findSpawn(this.room.name))
     if(this.hasTarget()) this.setState('retire')
   }
   if(this.stateIs('retire')) {
     var target = this.target()
-    if(this.moveCloseTo(target.pos.x, target.pos.y, 0)) this.setState('suicide')
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) this.setState('suicide')
   }
   if(this.stateIs('suicide')) this.suicide()
 }

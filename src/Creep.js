@@ -2,12 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-31 01:10:16
+* @Last Modified time: 2016-09-10 15:47:55
 */
 
 'use strict';
 
 Creep.prototype.tick = function(){
+  try {
   if(this.memory.role == 'miner') {
     _.merge(Creep.prototype, MinerCreep.prototype)
     this.tickCreep()
@@ -17,6 +18,18 @@ Creep.prototype.tick = function(){
   } else if(this.memory.role == 'builder') {
     _.merge(Creep.prototype, BuilderCreep.prototype)
     this.tickCreep()
+  } else if(this.memory.role == 'big-miner') {
+    _.merge(Creep.prototype, BigMinerCreep.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'peddler') {
+    _.merge(Creep.prototype, PeddlerCreep.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'harvester') {
+    _.merge(Creep.prototype, HarvesterCreep.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'upgrader') {
+    _.merge(Creep.prototype, UpgraderCreep.prototype)
+    this.tickCreep()
   } else {
     this.setHome()
     if(!this.spawning) {
@@ -25,6 +38,15 @@ Creep.prototype.tick = function(){
       this.checkForAging()
       this.doWork();
     }
+  }
+  } catch(error) {
+    Log.error(this.name + " HAS AN ERROR")
+    Log.error(error.message)
+    Log.error("Line: " + error.stack)
+    Log.error("Role: " + this.memory.role + " Mode: " + this.mode())
+    Log.error(JSON.stringify(this.memory))
+    this.room.resetMemory();
+    this.setMode(null)
   }
 }
 
@@ -98,10 +120,10 @@ Creep.prototype.doNoop = function() {
 
 Creep.prototype.moveCloseTo = function(x, y, range = 0, creep) {
   if(!creep) {
-    if(this.memory.there && this.memory.there > Game.time) return true
+    //if(this.memory.there && this.memory.there > Game.time) return true
     var distance = this.pos.getRangeTo(x, y)
     if(distance <= range) {
-      this.memory.there = Game.time + 5
+      //this.memory.there = Game.time + 5
       return true
     }
   } else {

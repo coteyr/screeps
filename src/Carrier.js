@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-01 20:30:33
+* @Last Modified time: 2016-09-07 13:08:04
 */
 
 'use strict';
@@ -101,7 +101,10 @@ Creep.prototype.doTransfer = function() {
 
   } else {
     var spawn = Finder.findSpawn(this.room.name)
-    if(spawn && this.moveCloseTo(spawn.pos.x, spawn.pos.y, 1)) this.setMode('idle')
+    if(spawn && this.moveCloseTo(spawn.pos.x, spawn.pos.y, 1)) {
+      this.drop(RESOURCE_ENERGY)
+      this.setMode('idle')
+    }
   }
   if(this.isEmpty()) {
     this.setMode('idle')
