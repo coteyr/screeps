@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-21 05:48:36
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-12 13:42:55
+* @Last Modified time: 2016-09-24 10:10:09
 */
 
 'use strict';
@@ -13,7 +13,7 @@ global.clearPaths = function() {
   }, Game.rooms);
 }
 global.clearGoals = function() {
-  var ops = ['harvest', 'reserve', 'attack', 'steal', 'claim', 'mine', 'carry', 'build', 'responder', 'sapper']
+  var ops = ['harvest', 'reserve', 'attack', 'steal', 'claim', 'mine', 'carry', 'build', 'responder', 'sapper', 'reap']
   Object.keys(Game.rooms).forEach(function(key, index) {
       ops.forEach(function(op){
         Game.rooms[key].memory[op] = []
@@ -23,7 +23,7 @@ global.clearGoals = function() {
 }
 global.listGoals = function() {
 
-  var ops = ['scout', 'harvest', 'reserve', 'attack', 'steal', 'claim', 'mine', 'carry', 'build', 'responder', 'sapper']
+  var ops = ['scout', 'harvest', 'reserve', 'attack', 'steal', 'claim', 'mine', 'carry', 'build', 'responder', 'sapper', 'reap']
   var out = "<table cellpadding='5' cellspacing='5'><thead><tr><th style='border: 1px solid; padding: 4px'>Room</th>"
   ops.forEach(function(o){
     out += "<th style='border: 1px solid; padding: 4px'>" + o + "</th>"
@@ -136,4 +136,7 @@ global.forceTarget = function(id) {
      creep.target = id
     }
   }
+}
+global.quite = function(ticks=100) {
+  Memory.quite = Game.time + ticks
 }

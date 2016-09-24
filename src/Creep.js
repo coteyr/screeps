@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-10 15:47:55
+* @Last Modified time: 2016-09-23 15:43:45
 */
 
 'use strict';
@@ -29,6 +29,12 @@ Creep.prototype.tick = function(){
     this.tickCreep()
   } else if(this.memory.role == 'upgrader') {
     _.merge(Creep.prototype, UpgraderCreep.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'repairer') {
+    _.merge(Creep.prototype, RepairerCreep.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'excavator') {
+    _.merge(Creep.prototype, ExcavatorCreep.prototype)
     this.tickCreep()
   } else {
     this.setHome()
@@ -136,8 +142,8 @@ Creep.prototype.moveCloseTo = function(x, y, range = 0, creep) {
   } else {
     var result = this.moveTo(x, y, {reusePath: distance})
     if(result) Log.warn("Could not move: " + result, this.room, this)
-    if(result === -2) this.move(Memory.dance_move) // no path
-    return false
+    // if(result === -2) this.move(Memory.dance_move) // no path
+    return result
   }
 }
 
@@ -192,10 +198,10 @@ Creep.prototype.dumpResources = function(target) {
   Object.keys(this.carry).forEach(function(key, index) {
       if(creep.carry[key] > 0) {
         if(target) {
-          creep.transfer(target, key)
-          if(target.isFull() && target.structureType == STRUCTURE_CONTAINER) creep.drop(key)
+          if(creep.transfer(target, key) !== 0) creep.drop(key)
+          if(target.isFull()) creep.drop(key)
         } else {
-          //creep.drop(key)
+          creep.drop(key)
         }
       }
   }, this.carry);

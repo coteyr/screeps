@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 01:16:04
+* @Last Modified time: 2016-09-15 11:25:11
 */
 
 'use strict';
@@ -25,7 +25,13 @@ Creep.prototype.assignRemoteExoResponderTasks = function () {
 }
 
 Creep.prototype.doRespond = function() {
-  this.kiteAttack()
+  //this.kiteAttack()
+  if(Finder.hasHostals(this.room.name)) {
+    this.normalAttack()
+  } else {
+    this.moveCloseTo(this.room.controller.pos.x, this.room.controller.pos.x, 2)
+  }
+
   /*var target = Targeting.nearestHostalCreep(this.pos)
   var range = this.pos.getRangeTo(target)
   if(this.hits < (this.hitsMax * 0.50)) range = range - 5  // run away for healing

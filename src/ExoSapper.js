@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-22 21:51:51
+* @Last Modified time: 2016-09-20 18:25:28
 */
 
 'use strict';
@@ -36,12 +36,10 @@ Creep.prototype.doSap = function() {
     if(this.id == tank.id) { // I am the tank
       if(range > 2 && !this.needsHealing()) {
         this.say("Hold Still", true)
-        console.log(target.id)
         this.moveTo(target)
       }
       if(this.needsHealing() && range <= 5) this.flee(target)
     } else { // I am not the tank
-      console.log('not the tank')
       this.moveTo(tank)
     }
   }

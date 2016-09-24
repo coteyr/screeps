@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-12 12:20:11
+* @Last Modified time: 2016-09-20 19:20:38
 */
 
 'use strict';
@@ -89,8 +89,11 @@ var Finder = {
   findExoCreepCount: function(role, spawn, home) {
     return _.size(_.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === home)) + _.size(_.filter(Memory.spawn_queue, {'role': role, room: spawn.room.name}))
   },
-  findExoCreepAssignedToTarget: function(role, targetRoomName) {
-    return _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.exo_target === targetRoomName)
+  findCreepCountAssignedToRoom: function(role, roomName, sourceRoomName) {
+    return _.size(Finder.findExoCreepAssignedToTarget(role, roomName, sourceRoomName)) + _.size(_.filter(Memory.spawn_queue, {'role': role, target: roomName, room: sourceRoomName}))
+  },
+  findExoCreepAssignedToTarget: function(role, targetRoomName, sourceRoomName) {
+    return        _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.exo_target === targetRoomName && creep.memory.home == sourceRoomName && creep.ticksToLive > REMOTE_RECYCLE_AGE)
   },
   findSquad: function(roomName){
     return _.filter(Game.creeps, function(c){

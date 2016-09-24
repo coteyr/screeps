@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-13 09:03:03
+* @Last Modified time: 2016-09-24 09:50:41
 */
 
 'use strict';
@@ -28,11 +28,8 @@ Room.prototype.tickStuff = function() {
   Object.keys(stuff).forEach(function(key, index) {
     var object = Game.getObjectById(this[key].id);
     if(object) {
-      try {
-        object.tick();
-      } catch (error) {
 
-      }
+        object.tick();
     }
   }, stuff);
 }
@@ -206,6 +203,14 @@ Room.prototype.removeSapper = function(room_name) {
   this.removeExoTarget('sapper', room_name)
 }
 
+Room.prototype.addReaper = function(room_name) {
+  this.addExoTarget('reap', room_name)
+}
+
+Room.prototype.removeReaper = function(room_name) {
+  this.removeExoTarget('reap', room_name)
+}
+
 Room.prototype.list = function(arrayName) {
   var array = this.memory[arrayName] || []
   console.log('<span style="#00FFFF">Values for ' + arrayName + "</span>")
@@ -335,4 +340,28 @@ Room.prototype.addSellOrder = function(resource, amount) {
   if(!this.memory.sell[resource]) this.memory.sell[resource] = {total: 0, id: null, cost: 0, state: null}
   this.memory.sell[resource].total += amount
   global.listSales()
+}
+Room.prototype.needs = function(role, sourceRoom) {
+  if(role === 'exo-scout') {
+    return EXOROLES.getExoScoutMulti()
+  } else if (role === 'exo-reserver') {
+    return EXOROLES.getExoReserverMulti()
+  } else if (role === 'exo-miner') {
+    return Finder.findSourceCount(this.name) * EXOROLES.getExoMinerMulti()
+  } else if (role === 'exo-carrier'){
+    return Math.ceil(_.size(Finder.findStructures(this.name, STRUCTURE_ROAD)) / 15) + ((Game.map.getRoomLinearDistance(this.name, sourceRoom.name) - 1) * 2) *  EXOROLES.getExoCarrierMulti()
+  } else if (role === 'exo-builder') {
+    return Math.ceil(_.size(Finder.findConstructionSites(this.name)) / 10) * EXOROLES.getExoBuilderMulti()
+  } else if(role === 'exo-attacker') {
+    let count = 0
+    ARMY[sourceRoom.tactic()].roles.forEach(function(r){
+      if(r.role === role) count += r.multiplyer
+    })
+    return count
+  } else {
+    return 0
+  }
+}
+Room.prototype.has = function(role,  sourceRoomName) {
+  return Finder.findCreepCountAssignedToRoom(role, this.name, sourceRoomName)
 }

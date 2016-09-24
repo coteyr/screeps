@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:40:25
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-26 01:48:38
+* @Last Modified time: 2016-09-20 19:15:47
 */
 
 'use strict';
@@ -51,10 +51,10 @@ var Log = {
           }
         }, Game.rooms);
         body += "</tbody></table>"
-        console.log(body)
+        if(Memory.quite < Game.time) console.log(body)
       } else {
-        console.log(this.colorizer('green', 'TICK: ') + this.colorizer('yellow', Game.time + ' ') + this.colorizer('green', 'CPU: ') + this.colorizer('yellow', Game.cpu.getUsed().toFixed(2) + ' of ' + Game.cpu.limit.toFixed(2) + ' ') + this.colorizer('green',  'Bucket: ') + this.colorizer('yellow', Game.cpu.bucket))
-        console.log(this.colorizer('green', 'Energy Harvested: ') + this.colorizer('yellow', Memory.harvest_this_tick + ' ') + this.colorizer('green', 'Average Energy Per Tick: ') + this.colorizer('yellow', Memory.harvest_average.toFixed(2)))
+        if(Memory.quite < Game.time) console.log(this.colorizer('green', 'TICK: ') + this.colorizer('yellow', Game.time + ' ') + this.colorizer('green', 'CPU: ') + this.colorizer('yellow', Game.cpu.getUsed().toFixed(2) + ' of ' + Game.cpu.limit.toFixed(2) + ' ') + this.colorizer('green',  'Bucket: ') + this.colorizer('yellow', Game.cpu.bucket))
+        if(Memory.quite < Game.time) console.log(this.colorizer('green', 'Energy Harvested: ') + this.colorizer('yellow', Memory.harvest_this_tick + ' ') + this.colorizer('green', 'Average Energy Per Tick: ') + this.colorizer('yellow', Memory.harvest_average.toFixed(2)))
       }
     }
   },
@@ -77,7 +77,7 @@ var Log = {
     if (room && room.name) msg += this.colorizer('green', room.name + " ")
     if (creep && creep.name) msg += this.colorizer('yellow', creep.name + " ")
     msg += this.colorizer(color, message)
-    console.log(msg)
+    if(Memory.quite < Game.time) console.log(msg)
   },
   colorizer(tcolor, message) {
     // ltgray  #a9b7c6

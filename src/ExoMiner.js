@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-24 21:27:58
+* @Last Modified time: 2016-09-19 08:43:16
 */
 
 'use strict';
@@ -43,6 +43,6 @@ Creep.prototype.assignRemoteExoMinerTasks = function() {
 
 Creep.prototype.doPlop = function() {
   this.drop(RESOURCE_ENERGY)
-  this.setMode('idle')
+  this.setMode('mine')
 }
 

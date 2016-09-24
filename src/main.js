@@ -2,19 +2,20 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-28 10:38:03
+* @Last Modified time: 2016-09-17 10:59:54
 */
 
 'use strict';
 var RAM = {}
-
+var msgpack = require("msgpack.min");
+var Buffer = require("buffer").Buffer ;
 String.prototype.toCamel = function(){
   return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');}).replace(/(\-[a-z])/g, function($1){return $1.toUpperCase().replace('-','');});
 };
 String.prototype.toUnderscore = function(){
   return this.replace(/([A-Z])/g, function($1){return "_"+$1.toLowerCase();});
 };
-
+//let Memory = {}
 var logLevel = 4;
 
 module.exports.loop = function () {
@@ -37,14 +38,15 @@ module.exports.loop = function () {
   //Memory.spread_targets = []
   /*var choices = [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT];
   var choice = choices[Math.floor(Math.random()*choices.length)];
-  Memory.dance_move = choice*/
+  Memory.dance_move = choice
   _.each(Object.keys(Game.rooms), function(room) {
     Game.rooms[room].tick()
-  })
-  /*Object.keys(Game.rooms).forEach(function(key, index) {
+  })*/
+  Object.keys(Game.rooms).forEach(function(key, index) {
     this[key].tick();
+    global[key] = this[key] // shortcuts
     //global.logUsedCPU(this[key])
-  }, Game.rooms);*/
+  }, Game.rooms);
     Memory.harvest_total += Memory.harvest_this_tick
     Memory.harvest_count += 1
     Memory.harvest_average = Memory.harvest_total / Memory.harvest_count

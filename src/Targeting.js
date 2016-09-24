@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-10 03:39:30
+* @Last Modified time: 2016-09-24 12:47:02
 */
 
 'use strict';
@@ -129,7 +129,7 @@ var Targeting = {
   nearestNonController: function(pos, type) {
     var target = pos.findClosestByPath(type, {
         filter: function(object) {
-          return object.structureType !== 'controller' &&object.structureType !== 'road';
+          return object.structureType !== 'controller' && object.structureType !== 'road';
         }
       });
     return target
@@ -271,7 +271,35 @@ var Targeting = {
   },
   findClosestDroppedEnergy: function(pos, roomName) {
     return pos.findClosestByRange(Finder.findDropedEnergy(roomName))
+  },
+  findNearestDemo: function(pos, room) {
+    let canidates = []
+    room.memory.demos.forEach(function(id){
+      let object = Game.getObjectById(id)
+      if(!object) {
+        room.removeDemo(id)
+      } else {
+        canidates.push(object)
+      }
+    })
+    return pos.findClosestByRange(canidates)
+  },
+  findReaperTarget: function(pos, room) {
+    var miniral = Finder.findMineral(room.name)
+    if(miniral && miniral.mineralAmount > 0) {
+      return miniral
+    }
+  },
+  nearestDamagedFriendly: function(pos, room) {
+    var friends = _.filter(Game.creeps, (creep) => creep.room.name == room.name && creep.hits < creep.hitsMax)
+    return pos.findClosestByRange(friends)
+
+  },
+  nearestKeeperLair: function(pos, room) {
+    var lair = pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {filter: function(s) {return s.structureType === STRUCTURE_KEEPER_LAIR}})
+    return lair
   }
+
 
 
 

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-07 12:30:50
+* @Last Modified time: 2016-09-22 14:47:17
 */
 
 'use strict';
@@ -39,34 +39,33 @@ Creep.prototype.doScout = function() {
   }
   var home = Game.rooms[this.memory.home]
   if(this.room.controller){
+    if(!this.room.controller.reservation || this.room.controller.reservation.ticksToEnd < 1500) {
+      this.autoAddExo('reserve', home, this.room)
+      this.autoRemoveExo('mine', home, this.room)
+      this.autoRemoveExo('build', home, this.room)
+      this.autoRemoveExo('carry', home, this.room)
+    }
     if(!this.room.controller.reservation || this.room.controller.reservation.ticksToEnd < 2500) {
       this.autoAddExo('reserve', home, this.room)
     }
     if(this.room.controller.reservation && this.room.controller.reservation.ticksToEnd > 4000) {
       this.autoRemoveExo('reserve', home, this.room)
+      this.autoAddExo('mine', home, this.room, Finder.findSourceCount(this.room.name))
+      this.autoAddExo('carry', home, this.room, Finder.findSourceCount(this.room.name))
+      if(this.room.needsConstruction()) {
+        this.autoAddExo('build', home, this.room)
+      } else {
+        this.autoRemoveExo('build', home, this.room)
+      }
     }
   }
 
-  if(this.room.needsConstruction()) {
-    this.autoAddExo('build', home, this.room)
-  } else {
-    this.autoRemoveExo('build', home, this.room)
-  }
+
   if(_.size(Finder.findHostileStructures(this.room.name)) > 0) {
     this.autoAddExo('steal', home, this.room)
   }
   if(_.size(Finder.findHostileStructures(this.room.name)) <= 0) {
     this.autoRemoveExo('steal', home, this.room)
-  }
-  /*
-  if(!this.room.needsConstruction() && this.room.hasRoads()) {
-    this.autoAddExo('mine', home, this.room)
-    this.autoAddExo('carry', home, this.room)
-    this.autoRemoveExo('harvest', home, this.room)
-  } else {
-    this.autoRemoveExo('mine', home, this.room, Finder.findSourceCount(this.room.name))
-    this.autoRemoveExo('carry', home, this.room, Finder.findSourceCount(this.room.name))
-    this.autoAddExo('harvest', home, this.room, Finder.findSourceCount(this.room.name))
   }
   if(Finder.hasHostals(this.room.name)) {
     this.autoAddExo('responder', home, this.room)
@@ -74,7 +73,6 @@ Creep.prototype.doScout = function() {
   } else {
     this.autoRemoveExo('responder', home, this.room)
   }
-  */
 }
 
 Creep.prototype.autoAddExo = function(arrayName, home, room, count = 1) {

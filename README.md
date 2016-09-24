@@ -26,6 +26,8 @@ To anyone that stumbles across this. Screeps is a game where you focus on automa
 # Game Constants
 
 # My Constants
+  - **LOCAL_RECYCLE_AGE** When less time to live then this, try and recycle. This needs to exceed possible spawn time or you could run into a starvation situation.
+  - **REMOTE_RECYCLE_AGE** When less time to live while working with remote creeps, try and recycle. This needs to be large enough for the creeps to get back. Claimers and Reserves are immune to this cause of their low life time.
 
 # Alarms
 

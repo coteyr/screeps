@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-10 15:45:48
+* @Last Modified time: 2016-09-20 00:47:12
 */
 
 'use strict';
@@ -26,7 +26,7 @@ UpgraderCreep.prototype.checkState = function() {
   }
   if(this.stateIs('goto')) {
     var target = this.target()
-    if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) this.setState('grab')
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 1) === true) this.setState('grab')
   }
   if(this.stateIs('grab')) {
     var target = this.target()
@@ -35,7 +35,7 @@ UpgraderCreep.prototype.checkState = function() {
     if(this.hasSome()) this.setState('travel')
   }
   if(this.stateIs('travel')) {
-    if(this.moveCloseTo(this.room.controller.pos.x, this.room.controller.pos.y, 3)) this.setState('upgrade')
+    if(this.moveCloseTo(this.room.controller.pos.x, this.room.controller.pos.y, 3) === true) this.setState('upgrade')
   }
   if(this.stateIs('upgrade')) {
     this.upgradeController(this.room.controller)

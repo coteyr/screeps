@@ -2,33 +2,54 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-07 10:12:18
+* @Last Modified time: 2016-09-22 14:43:55
 */
 
 'use strict';
 
 let ExoCreep = function(){};
 
-StructureSpawn.prototype.getExoCount = function(role) {
+StructureSpawn.prototype.getExoCount = function(role, roomName) {
   // return this.memory['current-' + role] || Finder.findExoCreepCount(role, this, this.room.name)
-  return Finder.findExoCreepCount(role, this, this.room.name)
+  //return Finder.findExoCreepCount(role, this, this.room.name)
+  //let room = Game.rooms[roomName]
+  //if(room) {
+  //  return room.has(role, this.room.name)
+  //} else {
+    return Finder.findCreepCountAssignedToRoom(role, roomName, this.room.name)
+ // }
+
 }
 
-StructureSpawn.prototype.getMaxExoCount = function(role, scope) {
+StructureSpawn.prototype.getMaxExoCount = function(role, scope, roomName) {
   //return this.memory["max-" + role] || 0
-  var functionName = ("get_" + role.role + '_multi').toCamel()
+  /*var functionName = ("get_" + role.role + '_multi').toCamel()
   var multi = eval(scope + '.' + functionName + '(this.room)')
   var max = 0
   max += multi * _.size(this.room.memory[role.arrayName])
-  return max
+  return max*/
+    let room = Game.rooms[roomName]
+    if(room) {
+      return room.needs(role.role, this.room)
+    } else {
+      var functionName = ("get_" + role.role + '_multi').toCamel()
+      var multi = eval(scope + '.' + functionName + '(this.room)')
+      var max = 0
+      max += multi //* _.size(this.room.memory[role.arrayName])
+      return max
+    }
 }
-StructureSpawn.prototype.getMaxExoArmyCount = function(role, scope) {
-  //return this.memory["max-" + role] || 0
-  var functionName = ("get_" + role.role + '_multi').toCamel()
-  var multi = role.multiplyer
-  var max = 0
-  max += multi * _.size(this.room.memory[role.arrayName])
-  return max
+StructureSpawn.prototype.getMaxExoArmyCount = function(role, scope, roomName) {
+  let room = Game.rooms[roomName]
+  if(room) {
+      return room.needs(role.role, this.room)
+    } else {
+      var multi = role.multiplyer
+      var max = 0
+      max += multi * _.size(this.room.memory[role.arrayName])
+      return max
+    }
+
 }
 
 Creep.prototype.assignExoTasks = function() {
@@ -37,10 +58,8 @@ Creep.prototype.assignExoTasks = function() {
   if(this.mode() != 'transition' && this.mode() != 'leave' && this.mode() !== 'respond') {
     this.getOffExits()
   }
-  /*if(this.room.name === this.memory.home && this.ticksToLive <= 300) {
-    this.setMode('recycle')
-  } else*/
-   if (this.modeIs('recover')) {
+  // if(this.ticksToLive < REMOTE_RECYCLE_AGE && this.role !== 'exo-reserver' && this.role !== 'exo-claimer') this.setMode('recover')
+  if (this.modeIs('recover')) {
 
   } else if(this.room.name === this.memory.exo_target) {
     // I am in the remote room
@@ -100,7 +119,7 @@ Creep.prototype.setupExoMemory = function() {
     delete this.memory.exit
     delete this.memory.old_room
   }
-  this.recoverUnused()
+  // this.recoverUnused()
 }
 
 Creep.prototype.recoverUnused = function() {
@@ -113,7 +132,7 @@ Creep.prototype.recoverUnused = function() {
     var role = roles[0]
     if(_.indexOf(home.memory[role.arrayName], target) === -1){
       // no longer an option
-      this.setMode('recover')
+      // this.setMode('recover')
     }
   }
 }
@@ -152,7 +171,6 @@ Creep.prototype.doTransition = function() {
     }
   } else {
     if (this.memory.exit) {
-      console.log('pp')
       this.moveTo(this.memory.exit.x, this.memory.exit.y)
       /*if(this.pos.x > this.memory.exit.x) {
         this.move(LEFT)
@@ -167,11 +185,9 @@ Creep.prototype.doTransition = function() {
         this.move(TOP)
       }*/
     } else {
-      console.log('ts')
       var exitDir = this.room.getExitTo(roomName);
       var exit = this.pos.findClosestByRange(this.memory.exit_dir);
       this.moveTo(exit)
-      console.log(JSON.stringify(exit))
     }
   }
   }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-13 01:06:28
+* @Last Modified time: 2016-09-20 18:24:53
 */
 
 'use strict';
@@ -70,9 +70,26 @@ Creep.prototype.doAttack = function() {
   if(Game.rooms[this.memory.home].tactic() === 'swarm') this.normalAttack()
   if(Game.rooms[this.memory.home].tactic() === 'kite') this.kiteAttack()
   if(Game.rooms[this.memory.home].tactic() === 'litewalls') this.kiteAttack()
-  if(Game.rooms[this.memory.home].tactic() === 'noob-tower') this.normalAttack()
+  if(Game.rooms[this.memory.home].tactic() === 'noob-tower') this.breakWalls()
   if(Game.rooms[this.memory.home].tactic() === 'drain') this.drainTower()
+  if(Game.rooms[this.memory.home].tactic() === 'block') this.block()
   //this.normalAttack()
+}
+Creep.prototype.breakWalls = function() {
+  if(this.needsTarget()) this.setTarget(Targeting.nearestNonController(this.pos))
+  let target = this.target()
+  if(this.hasTarget()) {
+    if(this.moveCloseTo(target.pos.x, target.pos.y, 1) === true) {
+      this.attack(target)
+    }
+  }
+}
+Creep.prototype.block = function() {
+  if(this.needsTarget()) this.setTarget(Targeting.nearestHostalSpawn(this.pos))
+  let target = this.target()
+  if(this.hasTarget()) {
+    this.moveCloseTo(target.pos.x, target.pos.y, 2)
+  }
 }
 Creep.prototype.drainTower = function() {
   var target = Targeting.findMostNeedingHeals(this.pos, this.room)
@@ -111,20 +128,18 @@ Creep.prototype.kiteAttack = function() {
 }
 
 Creep.prototype.normalAttack = function() {
+  this.rangedMassAttack()
  if(this.needsTarget()) {
-    console.log('needs target')
     this.setTarget(Targeting.nearestHostalAnything(this.pos))
   }
   var target = this.target()
   if(target) {
-    console.log('attacking target')
     if(this.attack(target) == ERR_NOT_IN_RANGE) {
-      console.log('Not in range')
-      if(this.moveTo(target, {ignoreDestructibleStructures: true}) == -2) {
+      if(this.moveTo(target) == -2) {
         var blocker = Targeting.nearByStructures(this.pos)
         if (blocker) {
-          console.log('attacking blocker')
           this.setTarget(blocker)
+          this.rangedMassAttack()
           this.attack(blocker)
         }
       } else {

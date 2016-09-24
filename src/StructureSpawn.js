@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-12 13:44:00
+* @Last Modified time: 2016-09-24 09:58:16
 */
 
 'use strict';
@@ -17,6 +17,8 @@ StructureSpawn.prototype.tick = function() {
 
   // this.refreshData();
   if(Game.time % 10 == 0) this.isStarving()
+  if(this.memory.spawning_creep) Log.info("Lock: " + this.memory.spawn_lock + " Spawning a " + this.memory.spawning_creep, this.room, this)
+  // if(!this.spawning) delete this.memory.spawning_creep
 }
 StructureSpawn.prototype.promote = function(from, to) {
   Log.warn("Promoting " +  from + " to " + to, this.room)
@@ -60,15 +62,16 @@ StructureSpawn.prototype.promoteCreeps = function() {
     this.promote('harvester', 'carrier')
   }
 }
-StructureSpawn.prototype.spawnACreep = function(role, body, home, er=false)  {
+StructureSpawn.prototype.spawnACreep = function(role, body, home, target, er=false)  {
   this.room.cleanCreeps()
   Log.info("Spawning A " + role + " in " + this.room.name)
+  this.memory.spawning_creep = role
   if(Memory.creeper) {
     Memory.creeper += 1
   } else {
     Memory.creeper = 1
   }
-  var result = this.createCreep(body, role + "_" + Memory.creeper, {role: role, mode: 'idle', home: home, er: er})
+  var result = this.createCreep(body, role + "_" + Memory.creeper, {role: role, mode: 'idle', home: home, er: er, exo_target: target})
   if(result !== role + "_" + Memory.creeper) {
     Log.error('Problem Spawning Creep: ' + result)
     Log.error(role + ": " + JSON.stringify(body))
@@ -86,11 +89,10 @@ StructureSpawn.prototype.assignMode = function() {
       this.setMode('idle')
   }
   if (Finder.findRealCreepCount('harvester', this) === 0 && Finder.findRealCreepCount('miner', this) === 0 && Finder.findRealCreepCount('big-miner', this) === 0) {
-    this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK], this.room.name, true)
+    this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK], this.room.name, this.room.name, true)
   }
-  console.log(Finder.findRealCreepCount('carrier', this))
   if (Finder.findRealCreepCount('carrier', this) === 0) {
-    this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY], this.room.name, true)
+    this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY], this.room.name, this.room.name, true)
   }
 }
 
@@ -133,11 +135,11 @@ StructureSpawn.prototype.doErSpawn = function() {
   }*/
     if(!this.spawning) {
       if(Finder.findRealCreepCount('harvester', this) + Finder.findRealCreepCount('carrier', this) < 2){
-        this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK], this.room.name, true)
+        this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK], this.room.name, this.room.name, true)
       } else if(Finder.findRealCreepCount('miner', this) < 2) {
-        this.spawnACreep('miner', [MOVE, CARRY, WORK, WORK], this.room.name, true)
+        this.spawnACreep('miner', [MOVE, CARRY, WORK, WORK], this.room.name, this.room.name, true)
       } else if(Finder.findRealCreepCount('carrier', this) < 2){
-        this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY], this.room.name, true)
+        this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY], this.room.name, this.room.name, true)
       } else {
         this.setMode('idle')
       }
@@ -157,18 +159,29 @@ StructureSpawn.prototype.spawnCreeps = function() {
       spawner.retireCreep(role.role)
     }
   })
-  EXOROLES.getRoles(this.room.energyCapacity()).forEach(function(role) {
-    if (spawner.getExoCount(role.role) < spawner.getMaxExoCount(role, 'EXOROLES')) {
-      spawner.addToSpawnQueue(role.role, BodyBuilder.buildBody(role.body, spawner.room.energyCapacity(), true, false, false), role.priority)
-    }
-  })
-  if(this.room.hasTactic()) {
-    ARMY[this.room.tactic()].roles.forEach(function(role) {
-      if (spawner.getExoCount(role.role) < spawner.getMaxExoArmyCount(role, 'ARMY')) {
-        spawner.addToSpawnQueue(role.role, role.body, role.priority)
-      }
+  if(_.size(this.room.memory.attack) === 0) {
+    EXOROLES.getRoles(this.room.energyCapacity()).forEach(function(role) {
+      let goals = spawner.room.memory[role.arrayName]
+      if(!goals) goals = []
+      goals.forEach(function(roomName){
+        if(spawner.getExoCount(role.role, roomName) < spawner.getMaxExoCount(role, 'EXOROLES', roomName)) {
+            spawner.addToSpawnQueue(role.role, BodyBuilder.buildBody(role.body, spawner.room.energyCapacity(), true, false, false), role.priority, roomName)
+          }
+        })
     })
   }
+  /// need fixing
+
+    ARMY[this.room.tactic()].roles.forEach(function(role) {
+      let goals = spawner.room.memory[role.arrayName]
+      if(!goals) goals = []
+      goals.forEach(function(roomName){
+        if (spawner.getExoCount(role.role, roomName) < spawner.getMaxExoArmyCount(role, 'ARMY', roomName)) {
+          spawner.addToSpawnQueue(role.role, role.body, role.priority, roomName)
+        }
+      })
+    })
+
 }
 
 StructureSpawn.prototype.retireCreep = function(role) {
@@ -185,52 +198,103 @@ StructureSpawn.prototype.retireCreep = function(role) {
   global.clearSpawnQueue()
 }
 
-StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority) {
+StructureSpawn.prototype.addToSpawnQueue = function(role, body,  priority, target) {
+  if(!target) target = this.room.name
   if(!this.spawning) {
     if(typeof body === 'function') {
       body = eval('body(this)');
     }
     if(!Memory.spawn_queue) global.clearSpawnQueue()
     var array = Memory.spawn_queue
-    array.push({role: role, body: body, priority: priority, room: this.room.name, id: Game.time + '-' + this.id + '-' + Math.random()})
+    array.push({target: target, role: role, body: body, priority: priority, room: this.room.name, id: Game.time + '-' + this.id + '-' + Math.random()})
     array = _.sortBy(array, function(a) {
       return a.priority;
     })
     Memory.spawn_queue = array
     Log.warn("Spawn Queue is now " + _.size(array) + " long")
-    Log.warn("Added a " + role)
+    Log.warn("Added a " + role + " from " + this.room.name + " to " + target)
   }
 }
-
-StructureSpawn.prototype.spawnFromQueue = function() {
+StructureSpawn.prototype.nextCreep = function() {
   var array = Memory.spawn_queue
-  var spawner = this;
+  let lock = this.memory.spawn_lock
+  let spawner = this
+  var creep
+  if(!lock) lock = this.room.name
   if (array) {
-    array = _.sortBy(array, function(a) {
-      return a.priority;
-    })
-
+    array = _.sortBy(array, ['target', 'priority'])
     if(array.length > 0) {
-      var creep = array[0]
+      if(_.size(_.filter(array, function(c){ c.target == spawner.room.name})) > 0) lock = spawner.room.name
+      if(_.size(_.filter(array, function(c){ c.target == lock })) <= 0) lock = array[0].target
+
       if(!global.globalSpawn()) {
-        var newArray = _.filter(array, function(c) { return c.room === spawner.room.name })
+        var newArray = _.filter(array, function(c) { return c.room === spawner.room.name && c.target == lock })
         creep = newArray[0]
       } else {
-        array - _.sortBy(array, function(a){
+        array = _.sortBy(array, function(a){
           var o = a.priority;
           if(a.room !== spawner.room.name) o+= 500
           return o
         })
-        var newArray = _.filter(array, function(c) { return BodyBuilder.getCost(c.body) <= spawner.room.energyCapacityAvailable })
+        var newArray = _.filter(array, function(c) { return BodyBuilder.getCost(c.body) <= spawner.room.energyCapacityAvailable && c.target == lock })
+        creep = newArray[0]
+      }
+      console.log('Next Creep is: ' + creep.role + " Cost: " + BodyBuilder.getCost(creep.body) + " Target: " + creep.target)
+    }
+  }
+}
+StructureSpawn.prototype.spawnLock = function() {
+  let array = Memory.spawn_queue
+  let spawner = this
+  array = _.filter(array, function(c){ return c.room === spawner.room.name })
+  if(_.size(array) <= 0) {
+    Log.info("No Spawn Queue", this.room, this)
+    return false
+  }
+  let lock = this.memory.spawn_lock
+  if(!lock) lock = this.room.name
+  if(_.size(_.filter(array, function(c){ return c.target === spawner.room.name})) > 0) {
+    lock = spawner.room.name
+  } else if (_.size(_.filter(array, function(c){ return c.priority < 100})) > 0) {
+    lock = _.filter(array, function(c){ return c.priority < 100})[0].target
+
+  } else if(_.size(_.filter(array, function(c){ return c.target === lock})) <= 0) {
+    lock = _.sortBy(array, ['target', 'priority'])[0].target
+  }
+  this.memory.spawn_lock = lock
+  return lock
+}
+StructureSpawn.prototype.spawnFromQueue = function() {
+  var array = Memory.spawn_queue
+  var spawner = this;
+  if (array) {
+
+    /*array = _.sortBy(array, function(a) {
+      return a.priority;
+    })*/
+    array = _.sortBy(array, ['target', 'priority'])
+
+    if(array.length > 0) {
+      var creep = array[0]
+      if(!global.globalSpawn()) {
+        var newArray = _.filter(array, function(c) { return c.room === spawner.room.name && c.target == spawner.spawnLock() })
+        creep = newArray[0]
+      } else {
+        array = _.sortBy(array, function(a){
+          var o = a.priority;
+          if(a.room !== spawner.room.name) o+= 500
+          return o
+        })
+        var newArray = _.filter(array, function(c) { return BodyBuilder.getCost(c.body) <= spawner.room.energyCapacityAvailable && c.target == spawner.spawnLock() })
         creep = newArray[0]
       }
       if(!creep) return false
-      Log.info("Trying to Spawn a " + creep.role + " in " + this.room.name)
+      Log.info("Trying to Spawn a " + creep.role + " in " + this.room.name + " for " + creep.target)
       if (this.canCreateCreep(creep.body) === 0 && !this.spawning){ // && this.canCreateCreep(creep.body)){
         _.remove(array, function(c) {
           return c.id === creep.id
         })
-        this.spawnACreep(creep.role, creep.body, creep.room)
+        this.spawnACreep(creep.role, creep.body, creep.room, creep.target)
 
       } else if(this.canCreateCreep(creep.body) == ERR_INVALID_ARGS) {
         _.remove(array, function(c) {
