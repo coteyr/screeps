@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-24 13:06:58
+* @Last Modified time: 2016-09-26 11:03:58
 */
 
 'use strict';
@@ -61,13 +61,14 @@ var ROLES = {
     ]},
     {min: 2300, max: 9000, roles: [
       { role: 'harvester', priority: 1, body: {work: 5, carry: 5} },
+      { role: 'miner',     priority: 2, body: {work: 5, carry: 1} },
       { role: 'carrier',   priority: 3, body: {carry: 10} },
       { role: 'builder',   priority: 4, body: {work: 2, carry: 5} },
       { role: 'upgrader',  priority: 4, body: {work: 2, carry: 5} },
       { role: 'demo',      priority: 5, body: {work: 8, carry: 5} },
       { role: 'big-miner', priority: 2, body: {work: 14, carry: 1} },
-      { role: 'excavator', priority: 6, body: {work: 6, carry: 1} },
-      { role: 'hauler',    priority: 6, body: {carry: 10} },
+      { role: 'excavator', priority: 6, body: {work: 22, carry: 1, move: 1} },
+      { role: 'hauler',    priority: 6, body: {carry: 1} },
       { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} },
       { role: 'peddler',   priority: 6, body: {carry: 20} },
       { role: 'repairer',  priority: 4, body: {work: 8, carry: 8} },
@@ -107,7 +108,7 @@ var ROLES = {
   },
 
   getBigMinerMulti: function(room){
-    if(room.energyCapacity() >= 2300) return 1
+    // if(room.energyCapacity() >= 2300) return 1
     return 0
   },
 
@@ -126,7 +127,7 @@ var ROLES = {
   },
 
   getMinerMulti: function(room){
-    if (room.carrierReady() && room.energyCapacity() < 2300) return room.sourceCount()
+    if (room.carrierReady()) return room.sourceCount()
     return 0
   },
   getMassUpgraderMulti: function(room){
@@ -289,11 +290,10 @@ var ARMY = {
   'kite': {roles: [
     { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 5, priority: 103, body: BodyBuilder.buildBody({ranged: 2, attack: 2, move: 6, tough: 2}, 800, false, false, false)}
   ], rally: 5},
-  'heavy': [
-    { role: 'exo-tank',      arrayName: 'attack',  multiplyer: 4,  priority: 103, body: BodyBuilder.buildBody({heal: 1, work: 1, move: 10}, 1300, false, true, true) },
-    { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 5,  priority: 110, body: BodyBuilder.buildBody({ attack: 8, move: 10}, 1300, false, true, true) },
-    { role: 'exo-healer',    arrayName: 'attack',  multiplyer: 2,  proiorty: 120, body: BodyBuilder.buildBody({ heal: 2, move: 10}, 1300, false, true, true) }
-  ],
+  'heavy': { roles: [
+    { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 8,  priority: 110, body: BodyBuilder.buildBody({ attack: 5, ranged: 5, heal: 1, tough: 15, move: 13}, 2300, false, true, true) },
+    { role: 'exo-healer',    arrayName: 'attack',  multiplyer: 2,  proiorty: 120, body: BodyBuilder.buildBody({ heal: 5, attack: 2, ranged: 2, tough: 2, move: 11}, 2300, false, true, true) }
+  ], rally: 10 },
   'noob-tower': {roles: [
     { role: 'exo-attacker',  arrayName: 'attack',  multiplyer: 100,  priority: 110, body: BodyBuilder.buildBody({ attack: 1, move: 1}, 550, false, true, true) }
   ], rally: 100  },
@@ -305,7 +305,11 @@ var ARMY = {
   ], rally: 1 },
   'block': {roles: [
     { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 20, priority: 101, body: BodyBuilder.buildBody({move: 1}, 550, false, false, false) }
-  ], rally: 10 }
+  ], rally: 10 },
+  'post': {roles: [
+    { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 10, priority: 103, body: BodyBuilder.buildBody({ranged: 2, attack: 2, move: 6, tough: 2}, 800, false, false, false)},
+    { role: 'exo-healer',    arrayName: 'attack', multiplyer: 2,  priority: 104, body: BodyBuilder.buildBody({heal: 4, move: 4}, 1300, false, false, false)}
+  ], rally: 5}
 }
 
 

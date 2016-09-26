@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-09 08:04:04
+* @Last Modified time: 2016-09-25 15:49:40
 */
 
 'use strict';
@@ -46,6 +46,30 @@ Creep.prototype.assignRemoteExoHealerTasks = function() {
   }
 }
 Creep.prototype.doHeal = function() {
+  if(Game.rooms[this.memory.home].tactic() === 'post') {
+    this.postHeal()
+  } else {
+    this.normalHeal()
+  }
+}
+Creep.prototype.postHeal = function() {
+  var flag = this.room.find(FIND_FLAGS)[0]
+
+  if(this.needsTarget()) this.setTarget(Targeting.nearestDamagedFriendly(this.pos, this.room))
+  if(this.hasTarget()) {
+    let target = this.target()
+    this.moveCloseTo(target.pos.x, target.pos.y, 1)
+    this.heal(target)
+    if(target.hits >= target.hitsMax) this.clearTarget()
+  } else {
+    if(flag) {
+      this.moveCloseTo(flag.pos.x, flag.pos.y, 1)
+    } else {
+      this.moveCloseTo(25, 25, 10)
+    }
+  }
+}
+Creep.prototype.normalHeal = function() {
   var target = this.pos.findClosestByRange(FIND_MY_CREEPS, {
     filter: function(object) {
         return object.hits < object.hitsMax;

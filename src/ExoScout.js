@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-22 14:47:17
+* @Last Modified time: 2016-09-25 10:16:01
 */
 
 'use strict';
@@ -71,7 +71,7 @@ Creep.prototype.doScout = function() {
     this.autoAddExo('responder', home, this.room)
     Log.alert("Hostiles Spotted", this.room, this)
   } else {
-    this.autoRemoveExo('responder', home, this.room)
+    // this.autoRemoveExo('responder', home, this.room)
   }
 }
 

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-21 05:48:36
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-24 10:10:09
+* @Last Modified time: 2016-09-25 15:15:29
 */
 
 'use strict';
@@ -101,12 +101,27 @@ global.clearSpawnQueue = function() {
   Memory.spawn_queue = []
 }
 
-global.reAttack = function(roomName) {
+global.reAttack = function(roomName, sourceRoom=false, role=false) {
   for(var name in Memory.creeps) {
     var creep = Memory.creeps[name]
-    if(creep.role == 'exo-attacker') {
-      creep.mode = 'idle'
-      creep.exo_target = roomName
+    if(sourceRoom && creep.home === sourceRoom) {
+      if(role && creep.role === role) {
+        creep.mode = 'idle'
+        creep.exo_target = roomName
+      } else if(creep.role == 'exo-attacker' || creep.role == 'exo-tank' || creep.role == "exo-healer") {
+        creep.mode = 'idle'
+        creep.exo_target = roomName
+      }
+    } else {
+      if(role) {
+        if(creep.role == role) {
+          creep.mode = 'idle'
+          creep.exo_target = roomName
+        }
+      } else if(creep.role == 'exo-attacker' || creep.role == 'exo-tank' || creep.role == "exo-healer") {
+          creep.mode = 'idle'
+          creep.exo_target = roomName
+      }
     }
   }
 }

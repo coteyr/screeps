@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-24 09:50:41
+* @Last Modified time: 2016-09-25 15:11:05
 */
 
 'use strict';
@@ -328,7 +328,7 @@ Room.prototype.hasRoads = function() {
 }
 
 Room.prototype.hasHostiles = function() {
-  return _.size(Finder.findHostiles)
+  return _.size(Finder.findHostiles(this.name)) > 0
 }
 
 Room.prototype.findAPath = function(from, to) {
@@ -358,6 +358,14 @@ Room.prototype.needs = function(role, sourceRoom) {
       if(r.role === role) count += r.multiplyer
     })
     return count
+  } else if(role === 'exo-healer') {
+    let count = 0
+    ARMY[sourceRoom.tactic()].roles.forEach(function(r){
+      if(r.role === role) count += r.multiplyer
+    })
+    return count
+  } else if(role === 'exo-reaper') {
+    return ((Game.map.getRoomLinearDistance(this.name, sourceRoom.name) - 1) * 2) *  EXOROLES.getExoReaperMulti()
   } else {
     return 0
   }

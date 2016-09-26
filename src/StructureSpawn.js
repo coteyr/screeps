@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-24 09:58:16
+* @Last Modified time: 2016-09-25 14:27:01
 */
 
 'use strict';
@@ -159,7 +159,7 @@ StructureSpawn.prototype.spawnCreeps = function() {
       spawner.retireCreep(role.role)
     }
   })
-  if(_.size(this.room.memory.attack) === 0) {
+  //if(_.size(this.room.memory.attack) === 0) {
     EXOROLES.getRoles(this.room.energyCapacity()).forEach(function(role) {
       let goals = spawner.room.memory[role.arrayName]
       if(!goals) goals = []
@@ -169,18 +169,21 @@ StructureSpawn.prototype.spawnCreeps = function() {
           }
         })
     })
-  }
+  //}
   /// need fixing
-
-    ARMY[this.room.tactic()].roles.forEach(function(role) {
-      let goals = spawner.room.memory[role.arrayName]
-      if(!goals) goals = []
-      goals.forEach(function(roomName){
-        if (spawner.getExoCount(role.role, roomName) < spawner.getMaxExoArmyCount(role, 'ARMY', roomName)) {
-          spawner.addToSpawnQueue(role.role, role.body, role.priority, roomName)
-        }
+    try {
+      ARMY[this.room.tactic()].roles.forEach(function(role) {
+        let goals = spawner.room.memory[role.arrayName]
+        if(!goals) goals = []
+        goals.forEach(function(roomName){
+          if (spawner.getExoCount(role.role, roomName) < spawner.getMaxExoArmyCount(role, 'ARMY', roomName)) {
+            spawner.addToSpawnQueue(role.role, role.body, role.priority, roomName)
+          }
+        })
       })
-    })
+    } catch(error) {
+      Log.error("No Army Spawn Happening. Error Occurred!")
+    }
 
 }
 

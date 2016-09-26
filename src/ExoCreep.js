@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-22 14:43:55
+* @Last Modified time: 2016-09-25 12:05:56
 */
 
 'use strict';
@@ -212,8 +212,9 @@ Creep.prototype.gotoRoom = function(roomName) {
     return true
   }  else {
     if(!this.memory.exit) {
+      var pos = new RoomPosition(25, 25, roomName);
       var exitDir = this.room.getExitTo(roomName);
-      var exit = this.pos.findClosestByRange(exitDir);
+      var exit = this.pos.findClosestByPath(exitDir);
       this.memory.exit = exit
       this.memory.exit_dir = exitDir
       this.memory.old_room = this.room.name

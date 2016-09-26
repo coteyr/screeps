@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-24 12:47:02
+* @Last Modified time: 2016-09-25 15:44:14
 */
 
 'use strict';
@@ -20,6 +20,11 @@ var Targeting = {
     return element
   },
   getTransferTarget: function(pos, room) {
+    if(room.hasHostiles) {
+       var towers = Finder.findTowers(room.name)
+      var tower = this.getMax(towers, function(t) { return t.energyCapacity - t.energy })
+      if(tower && tower.hasRoom() && tower.storedEnergy() <= (tower.possibleEnergy() * 0.80)) return tower
+    }
     // spawner -> tower -> extensions -> storage
     var spawn = Finder.findSpawn(room.name)
     if(spawn && spawn.hasRoom()) return spawn

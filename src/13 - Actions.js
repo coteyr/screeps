@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-12 15:47:32
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-23 14:41:08
+* @Last Modified time: 2016-09-25 15:45:09
 */
 
 'use strict';
@@ -12,8 +12,10 @@ let Actions = {
   moveToTarget: function(creep, target, exitState, range = 1, failState = false) {
     if(target) {
       if(creep.moveCloseTo(target.pos.x, target.pos.y, range) === true) creep.setState(exitState)
-      let ext = Targeting.findCloseExtension(creep.pos)
-      if(ext && ext.hasRoom() && creep.hasSome()) creep.dumpResources(ext)
+      if(!creep.room.hasHostiles()) {
+        let ext = Targeting.findCloseExtension(creep.pos)
+        if(ext && ext.hasRoom() && creep.hasSome()) creep.dumpResources(ext)
+      }
     } else if(failState){
       creep.setState(failState)
     } else {

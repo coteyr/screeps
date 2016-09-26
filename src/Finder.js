@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-20 19:20:38
+* @Last Modified time: 2016-09-25 15:41:58
 */
 
 'use strict';
@@ -270,6 +270,13 @@ var Finder = {
   findConstructionSites: function(roomName) {
     var room = Game.rooms[roomName]
     return _.filter(this.unbox(room, 'construction-sites'), function(s){ return s.my })
+  },
+  findHostiles: function(roomName) {
+    var room = Game.rooms[roomName]
+    if(room) return this.unbox(room, 'hostile-creeps')
+  },
+  findRamparts: function(roomName) {
+    return false
   }
 
 

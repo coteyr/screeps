@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-19 14:06:22
+* @Last Modified time: 2016-09-25 01:46:03
 */
 
 'use strict';
@@ -22,8 +22,8 @@ BuilderCreep.prototype.tickCreep = function() {
 
 BuilderCreep.prototype.checkState = function() {
   if(!this.state()) this.setState('check-dropped')
-  if(this.stateIs('choose')) Actions.targetWithState(this, Targeting.findClosestConstruction(this.pos), 'position', 'old')
-  if(this.stateIs('position')) Actions.moveToTarget(this, this.target(), 'build')
+  if(this.stateIs('choose')) Actions.targetWithState(this, Targeting.findClosestConstruction(this.pos), 'travel', 'old')
+  if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'build')
   if(this.stateIs('build')) Actions.build(this, this.target(), 'check-dropped', 'check-dropped')
 }
 
