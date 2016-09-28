@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-26 11:03:58
+* @Last Modified time: 2016-09-28 13:32:11
 */
 
 'use strict';
@@ -68,7 +68,7 @@ var ROLES = {
       { role: 'demo',      priority: 5, body: {work: 8, carry: 5} },
       { role: 'big-miner', priority: 2, body: {work: 14, carry: 1} },
       { role: 'excavator', priority: 6, body: {work: 22, carry: 1, move: 1} },
-      { role: 'hauler',    priority: 6, body: {carry: 1} },
+      { role: 'hauler',    priority: 6, body: {carry: 10} },
       { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} },
       { role: 'peddler',   priority: 6, body: {carry: 20} },
       { role: 'repairer',  priority: 4, body: {work: 8, carry: 8} },
@@ -237,7 +237,7 @@ var EXOROLES = {
     return 1
   },
   getExoReserverMulti: function(room){
-    return 1
+    return 2
   },
   getExoTheifMulti: function(room){
     return 2

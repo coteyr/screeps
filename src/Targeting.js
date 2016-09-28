@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 15:44:14
+* @Last Modified time: 2016-09-28 15:06:19
 */
 
 'use strict';
@@ -20,9 +20,9 @@ var Targeting = {
     return element
   },
   getTransferTarget: function(pos, room) {
-    if(room.hasHostiles) {
+    if(room.hasHostiles()) {
        var towers = Finder.findTowers(room.name)
-      var tower = this.getMax(towers, function(t) { return t.energyCapacity - t.energy })
+      var tower = Targeting.getMax(towers, function(t) { return t.energyCapacity - t.energy })
       if(tower && tower.hasRoom() && tower.storedEnergy() <= (tower.possibleEnergy() * 0.80)) return tower
     }
     // spawner -> tower -> extensions -> storage
@@ -33,11 +33,11 @@ var Targeting = {
     if(extension && extension.hasRoom()) return extension
 
     var towers = Finder.findTowers(room.name)
-    var tower = this.getMax(towers, function(t) { return t.energyCapacity - t.energy })
+    var tower = Targeting.getMax(towers, function(t) { return t.energyCapacity - t.energy })
     if(tower && tower.hasRoom() && tower.storedEnergy() <= (tower.possibleEnergy() * 0.80)) return tower
 
     var labs = Finder.findLabs(room.name)
-    var lab = this.getMax(labs, function(l) { return l.energyCapacity - l.energy})
+    var lab = Targeting.getMax(labs, function(l) { return l.energyCapacity - l.energy})
     if(lab && lab.hasRoom()) return lab
 
     if(room.storage) return room.storage

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 15:41:58
+* @Last Modified time: 2016-09-27 21:09:56
 */
 
 'use strict';
@@ -117,7 +117,7 @@ var Finder = {
   },
   findExclusiveDropedEnergy: function(roomName) {
     var room = Game.rooms[roomName]
-    var dropped = _.filter(this.unbox(room, 'dropped-resources'), (r) => r.resourceType === RESOURCE_ENERGY && r.amount > 300)
+    var dropped = _.filter(Finder.unbox(room, 'dropped-resources'), (r) => r.resourceType === RESOURCE_ENERGY && r.amount > 300)
     var result
     dropped.some(function(blob){
       var creeps = _.filter(Game.creeps, (creep) => creep.memory.target === blob.id);
