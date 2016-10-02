@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 10:16:01
+* @Last Modified time: 2016-09-29 13:37:00
 */
 
 'use strict';
@@ -45,17 +45,18 @@ Creep.prototype.doScout = function() {
       this.autoRemoveExo('build', home, this.room)
       this.autoRemoveExo('carry', home, this.room)
     }
-    if(!this.room.controller.reservation || this.room.controller.reservation.ticksToEnd < 2500) {
+    if(!this.room.controller.reservation || this.room.controller.reservation.ticksToEnd < 4000) {
       this.autoAddExo('reserve', home, this.room)
     }
     if(this.room.controller.reservation && this.room.controller.reservation.ticksToEnd > 4000) {
       this.autoRemoveExo('reserve', home, this.room)
-      this.autoAddExo('mine', home, this.room, Finder.findSourceCount(this.room.name))
-      this.autoAddExo('carry', home, this.room, Finder.findSourceCount(this.room.name))
+
       if(this.room.needsConstruction()) {
         this.autoAddExo('build', home, this.room)
       } else {
         this.autoRemoveExo('build', home, this.room)
+        this.autoAddExo('mine', home, this.room, Finder.findSourceCount(this.room.name))
+        this.autoAddExo('carry', home, this.room, Finder.findSourceCount(this.room.name))
       }
     }
   }

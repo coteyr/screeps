@@ -2,11 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 15:40:34
+* @Last Modified time: 2016-09-28 19:56:21
 */
 
 'use strict';
 
+// let ExoAttacker = function() {}
+// _.merge(ExoAttacker.prototype, StateMachine.prototype, RecyclableCreep.prototype, RemoteCreep.prototype)
 
 Creep.prototype.setupExoAttackerMemory = function() {
   this.chooseExoTarget('attack')

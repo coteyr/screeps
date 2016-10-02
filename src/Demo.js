@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-20 18:28:56
+* @Last Modified time: 2016-09-28 19:50:07
 */
 
 'use strict';
@@ -27,17 +27,6 @@ DemoCreep.prototype.checkState = function() {
   if(this.stateIs('upgrade')) Actions.upgrade(this, 'select')
 }
 
-Creep.prototype.doDemo = function() {
-  if(this.needsTarget()) this.setTarget(this.room.memory.demos[0])
-  if(this.hasTarget()) {
-    var target = this.target()
-    this.getCloseAndAction(target, this.dismantle(target), 1)
-  } else {
-    this.room.removeDemo(this.room.memory.demos[0])
-    this.clearTarget()
-    this.setMode('idle')
-  }
-  if(this.isFull()) this.setMode('upgrade')
-}
+
 
 

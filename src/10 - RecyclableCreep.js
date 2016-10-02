@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-08-30 17:05:51
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-09 04:54:43
+* @Last Modified time: 2016-09-28 20:17:13
 */
 
 'use strict';
@@ -27,5 +27,5 @@ RecyclableCreep.prototype.recycleState = function() {
 
 
 RecyclableCreep.prototype.isTooOld = function() {
-  return this.ticksToLive < LOCAL_RECYCLE_AGE
+  return this.ticksToLive < (LOCAL_RECYCLE_AGE / 2)
 }
