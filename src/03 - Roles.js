@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-02 17:40:03
+* @Last Modified time: 2016-10-03 18:41:15
 */
 
 'use strict';
@@ -63,7 +63,7 @@ var ROLES = {
       { role: 'harvester', priority: 1, body: {work: 5, carry: 5} },
       { role: 'miner',     priority: 2, body: {work: 5, carry: 1} },
       { role: 'carrier',   priority: 3, body: {carry: 10} },
-      { role: 'builder',   priority: 4, body: {work: 2, carry: 5} },
+      { role: 'builder',   priority: 4, body: {work: 10, carry: 6} },
       { role: 'upgrader',  priority: 4, body: {work: 2, carry: 5} },
       { role: 'demo',      priority: 5, body: {work: 8, carry: 5} },
       { role: 'big-miner', priority: 2, body: {work: 14, carry: 1} },
