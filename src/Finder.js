@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-03 23:58:30
+* @Last Modified time: 2016-10-04 03:29:10
 */
 
 'use strict';
@@ -93,7 +93,7 @@ var Finder = {
     return _.size(Finder.findExoCreepAssignedToTarget(role, roomName, sourceRoomName)) + _.size(_.filter(Memory.spawn_queue, {'role': role, target: roomName, room: sourceRoomName}))
   },
   findExoCreepAssignedToTarget: function(role, targetRoomName, sourceRoomName) {
-    return        _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.exo_target === targetRoomName && creep.memory.home == sourceRoomName && creep.ticksToLive > REMOTE_RECYCLE_AGE)
+    return        _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.exo_target === targetRoomName && creep.memory.home == sourceRoomName) // && creep.ticksToLive > REMOTE_RECYCLE_AGE)
   },
   findSquad: function(roomName){
     return _.filter(Game.creeps, function(c){

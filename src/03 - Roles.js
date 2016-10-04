@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-03 19:47:33
+* @Last Modified time: 2016-10-04 05:55:41
 */
 
 'use strict';
@@ -228,7 +228,7 @@ var EXOROLES = {
     return roles
   },
   getExoBuilderMulti: function(room){
-    return 1
+    return 3
   },
   getExoHarvesterMulti: function(room){
     return 2

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-10-03 18:53:23
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-04 00:14:14
+* @Last Modified time: 2016-10-04 06:39:17
 */
 
 'use strict';
@@ -18,10 +18,24 @@ let MilitaryActions = {
     }
   },
   moveOut: function(creep, targetRoom, exitStatus, failStatus) {
+
     creep.gotoRoom(targetRoom)
     if(creep.room.name !== targetRoom) creep.setState(failStatus)
     if(creep.room.name === targetRoom) {
-      creep.setState(exitStatus)
+      if(creep.move(creep.memory.exit_dir) === 0 || !creep.memory.exit) {
+        delete creep.memory.exit_dir
+        delete creep.memory.exit
+        delete creep.memory.goto_room
+        delete creep.memory.old_room
+        creep.setState(exitStatus)
+      }
+    }
+
+    /*if(creep.room.name === creep.memory.old_room) {
+      delete creep.memory.exit
+      delete creep.memory.exit_dir
+    }*/
+    if(creep.room.name !== creep.memory.old_room){
       delete creep.memory.exit
       delete creep.memory.exit_dir
     }
