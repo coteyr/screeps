@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-28 19:47:54
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-28 19:50:33
+* @Last Modified time: 2016-10-03 22:54:57
 */
 
 'use strict';
@@ -133,4 +133,37 @@ Creep.prototype.doStash = function() {
   var container = Targeting.findClosestContainer(this.pos, this.room)
   if(container) this.dumpResources(container)
   this.setMode('idle')
+}
+
+Creep.prototype.doSend = function() {
+  var containers = this.pos.findInRange(FIND_STRUCTURES, 3, {filter: function(c) { return c.structureType === STRUCTURE_CONTAINER && c.hasRoom() }}) // {structureType: STRUCTURE_CONTAINER}}) // function(c) {
+  //  c.storedEnergy() < c.possibleEnergy() - this.carry.energy && c.structureType === STRUCTURE_CONTAINER && c.isActive()
+  //});
+  if (_.size(containers) > 0) {
+    this.getCloseAndAction(containers[0], this.transfer(containers[0], RESOURCE_ENERGY), 1) // this.setMode('idle'
+  } else {
+    this.dumpResources()
+  }
+  if(this.carry.energy == 0) this.setMode('idle')
+}
+
+Creep.prototype.doRally = function() {
+  var flag = this.room.find(FIND_FLAGS)[0]
+  if(!flag) {
+    this.setMode('idle')
+  } else {
+    this.moveCloseTo(flag.pos.x, flag.pos.y, 2)
+  }
+}
+
+Creep.prototype.doMoveOut = function() {
+  this.heal(this)
+  var go = true
+  /*Finder.findSquad(this.room.name).forEach( function(creep) {
+    if(creep.fatigue !== 0) go = false
+  })*/
+  if(go) this.gotoRoom(this.memory.exo_target)
+}
+Creep.prototype.doEnter = function() {
+  this.gotoRoom(this.memory.attack)
 }

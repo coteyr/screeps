@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-03 18:41:15
+* @Last Modified time: 2016-10-03 19:47:33
 */
 
 'use strict';
@@ -309,6 +309,9 @@ var ARMY = {
   'post': {roles: [
     { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 10, priority: 103, body: BodyBuilder.buildBody({ranged: 2, attack: 2, move: 6, tough: 2}, 800, false, false, false)},
     { role: 'exo-healer',    arrayName: 'attack', multiplyer: 2,  priority: 104, body: BodyBuilder.buildBody({heal: 4, move: 4}, 1300, false, false, false)}
+  ], rally: 5},
+  'test': {roles: [
+    { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 10, priority: 103, body: BodyBuilder.buildBody({attack: 1, move: 1}, 300, false, false, false)},
   ], rally: 5}
 }
 

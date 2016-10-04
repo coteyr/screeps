@@ -2,46 +2,27 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-12 23:00:25
+* @Last Modified time: 2016-10-03 23:19:53
 */
 
 'use strict';
 
-Creep.prototype.setupExoBuilderMemory = function() {
-  this.chooseExoTarget('build')
+let ExoBuilder = function() {}
+_.merge(ExoBuilder.prototype, StateMachine.prototype, RecyclableCreep.prototype, RemoteCreep.prototype)
+
+ExoBuilder.prototype.tickCreep = function() {
+  this.remoteState()
+  this.checkState()
+  this.recycleState()
 }
 
-Creep.prototype.assignHomeExoBuilderTasks = function() {
-  if(this.carry.energy <= 0) {
-    this.setMode('leave');
-  } else {
-    this.setMode('transfer');
-  }
-}
-
-Creep.prototype.assignTravelExoBuilderTasks = function() {
-  this.setMode('leave')
-}
-
-Creep.prototype.assignRemoteExoBuilderTasks = function() {
-  if(this.modeIs('transition')) {
-    // this.setMode('mine')
-  } else if (this.modeIs('idle')) {
-    if (this.carry.energy === 0 && !this.room.carrierReady()) {
-      this.clearTarget()
-      var target = Finder.findExclusiveDropedEnergy(this.room.name)
-      if(target) {
-        if(this.moveCloseTo(target.pos.x, target.pos.y, 1)) this.pickup(target)
-      } else {
-        this.setMode('mine')
-      }
-    } else if (this.carry.energy === 0 && this.room.carrierReady()) {
-      this.clearTarget()
-      this.setMode('pickup')
-    } else {
-      this.clearTarget()
-      this.setMode('build')
-    }
-  }
+ExoBuilder.prototype.checkState = function() {
+  if(!this.state()) this.setState('r-move-out')
+  if(this.stateIs('select')) Actions.targetWithState(this, Finder.findSourcePosition(this.room.name, this.memory.role), 'position')
+  if(this.stateIs('position')) Actions.moveToTarget(this, this.target(), 'mine')
+  if(this.stateIs('mine')) Actions.mine(this, this.target(), 'choose', 'choose')
+  if(this.stateIs('choose')) Actions.targetWithState(this, Targeting.findClosestConstruction(this.pos), 'travel', 'old')
+  if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'build')
+  if(this.stateIs('build')) Actions.build(this, this.target(), 'select', 'select')
 }
 

@@ -2,12 +2,35 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-21 02:40:55
+* @Last Modified time: 2016-10-03 23:58:52
 */
 
 'use strict';
 
-Creep.prototype.setupExoCarrierMemory = function() {
+let ExoCarrier = function() {}
+_.merge(ExoCarrier.prototype, StateMachine.prototype, RecyclableCreep.prototype, RemoteCreep.prototype)
+
+ExoCarrier.prototype.tickCreep = function() {
+  this.remoteState()
+  this.checkState()
+  this.recycleState()
+}
+
+ExoCarrier.prototype.checkState = function() {
+  if(!this.state()) this.setState('r-move-out')
+  if(this.stateIs('select')) Actions.targetWithState(this, Targeting.findClosestDroppedEnergy(this.pos, this.room.name), 'goto', 'choose')
+  if(this.stateIs('goto')) Actions.moveToTarget(this, this.target(), 'pickup', 1, 'select')
+  if(this.stateIs('pickup')) Actions.pickup(this, this.target(), 'go-home')
+  if(this.stateIs('choose')) Actions.targetWithState(this, Targeting.findEnergySource(this.pos, this.room, this.memory.role), 'position', 'select')
+  if(this.stateIs('position')) Actions.moveToTarget(this, this.target(), 'fill')
+  if(this.stateIs('fill')) Actions.grab(this, this.target(), 'go-home', 'select')
+  if(this.stateIs('are-home')) Actions.targetWithState(this, Targeting.getTransferTarget(this.pos, this.room), 'travel')
+  if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'dump', 1, 'select')
+  if(this.stateIs('dump')) Actions.dump(this, this.target(), 'r-move-out', 'are-home')
+}
+
+
+/*Creep.prototype.setupExoCarrierMemory = function() {
   this.chooseExoTarget('carry')
 }
 
@@ -37,7 +60,7 @@ Creep.prototype.assignRemoteExoCarrierTasks = function() {
       this.setMode('take-home')
     }
   }
-}
+}*/
 
 Creep.prototype.doTakeHome = function() {
   var road = Targeting.findRoadUnderneath(this.pos)

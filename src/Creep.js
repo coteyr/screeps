@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-28 15:06:38
+* @Last Modified time: 2016-10-04 00:18:37
 */
 
 'use strict';
@@ -35,6 +35,15 @@ Creep.prototype.tick = function(){
     this.tickCreep()
   } else if(this.memory.role == 'excavator') {
     _.merge(Creep.prototype, ExcavatorCreep.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'exo-attacker') {
+    _.merge(Creep.prototype, ExoAttacker.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'exo-builder') {
+    _.merge(Creep.prototype, ExoBuilder.prototype)
+    this.tickCreep()
+  } else if(this.memory.role == 'exo-carrier') {
+    _.merge(Creep.prototype, ExoCarrier.prototype)
     this.tickCreep()
   } else {
     this.setHome()
@@ -235,6 +244,16 @@ Creep.prototype.harvest = function(target) {
   }
 
   return did
+}
+
+Creep.prototype.orignalMoveTo = Creep.prototype.moveTo
+
+Creep.prototype.moveTo = function(first, second, options) {
+  if(this.hasPart(WORK) && this.hasSome()) {
+    var road = Targeting.findRoadUnderneath(this.pos)
+    if(road && road.hits < road.hitsMax) this.repair(road)
+  }
+  this.orignalMoveTo(first, second, options)
 }
 
 Creep.prototype.getOffRamparts = function() {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-08-30 17:05:51
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-28 20:17:13
+* @Last Modified time: 2016-10-04 00:23:58
 */
 
 'use strict';
@@ -15,8 +15,12 @@ RecyclableCreep.prototype.recycleState = function() {
   if(this.isTooOld()) this.setState('old')
   if(this.stateIs('old')) {
     this.clearTarget()
-    this.setTarget(Finder.findSpawn(this.room.name))
-    if(this.hasTarget()) this.setState('retire')
+    if(this.room.name === this.memory.home) {
+      this.setTarget(Finder.findSpawn(this.room.name))
+      if(this.hasTarget()) this.setState('retire')
+    } else {
+      MilitaryActions.moveOut(this, this.memory.home, 'old', 'old')
+    }
   }
   if(this.stateIs('retire')) {
     var target = this.target()
@@ -27,5 +31,6 @@ RecyclableCreep.prototype.recycleState = function() {
 
 
 RecyclableCreep.prototype.isTooOld = function() {
-  return this.ticksToLive < (LOCAL_RECYCLE_AGE / 2)
+  return this.memory.exo_target === this.memory.home && this.ticksToLive < (LOCAL_RECYCLE_AGE / 2)
+  return this.memory.exo_target !== this.memory.home && this.room.name === this.memory.home && this.ticksToLive < (REMOTE_RECYCLE_AGE)
 }
