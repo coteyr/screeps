@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-04 03:29:10
+* @Last Modified time: 2016-10-07 09:14:55
 */
 
 'use strict';
@@ -159,7 +159,7 @@ var Finder = {
       if(role === 'miner') {
         return _.size(_.filter(Finder.findCreeps('miner', roomName), (c) => c.memory.target === s.id)) <= 0
       } else {
-        return s.energy >= 100
+        return s.energy >= 100 && _.size(_.filter(Game.creeps, (c) => c.room.name === roomName && c.memory.target === s.id)) < 2
       }
     })
   if (_.size(sources) > 0) return sources[0]
@@ -266,6 +266,13 @@ var Finder = {
   },
   findLabs: function(roomName) {
     return this.findStructures(roomName, STRUCTURE_LAB)
+  },
+  findLinks: function(roomName) {
+    return this.findStructures(roomName, STRUCTURE_LINK)
+  },
+  findReceivingLink: function(roomName) {
+    let links = _.filter(this.findStructures(roomName, STRUCTURE_LINK), function(l){return l.receiver() && l.cooldown <= 0 && !l.isFull()})
+    if(_.size(links) >= 1) return links[0]
   },
   findConstructionSites: function(roomName) {
     var room = Game.rooms[roomName]

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-12 15:47:32
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 15:45:09
+* @Last Modified time: 2016-10-07 09:25:07
 */
 
 'use strict';
@@ -12,7 +12,7 @@ let Actions = {
   moveToTarget: function(creep, target, exitState, range = 1, failState = false) {
     if(target) {
       if(creep.moveCloseTo(target.pos.x, target.pos.y, range) === true) creep.setState(exitState)
-      if(!creep.room.hasHostiles()) {
+      if(!creep.room.hasHostiles() && !creep.room.needsConstruction()) {
         let ext = Targeting.findCloseExtension(creep.pos)
         if(ext && ext.hasRoom() && creep.hasSome()) creep.dumpResources(ext)
       }
@@ -30,7 +30,7 @@ let Actions = {
   },
   grab: function(creep, target, exitState = 'dump', failState = false){
     if(target.transfer) target.transfer(creep, RESOURCE_ENERGY)
-    if(target.withdraw) creep.withdraw(target, RESOURCE_ENERGY)
+    if(creep.withdraw) creep.withdraw(target, RESOURCE_ENERGY)
     if(creep.isFull()) {
       creep.setState(exitState)
     } else if(failState){

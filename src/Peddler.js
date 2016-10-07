@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-28 10:23:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-28 16:59:54
+* @Last Modified time: 2016-10-07 09:21:20
 */
 
 'use strict';
@@ -136,9 +136,10 @@ PeddlerCreep.prototype.findSale = function() {
 PeddlerCreep.prototype.findResourceToSell = function() {
   let room = Game.rooms[this.memory.home]
   let storage = Finder.findStorage(this.memory.home)
+  let terminal = room.terminal
   let creep = this
   Object.keys(room.memory.sell).some(function(resource, index) {
-    if(room.memory.sell[resource].total < storage.store[resource]) {
+    if(room.memory.sell[resource].total < storage.store[resource] || terminal.store[resource] >= room.memory.sell[resource].total) {
       creep.memory.resource = resource
       return true
     }

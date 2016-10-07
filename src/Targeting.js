@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-28 15:06:19
+* @Last Modified time: 2016-10-07 09:33:29
 */
 
 'use strict';
@@ -21,9 +21,14 @@ var Targeting = {
   },
   getTransferTarget: function(pos, room) {
     if(room.hasHostiles()) {
-       var towers = Finder.findTowers(room.name)
+      var towers = Finder.findTowers(room.name)
       var tower = Targeting.getMax(towers, function(t) { return t.energyCapacity - t.energy })
       if(tower && tower.hasRoom() && tower.storedEnergy() <= (tower.possibleEnergy() * 0.80)) return tower
+    }
+    if(pos.x < 5 || pos.x > 48 || pos.y < 5 || pos.y > 48) {
+      var links = Finder.findLinks(room.name)
+      var link = pos.findClosestByRange(links, {filter: function(l) { return l.energy < l.energyCapacity && l.sender() }})
+      if(link) return link
     }
     // spawner -> tower -> extensions -> storage
     var spawn = Finder.findSpawn(room.name)
@@ -195,6 +200,8 @@ var Targeting = {
   },
 
   findEnergyBuffer: function(pos, room, mode = 'none') {
+    let links = _.filter(Finder.unbox(room, 'structures'), (l) => l.structureType === STRUCTURE_LINK && l.receiver() && l.energy > 0)
+    if(_.size(links) > 0) return pos.findClosestByRange(links)
     var targets = _.filter(Finder.unbox(room, 'structures'), (s) => s.structureType === STRUCTURE_CONTAINER && s.storedEnergy() > 100)
     var buffer = pos.findClosestByRange(targets)
     if(buffer) return buffer

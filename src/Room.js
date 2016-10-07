@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 15:11:05
+* @Last Modified time: 2016-10-07 09:12:06
 */
 
 'use strict';
@@ -24,7 +24,7 @@ Room.prototype.upgradeWalls = function() {
   return this.memory.energy_spent_on_walls < 500
 }
 Room.prototype.tickStuff = function() {
-  var stuff = _.union({}, this.memory.my_storages, this.memory.my_containers, this.memory.my_extensions, this.memory.my_spawns, this.memory.my_towers, this.memory.my_sources)
+  var stuff = _.union({}, this.memory.my_storages, this.memory.my_containers, this.memory.my_extensions, this.memory.my_spawns, this.memory.my_towers, this.memory.my_sources, this.memory.my_links)
   Object.keys(stuff).forEach(function(key, index) {
     var object = Game.getObjectById(this[key].id);
     if(object) {
@@ -58,6 +58,8 @@ Room.prototype.resetMemory = function() {
   this.memory.my_storages = storages
   var sources = this.find(FIND_SOURCES)
   this.memory.my_sources = sources
+  var links = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LINK}})
+  this.memory.my_links = links
 }
 
 Room.prototype.cleanPaths = function() {

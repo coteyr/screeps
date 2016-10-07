@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-04 12:02:05
+* @Last Modified time: 2016-10-04 18:03:45
 */
 
 'use strict';
@@ -27,7 +27,7 @@ HarvesterCreep.prototype.checkState = function() {
   if(this.stateIs('mine')) Actions.mine(this, this.target(), 'choose', 'choose')
   if(this.room.controller.level < 3) {
     if(this.stateIs('choose')) Actions.targetWithState(this, this.room.controller, 'travel')
-    if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'dump', 1, 'target')
+    if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'dump', 3, 'target')
     if(this.stateIs('dump')) Actions.upgrade(this, 'target')
   } else {
     if(this.stateIs('choose')) Actions.targetWithState(this, Targeting.getTransferTarget(this.pos, this.room), 'travel')
