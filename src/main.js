@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-17 10:59:54
+* @Last Modified time: 2016-10-08 13:56:29
 */
 
 'use strict';
@@ -51,4 +51,14 @@ module.exports.loop = function () {
     Memory.harvest_count += 1
     Memory.harvest_average = Memory.harvest_total / Memory.harvest_count
     Log.tick();
-  };
+
+  Reporting.setEmpireValue('cpuUsed', Game.cpu.getUsed())
+  Reporting.setEmpireValue('bucket', Game.cpu.bucket)
+  Reporting.setEmpireValue('cpuLimit', Game.cpu.limit)
+  Reporting.setEmpireValue('tick', Game.time)
+  Reporting.setEmpireValue('creepCount', _.size(Game.creeps))
+  Reporting.setEmpireValue('currentGCL', Game.gcl.level)
+  Reporting.setEmpireValue('gclProgress', Game.gcl.progress)
+  Reporting.setEmpireValue('gclTotal', Game.gcl.progressTotal)
+  Reporting.setEmpireValue('energyTick', Memory.harvest_this_tick)
+}

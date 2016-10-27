@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-04 18:03:45
+* @Last Modified time: 2016-10-27 03:07:33
 */
 
 'use strict';
@@ -25,7 +25,7 @@ HarvesterCreep.prototype.checkState = function() {
   if(this.stateIs('target')) Actions.targetWithState(this, Finder.findSourcePosition(this.room.name, this.memory.role), 'position')
   if(this.stateIs('position')) Actions.moveToTarget(this, this.target(), 'mine')
   if(this.stateIs('mine')) Actions.mine(this, this.target(), 'choose', 'choose')
-  if(this.room.controller.level < 3) {
+  if(this.room.controller.level < 3 || this.room.isFull()) {
     if(this.stateIs('choose')) Actions.targetWithState(this, this.room.controller, 'travel')
     if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'dump', 3, 'target')
     if(this.stateIs('dump')) Actions.upgrade(this, 'target')

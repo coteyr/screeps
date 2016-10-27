@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-07 09:33:29
+* @Last Modified time: 2016-10-25 15:00:35
 */
 
 'use strict';
@@ -209,7 +209,12 @@ var Targeting = {
   },
 
   findEnergySource: function(pos, room, mode) {
-      return Targeting.findEnergyBuffer(pos, room, mode)
+      if(room.controller && room.controller.level < 3) {
+        var targets = Finder.unbox(room, 'sources')
+        return pos.findClosestByRange(targets)
+      } else {
+        return Targeting.findEnergyBuffer(pos, room, mode)
+      }
   },
 
   findCloseContainer: function(pos, range) {

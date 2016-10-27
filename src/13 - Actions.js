@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-12 15:47:32
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-07 09:25:07
+* @Last Modified time: 2016-10-25 17:33:43
 */
 
 'use strict';
@@ -97,7 +97,6 @@ let Actions = {
     } else if(target && target.hits < target.hitsMax) {
       creep.repair(target)
     } else {
-      console.log('aaa')
       creep.setState(failState)
     }
     if(creep.isEmpty()) creep.setState(failState)
@@ -119,6 +118,10 @@ let Actions = {
   },
   excavate: function(creep, target, exitState) {
     creep.harvest(target)
+    creep.setState(exitState)
+  },
+  dispurse: function(creep, exitState){
+    creep.moveTo(25, 25)
     creep.setState(exitState)
   }
 

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-07 09:12:06
+* @Last Modified time: 2016-10-24 17:53:41
 */
 
 'use strict';
@@ -16,7 +16,9 @@ Room.prototype.tick = function() {
   // this.refreshData();
   this.tickStuff();
   this.tickCreeps(); //keep this separate
+  this.shields();
   if(Game.time % 1500 == 0) this.memory.energy_spent_on_walls = 0
+  Memory.stats["room." + this.name + ".energyAvailable"] = this.energyAvailable
   return true;
 };
 Room.prototype.upgradeWalls = function() {
@@ -374,4 +376,10 @@ Room.prototype.needs = function(role, sourceRoom) {
 }
 Room.prototype.has = function(role,  sourceRoomName) {
   return Finder.findCreepCountAssignedToRoom(role, this.name, sourceRoomName)
+}
+
+Room.prototype.shields = function() {
+  if(Finder.findPresentCreepCount(this.name) <= 0 && Finder.findHostileCreepCount(this.name) >= 1) {
+    return this.controller && this.controller.activateSafeMode()
+  }
 }

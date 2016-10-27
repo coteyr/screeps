@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-07 09:14:55
+* @Last Modified time: 2016-10-24 17:52:37
 */
 
 'use strict';
@@ -76,6 +76,13 @@ var Finder = {
   },
   findAllCreeps: function(role) {
     return _.filter(Game.creeps, (creep) => creep.memory.role === role);
+  },
+  findPresentCreepCount: function(roomName) {
+    return _.size(_.filter(Game.creeps, (creep) => creep.room.name == roomName));
+  },
+  findHostileCreepCount: function(roomName) {
+    var room = Game.rooms[roomName]
+    if(room) return _.size(this.unbox(room, 'hostile-creeps'))
   },
   findRealCreepCount: function(role, spawn) {
     return _.size(_.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.home === spawn.room.name && !creep.modeIs('recycle') && creep.ticksToLive >= 150));
