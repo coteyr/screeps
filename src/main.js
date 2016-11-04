@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-08 13:56:29
+* @Last Modified time: 2016-11-01 06:02:57
 */
 
 'use strict';
@@ -43,7 +43,16 @@ module.exports.loop = function () {
     Game.rooms[room].tick()
   })*/
   Object.keys(Game.rooms).forEach(function(key, index) {
-    this[key].tick();
+    let room = this[key]
+    if(room.strategyIs('Objects')) {
+      room.tick();
+    } else if(room.strategyIs('Dumb')) {
+      _.merge(Room.prototype, DumbRoom.prototype)
+      room.tickRoom()
+    } else {
+      Log.error("<h1>Room " + room.name + " has no strategy and is idle!</h1>")
+    }
+
     global[key] = this[key] // shortcuts
     //global.logUsedCPU(this[key])
   }, Game.rooms);

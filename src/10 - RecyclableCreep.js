@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-08-30 17:05:51
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-04 00:23:58
+* @Last Modified time: 2016-10-30 03:38:06
 */
 
 'use strict';
@@ -14,6 +14,7 @@ let RecyclableCreep = function(){}
 RecyclableCreep.prototype.recycleState = function() {
   if(this.isTooOld()) this.setState('old')
   if(this.stateIs('old')) {
+    this.spout('\u267B')
     this.clearTarget()
     if(this.room.name === this.memory.home) {
       this.setTarget(Finder.findSpawn(this.room.name))

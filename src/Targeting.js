@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-25 15:00:35
+* @Last Modified time: 2016-10-30 20:48:22
 */
 
 'use strict';
@@ -200,19 +200,23 @@ var Targeting = {
   },
 
   findEnergyBuffer: function(pos, room, mode = 'none') {
+    Log.info('a')
     let links = _.filter(Finder.unbox(room, 'structures'), (l) => l.structureType === STRUCTURE_LINK && l.receiver() && l.energy > 0)
     if(_.size(links) > 0) return pos.findClosestByRange(links)
     var targets = _.filter(Finder.unbox(room, 'structures'), (s) => s.structureType === STRUCTURE_CONTAINER && s.storedEnergy() > 100)
     var buffer = pos.findClosestByRange(targets)
+    Log.info('t')
     if(buffer) return buffer
     if(room.storage) return room.storage
   },
 
   findEnergySource: function(pos, room, mode) {
-      if(room.controller && room.controller.level < 3) {
-        var targets = Finder.unbox(room, 'sources')
-        return pos.findClosestByRange(targets)
+      if(!room.carrierReady() && mode !== 'carrier') {
+        //var targets = Finder.unbox(room, 'sources')
+        //return pos.findClosestByRange(targets)
+        return Finder.findSourcePosition(room.name, mode)
       } else {
+        Log.info('0')
         return Targeting.findEnergyBuffer(pos, room, mode)
       }
   },

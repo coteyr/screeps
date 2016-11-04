@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 09:38:56
+* @Last Modified time: 2016-10-31 01:49:58
 */
 
 'use strict';
@@ -28,7 +28,7 @@ Creep.prototype.doRespond = function() {
   //this.kiteAttack()
   if(this.hits < this.hitsMax) this.heal(this)
   if(Finder.hasHostals(this.room.name)) {
-    this.normalAttack()
+    this.kiteAttack()
   } else {
     this.moveCloseTo(this.room.controller.pos.x, this.room.controller.pos.x, 2)
   }

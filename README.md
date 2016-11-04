@@ -21,6 +21,12 @@ To anyone that stumbles across this. Screeps is a game where you focus on automa
 
 # Army
 
+# Room Strategies
+
+ - **Dumb** Very simple, monolithic room build out code. Takes almost no CPU but is dead stupid. The room is the center of the universe. It directs everything. Works very well for a rush to RCL 3, will continue to work beyond that, but is not advised. There is no offense, no defense, no queuing, no nothing. It works till the task is done. If a source is not being mined, it spawns a worker. It is not optimized in any direction, and works more off a list then it responds to a situation. It is better in RCL 1 to RCL 3 because it dumps 100% of the mined energy into room build out instead of longer term goals. After RCL 3 though that policy will not work.
+
+  - **Objects** Every object is responsible for it's own work. There are many roles, and each role is important. The individual object decides what it needs and tries to get it. Creeps are implemented as FSMs, and try to fill the goals of all objects. This is the core of the AI. It will work in RCL 1 to RCL 8 but at lower levels it's attempts to balance the economy are usually more harmful then helpful. It will make it though those levels, but for example, it will devote energy to building walls when it's more important to just get to RCL 3 for the tower.
+
 # Tactics
 
  - **litewalls** Cheap wall destroyers for when there are small walls and no towers, less important now that noob walls don't exist.

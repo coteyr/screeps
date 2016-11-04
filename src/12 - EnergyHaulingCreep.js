@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-19 13:51:50
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-25 15:56:31
+* @Last Modified time: 2016-10-30 22:31:59
 */
 
 'use strict';
@@ -20,7 +20,7 @@ EnergyHaulingCreep.prototype.energyState = function() {
   if(this.stateIs('e-select')) Actions.targetWithState(this, Targeting.findEnergySource(this.pos, this.room, this.memory.role), 'e-position', 'check-dropped')
   if(this.stateIs('e-position')) Actions.moveToTarget(this, this.target(), 'e-fill')
   if(this.stateIs('e-fill')) {
-    if (this.target() && this.target().mode){
+    if (this.target() && (typeof this.target().ticksToRegeneration !== 'undefined' || this.harvest(this.target()) === 0)){
       this.setState('mine')
     } else {
       Actions.grab(this, this.target(), 'choose', 'check-dropped')

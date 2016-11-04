@@ -2,10 +2,11 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:04:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-25 01:21:26
+* @Last Modified time: 2016-10-30 03:41:27
 */
 
 'use strict';
+Creep.prototype.vomit = ''
 
 Creep.prototype.tick = function(){
   try {
@@ -42,6 +43,9 @@ Creep.prototype.tick = function(){
   } else if(this.memory.role == 'exo-builder') {
     _.merge(Creep.prototype, ExoBuilder.prototype)
     this.tickCreep()
+  } else if(this.memory.role == 'exo-upgrader') {
+    _.merge(Creep.prototype, ExoUpgrader.prototype)
+    this.tickCreep()
   } else if(this.memory.role == 'exo-carrier') {
     _.merge(Creep.prototype, ExoCarrier.prototype)
     this.tickCreep()
@@ -66,6 +70,10 @@ Creep.prototype.tick = function(){
     this.room.resetMemory();
     this.setMode(null)
     delete this.memory.state
+  }
+  if(this.vomit && this.memory.last_say !== this.vomit){
+    this.say(this.vomit, true)
+    this.memory.last_say = this.vomit
   }
 }
 
@@ -212,7 +220,7 @@ Creep.prototype.dumpResources = function(target) {
       if(creep.carry[key] > 0) {
         if(target) {
           if(creep.transfer(target, key) !== 0) creep.drop(key)
-          if(target.isFull()) creep.drop(key)
+          if(target.isFull && target.isFull()) creep.drop(key)
         } else {
           creep.drop(key)
         }
@@ -270,4 +278,8 @@ Creep.prototype.sayStuff = function(sayings) {
   this.say(sayings[this.memory.say_spot], true)
   this.memory.say_spot += 1
   if(this.memory.say_spot > (_.size(sayings) - 1)) this.memory.say_spot = 0
+}
+
+Creep.prototype.spout = function(say){
+  if(!this.vomit.includes(say)) this.vomit += say
 }

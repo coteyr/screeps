@@ -2,28 +2,30 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-27 04:16:31
+* @Last Modified time: 2016-10-29 09:37:41
 */
 
 'use strict';
 
 
 let UpgraderCreep = function() {}
-_.merge(UpgraderCreep.prototype, StateMachine.prototype, RecyclableCreep.prototype);
+_.merge(UpgraderCreep.prototype, EnergyHaulingCreep.prototype, StateMachine.prototype, RecyclableCreep.prototype, LocalCreep.prototype);
 
 
 UpgraderCreep.prototype.tickCreep = function() {
+  this.localState()
+  this.energyState()
   this.checkState()
   this.recycleState()
 }
 
 UpgraderCreep.prototype.checkState = function() {
   if(!this.state()) this.setState('check-dropped')
-  if(this.stateIs('mine')) Actions.mine(this, this.target(), 'choose', 'choose')
-  if(this.stateIs('choose')) Actions.targetWithState(this, this.room.controller, 'travel', 'old')
-  if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'upgrade')
+  if(this.stateIs('mine'))    Actions.mine(this, this.target(), 'choose', 'choose')
+  if(this.stateIs('choose'))  Actions.targetWithState(this, this.room.controller, 'a-travel', 'old')
+  if(this.stateIs('a-travel'))  Actions.moveToTarget(this, this.target(), 'upgrade', 3)
   if(this.stateIs('upgrade')) Actions.upgrade(this, 'check-dropped')
-  /*
+    /*
   if(!this.state()) this.setState('pick')
   if(this.stateIs('pick')) {
     this.clearTarget()
@@ -46,7 +48,7 @@ UpgraderCreep.prototype.checkState = function() {
   if(this.stateIs('upgrade')) {
     this.upgradeController(this.room.controller)
     if(this.isEmpty()) this.setState('pick')
-  }*/
+  } */
 }
 Creep.prototype.assignUpgraderTasks = function() {
   if(this.modeIs('idle')) {

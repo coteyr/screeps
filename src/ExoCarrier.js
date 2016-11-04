@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-08 13:56:35
+* @Last Modified time: 2016-10-30 03:03:37
 */
 
 'use strict';
@@ -18,6 +18,7 @@ ExoCarrier.prototype.tickCreep = function() {
 
 ExoCarrier.prototype.checkState = function() {
   if(!this.state()) this.setState('r-move-out')
+  if(this.room.name !== this.memory.exo_target) this.setState('r-move-out')
   if(this.stateIs('select')) Actions.targetWithState(this, Targeting.findClosestDroppedEnergy(this.pos, this.room.name), 'goto', 'choose')
   if(this.stateIs('goto')) Actions.moveToTarget(this, this.target(), 'pickup', 1, 'select')
   if(this.stateIs('pickup')) Actions.pickup(this, this.target(), 'go-home')

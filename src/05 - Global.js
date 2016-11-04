@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-21 05:48:36
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 15:15:29
+* @Last Modified time: 2016-10-31 02:12:19
 */
 
 'use strict';
@@ -13,7 +13,7 @@ global.clearPaths = function() {
   }, Game.rooms);
 }
 global.clearGoals = function() {
-  var ops = ['harvest', 'reserve', 'attack', 'steal', 'claim', 'mine', 'carry', 'build', 'responder', 'sapper', 'reap']
+  var ops = ['harvest', 'reserve', 'attack', 'steal', 'claim', 'mine', 'carry', 'build', 'responder', 'sapper', 'reap', 'upgrade']
   Object.keys(Game.rooms).forEach(function(key, index) {
       ops.forEach(function(op){
         Game.rooms[key].memory[op] = []
@@ -23,7 +23,7 @@ global.clearGoals = function() {
 }
 global.listGoals = function() {
 
-  var ops = ['scout', 'harvest', 'reserve', 'attack', 'steal', 'claim', 'mine', 'carry', 'build', 'responder', 'sapper', 'reap']
+  var ops = ['scout', 'harvest', 'reserve', 'attack', 'steal', 'claim', 'mine', 'carry', 'build', 'responder', 'sapper', 'reap', 'upgrade']
   var out = "<table cellpadding='5' cellspacing='5'><thead><tr><th style='border: 1px solid; padding: 4px'>Room</th>"
   ops.forEach(function(o){
     out += "<th style='border: 1px solid; padding: 4px'>" + o + "</th>"
@@ -154,4 +154,13 @@ global.forceTarget = function(id) {
 }
 global.quite = function(ticks=100) {
   Memory.quite = Game.time + ticks
+}
+global.reTask = function(role, home, target) {
+  for(var name in Memory.creeps) {
+    var creep = Memory.creeps[name]
+    creep.home = home
+    creep.target = target
+    creep.role = role
+    creep.state = 'go-home'
+  }
 }

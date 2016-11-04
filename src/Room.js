@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-24 17:53:41
+* @Last Modified time: 2016-11-02 07:40:37
 */
 
 'use strict';
@@ -23,7 +23,8 @@ Room.prototype.tick = function() {
 };
 Room.prototype.upgradeWalls = function() {
   if(!this.memory.energy_spent_on_walls) this.memory.energy_spent_on_walls = 0
-  return this.memory.energy_spent_on_walls < 500
+  // return this.memory.energy_spent_on_walls < 500
+  return true
 }
 Room.prototype.tickStuff = function() {
   var stuff = _.union({}, this.memory.my_storages, this.memory.my_containers, this.memory.my_extensions, this.memory.my_spawns, this.memory.my_towers, this.memory.my_sources, this.memory.my_links)
@@ -215,6 +216,14 @@ Room.prototype.removeReaper = function(room_name) {
   this.removeExoTarget('reap', room_name)
 }
 
+Room.prototype.addUpgrade = function(room_name) {
+  this.addExoTarget('upgrade', room_name)
+}
+
+Room.prototype.removeUpgrade = function(room_name) {
+  this.removeExoTarget('upgrade', room_name)
+}
+
 Room.prototype.list = function(arrayName) {
   var array = this.memory[arrayName] || []
   console.log('<span style="#00FFFF">Values for ' + arrayName + "</span>")
@@ -348,14 +357,20 @@ Room.prototype.addSellOrder = function(resource, amount) {
 Room.prototype.needs = function(role, sourceRoom) {
   if(role === 'exo-scout') {
     return EXOROLES.getExoScoutMulti()
+  } else if (role === 'exo-responder') {
+    return EXOROLES.getExoResponderMulti()
   } else if (role === 'exo-reserver') {
     return EXOROLES.getExoReserverMulti()
+  } else if (role === 'exo-claimer') {
+    return EXOROLES.getExoClaimerMulti()
   } else if (role === 'exo-miner') {
     return Finder.findSourceCount(this.name) * EXOROLES.getExoMinerMulti()
   } else if (role === 'exo-carrier'){
     return Math.ceil(_.size(Finder.findStructures(this.name, STRUCTURE_ROAD)) / 15) + ((Game.map.getRoomLinearDistance(this.name, sourceRoom.name) - 1) * 2) *  EXOROLES.getExoCarrierMulti()
   } else if (role === 'exo-builder') {
     return Math.ceil(_.size(Finder.findConstructionSites(this.name)) / 10) * EXOROLES.getExoBuilderMulti()
+  } else if (role === 'exo-upgrader') {
+      return 8
   } else if(role === 'exo-attacker') {
     let count = 0
     ARMY[sourceRoom.tactic()].roles.forEach(function(r){
@@ -380,6 +395,17 @@ Room.prototype.has = function(role,  sourceRoomName) {
 
 Room.prototype.shields = function() {
   if(Finder.findPresentCreepCount(this.name) <= 0 && Finder.findHostileCreepCount(this.name) >= 1) {
-    return this.controller && this.controller.activateSafeMode()
+    // return this.controller && this.controller.activateSafeMode()
   }
+}
+Room.prototype.strategyIs = function(testStrategy) {
+  if(!this.strategy()) this.setStrategy('Objects')
+  return this.strategy() === testStrategy.toLowerCase()
+}
+Room.prototype.strategy = function() {
+  if(this.memory.strategy) return this.memory.strategy.toLowerCase()
+}
+Room.prototype.setStrategy = function(strategy) {
+  this.memory.strategy = strategy.toLowerCase()
+  return strategy.toLowerCase()
 }

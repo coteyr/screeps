@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-28 19:53:10
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-04 00:07:14
+* @Last Modified time: 2016-11-02 09:34:02
 */
 
 'use strict';
@@ -22,5 +22,6 @@ RemoteCreep.prototype.remoteState = function(rally = false) {
     if(this.stateIs('r-move-out')) MilitaryActions.moveOut(this, this.memory.exo_target, 'choose', 'r-move-out')
     if(this.stateIs('go-home')) MilitaryActions.moveOut(this, this.memory.home, 'are-home', 'go-home')
   }
+  if(this.pos.x === 50 || this.pos.y === 50 || this.pos.x === 0 || this.pos.y === 0) this.moveTo(25, 25)
 }
 

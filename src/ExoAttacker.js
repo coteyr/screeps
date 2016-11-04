@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-03 22:55:25
+* @Last Modified time: 2016-11-03 06:59:45
 */
 
 'use strict';
@@ -17,7 +17,8 @@ ExoAttacker.prototype.tickCreep = function() {
 }
 
 ExoAttacker.prototype.checkState = function() {
+  if(this.room.name !== this.memory.exo_target) this.setState('rally')
   if(!this.state()) this.setState('rally')
-  if(this.stateIs('select')) this.setState('attack')
+  if(this.stateIs('choose')) this.setState('attack')
   if(this.stateIs('attack')) MilitaryActions.attack(this)
 }

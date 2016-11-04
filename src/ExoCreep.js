@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 12:05:56
+* @Last Modified time: 2016-11-02 10:52:40
 */
 
 'use strict';
@@ -194,7 +194,7 @@ Creep.prototype.doTransition = function() {
 }
 
 Creep.prototype.gotoRoom = function(roomName) {
-  if(!Memory.waypoints) Memory.waypoints = {}
+ /* if(!Memory.waypoints) Memory.waypoints = {}
   if(!this.memory.waypoints && Memory.waypoints[this.room.name + "-to-" + roomName]) {
 
     this.memory.waypoints = Memory.waypoints[this.room.name + "-to-" + roomName]
@@ -210,8 +210,12 @@ Creep.prototype.gotoRoom = function(roomName) {
   } else if(this.memory.waypoints && this.memory.waypoints[0] !== roomName) {
     this.gotoRoom(this.memory.waypoints[0])
     return true
-  }  else {
-    if(!this.memory.exit) {
+  }  else {*/
+    var pos = new RoomPosition(25, 25, roomName);
+    if(this.room.name != roomName) {
+      this.moveTo(pos)
+    }
+    /*if(!this.memory.exit) {
       var pos = new RoomPosition(25, 25, roomName);
       var exitDir = this.room.getExitTo(roomName);
       var exit = this.pos.findClosestByPath(exitDir);
@@ -226,7 +230,7 @@ Creep.prototype.gotoRoom = function(roomName) {
       // delete this.memory.exit
       // delete this.memory.exit_dir
     }
-  }
+  }*/
 
 }
 

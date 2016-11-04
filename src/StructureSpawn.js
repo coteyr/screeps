@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-25 14:27:01
+* @Last Modified time: 2016-10-31 01:14:20
 */
 
 'use strict';
@@ -104,8 +104,9 @@ StructureSpawn.prototype.doWork = function() {
     this.doWaitEnergy();
   }
   if(this.modeIs('er-spawn')) {
-    this.doErSpawn()
+
   }
+  this.doErSpawn()
 }
 
 
@@ -136,10 +137,10 @@ StructureSpawn.prototype.doErSpawn = function() {
     if(!this.spawning) {
       if(Finder.findRealCreepCount('harvester', this) + Finder.findRealCreepCount('carrier', this) < 2){
         this.spawnACreep('harvester', [MOVE, MOVE, CARRY, CARRY, WORK], this.room.name, this.room.name, true)
-      } else if(Finder.findRealCreepCount('miner', this) < 2) {
-        this.spawnACreep('miner', [MOVE, CARRY, WORK, WORK], this.room.name, this.room.name, true)
-      } else if(Finder.findRealCreepCount('carrier', this) < 2){
-        this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY], this.room.name, this.room.name, true)
+      //} else if(Finder.findRealCreepCount('miner', this) < 2) {
+      //  this.spawnACreep('miner', [MOVE, CARRY, WORK, WORK], this.room.name, this.room.name, true)
+      //} else if(Finder.findRealCreepCount('carrier', this) < 2){
+      //  this.spawnACreep('carrier', [MOVE, MOVE, CARRY, CARRY], this.room.name, this.room.name, true)
       } else {
         this.setMode('idle')
       }

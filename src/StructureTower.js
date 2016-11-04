@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-01 19:58:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-20 18:35:27
+* @Last Modified time: 2016-10-29 12:20:19
 */
 
 'use strict';
@@ -25,7 +25,7 @@ StructureTower.prototype.doWork = function() {
 
 StructureTower.prototype.doAttackInvaders = function() {
   if (this.needsTarget()) {
-    var hostiles = this.pos.findInRange(FIND_HOSTILE_CREEPS, 50)/*, {filter: function(creep){
+    var hostiles = this.pos.findInRange(FIND_HOSTILE_CREEPS, 20)/*, {filter: function(creep){
       return  true;
     }});*/
     if(hostiles.length > 0) {
@@ -35,6 +35,8 @@ StructureTower.prototype.doAttackInvaders = function() {
   if(this.hasTarget()) {
     var target = this.target()
     this.attack(target);
+  } else {
+    this.doRepairs()
   }
 }
 

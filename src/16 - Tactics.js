@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-10-03 22:52:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-03 22:54:45
+* @Last Modified time: 2016-11-03 06:33:39
 */
 
 'use strict';
@@ -12,7 +12,7 @@ Creep.prototype.doAttack = function() {
   if(Game.rooms[this.memory.home].tactic() === 'heavy') this.versitleAttack()
   if(Game.rooms[this.memory.home].tactic() === 'kite') this.kiteAttack()
   if(Game.rooms[this.memory.home].tactic() === 'litewalls') this.kiteAttack()
-  if(Game.rooms[this.memory.home].tactic() === 'noob-tower') this.breakWalls()
+  if(Game.rooms[this.memory.home].tactic() === 'noob-tower') this.normalAttack()
   if(Game.rooms[this.memory.home].tactic() === 'drain') this.drainTower()
   if(Game.rooms[this.memory.home].tactic() === 'block') this.block()
   if(Game.rooms[this.memory.home].tactic() === 'post') this.post()
@@ -70,19 +70,24 @@ Creep.prototype.drainTower = function() {
   }
 }
 Creep.prototype.kiteAttack = function() {
-  var target = Targeting.nearestHostalCreep(this.pos)
+  this.spout('')
+  var target = false
+  target = Targeting.nearestHostalCreep(this.pos)
   if(target) {
     var range = this.pos.getRangeTo(target)
     if(this.hits < (this.hitsMax * 0.75)) range = range - 5  // run away for healing
 
-    if(range > 2) {
+    if(range > 3) {
+      this.spout('\u27B9')
       this.moveTo(target)
       this.heal(this)
       this.rangedMassAttack()
-    } else if(range === 2) {
+    } else if(range === 3) {
+      this.spout('\u27B9')
       this.heal(this)
       this.rangedMassAttack()
-    } else if(range <= 1) {
+    } else if(range <= 2) {
+        this.spout('\u2708')
       //if (this.pos.x > 10 && this.pos.y > 10 && this.pos.x < 40 && this.pos.y < 40) {
         var dir = this.pos.getDirectionTo(target)
         var go = dir + 4
