@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-12 15:47:32
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-30 03:42:07
+* @Last Modified time: 2016-11-08 06:48:23
 */
 
 'use strict';
@@ -59,6 +59,7 @@ let Actions = {
     creep.spout('\u2BED')
     creep.pickup(target)
     creep.setState(exitState)
+    creep.clearTarget()
   },
   dump: function(creep, target, exitState, failState = false) {
     creep.spout('\u2B73')

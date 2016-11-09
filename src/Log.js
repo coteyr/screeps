@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:40:25
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-09-20 19:15:47
+* @Last Modified time: 2016-11-06 02:26:57
 */
 
 'use strict';
@@ -17,13 +17,16 @@ var Log = {
 
   warn: function(message, room, creep) {
     if (logLevel >= 3) this.buildMessage('yellow', message, room, creep)
+    if(room) Notify('Warning', message, 0, "https://screeps.com/a/#!/room/" + room.name)
   },
   error: function(message, room, creep) {
     if (logLevel >= 2) this.buildMessage('red', message, room, creep)
+    if(room) Notify('Error', message, 1, "https://screeps.com/a/#!/room/" + room.name)
   },
 
   critical: function(message, room, creep) {
     if (logLevel >= 1) this.buildMessage('red', message, room, creep)
+    if(room) Notify('Critical', message, 2, "https://screeps.com/a/#!/room/" + room.name)
   },
   alert: function(message, room, creep) {
     this.buildMessage('purple', "<h1>" + message + "</h1>", room, creep)
@@ -54,7 +57,8 @@ var Log = {
         if(Memory.quite < Game.time) console.log(body)
       } else {
         if(Memory.quite < Game.time) console.log(this.colorizer('green', 'TICK: ') + this.colorizer('yellow', Game.time + ' ') + this.colorizer('green', 'CPU: ') + this.colorizer('yellow', Game.cpu.getUsed().toFixed(2) + ' of ' + Game.cpu.limit.toFixed(2) + ' ') + this.colorizer('green',  'Bucket: ') + this.colorizer('yellow', Game.cpu.bucket))
-        if(Memory.quite < Game.time) console.log(this.colorizer('green', 'Energy Harvested: ') + this.colorizer('yellow', Memory.harvest_this_tick + ' ') + this.colorizer('green', 'Average Energy Per Tick: ') + this.colorizer('yellow', Memory.harvest_average.toFixed(2)))
+       // if(Memory.quite < Game.time)   console.log(this.colorizer('green', 'Energy Harvested: ') + this.colorizer('yellow', Memory.harvest_this_tick + ' ') + this.colorizer('green', 'Average Energy Per Tick: ') + this.colorizer('yellow', Memory.harvest_average.toFixed(2)))
+       //  if(Memory.quite < Game.time) console.log(this.colorizer('green', 'RCL Upgrade: ')      + this.colorizer('yellow', Memory.upgradeController_this_tick + ' ') + this.colorizer('green', 'Average RCL Per Tick: ') + this.colorizer('yellow', Memory.upgradeController_average.toFixed(2)))
       }
     }
   },

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-28 19:47:54
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-03 22:54:57
+* @Last Modified time: 2016-11-08 06:49:58
 */
 
 'use strict';
@@ -166,4 +166,8 @@ Creep.prototype.doMoveOut = function() {
 }
 Creep.prototype.doEnter = function() {
   this.gotoRoom(this.memory.attack)
+}
+Creep.prototype.doPlop = function() {
+  this.drop(RESOURCE_ENERGY)
+  this.setMode('mine')
 }

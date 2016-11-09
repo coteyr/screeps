@@ -2,13 +2,14 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-01 06:02:57
+* @Last Modified time: 2016-11-09 01:08:47
 */
 
 'use strict';
+let Notify = require('notify')
+
 var RAM = {}
-var msgpack = require("msgpack.min");
-var Buffer = require("buffer").Buffer ;
+
 String.prototype.toCamel = function(){
   return this.replace(/(\_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');}).replace(/(\-[a-z])/g, function($1){return $1.toUpperCase().replace('-','');});
 };
@@ -22,31 +23,14 @@ module.exports.loop = function () {
   RAM = {}
   //global.resetUsedCPU()
   Alarm.tick()
-  if(!Memory.harvest_total) Memory.harvest_total = 0
-  if(!Memory.harvest_count) Memory.harvest_count = 0
-  if(!Memory.harvest_average) Memory.harvest_average = 0
+  Reporting.tickStart()
+  Detectors.detect()
 
-
-  Memory.harvest_last_tick = Memory.harvest_this_tick
-  Memory.harvest_this_tick = 0
-  if(Game.time % 10 == 0) {
-    Memory.harvest_total = 0
-    Memory.harvest_count = 0
-  }
-
-
-  //Memory.spread_targets = []
-  /*var choices = [TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT];
-  var choice = choices[Math.floor(Math.random()*choices.length)];
-  Memory.dance_move = choice
-  _.each(Object.keys(Game.rooms), function(room) {
-    Game.rooms[room].tick()
-  })*/
   Object.keys(Game.rooms).forEach(function(key, index) {
     let room = this[key]
-    if(room.strategyIs('Objects')) {
+    if(room.strategyIs('objects')) {
       room.tick();
-    } else if(room.strategyIs('Dumb')) {
+    } else if(room.strategyIs('dumb')) {
       _.merge(Room.prototype, DumbRoom.prototype)
       room.tickRoom()
     } else {
@@ -56,10 +40,9 @@ module.exports.loop = function () {
     global[key] = this[key] // shortcuts
     //global.logUsedCPU(this[key])
   }, Game.rooms);
-    Memory.harvest_total += Memory.harvest_this_tick
-    Memory.harvest_count += 1
-    Memory.harvest_average = Memory.harvest_total / Memory.harvest_count
-    Log.tick();
+  Reporting.tickEnd()
+
+  Log.tick();
 
   Reporting.setEmpireValue('cpuUsed', Game.cpu.getUsed())
   Reporting.setEmpireValue('bucket', Game.cpu.bucket)

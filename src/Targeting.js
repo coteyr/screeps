@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-03 11:36:42
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-30 20:48:22
+* @Last Modified time: 2016-11-07 15:20:42
 */
 
 'use strict';
@@ -211,12 +211,11 @@ var Targeting = {
   },
 
   findEnergySource: function(pos, room, mode) {
-      if(!room.carrierReady() && mode !== 'carrier') {
+      if(!room.carrierReady() && mode !== 'carrier' && mode !== 'exo-carrier') {
         //var targets = Finder.unbox(room, 'sources')
         //return pos.findClosestByRange(targets)
         return Finder.findSourcePosition(room.name, mode)
       } else {
-        Log.info('0')
         return Targeting.findEnergyBuffer(pos, room, mode)
       }
   },

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-09-19 13:51:50
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-30 22:31:59
+* @Last Modified time: 2016-11-07 15:14:55
 */
 
 'use strict';
@@ -13,8 +13,9 @@ _.merge(EnergyHaulingCreep.prototype, StateMachine.prototype, RecyclableCreep.pr
 // -> checked-dropped -> goto -> pickup -> choose ->
 //           -> select -> position -> fill        -> choose ->
 EnergyHaulingCreep.prototype.energyState = function() {
-  if(!this.state()) this.setState('check-dropped')
+  // if(!this.state()) this.setState('check-dropped')
   if(this.stateIs('check-dropped')) Actions.targetWithState(this, Finder.findExclusiveDropedEnergy(this.room.name), 'e-goto', 'e-select')
+  // if(this.stateIs('check-dropped')) Actions.targetWithState(this, Targeting.findEnergySource(this.pos, this.room, this.memory.role), 'e-goto', 'e-select')
   if(this.stateIs('e-goto')) Actions.moveToTarget(this, this.target(), 'e-pickup', 1, 'check-dropped')
   if(this.stateIs('e-pickup')) Actions.pickup(this, this.target(), 'choose')
   if(this.stateIs('e-select')) Actions.targetWithState(this, Targeting.findEnergySource(this.pos, this.room, this.memory.role), 'e-position', 'check-dropped')

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-11-01 04:28:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-01 12:28:34
+* @Last Modified time: 2016-11-08 20:44:29
 */
 
 'use strict';
@@ -18,6 +18,7 @@ let DumbRoom = function() {}
  */
 DumbRoom.prototype.tickRoom = function() {
   // First check if every source is being mined. If it not then we need a worker
+  Log.info("ticking Dumb room")
   let sources = Finder.findSources(this.name)
   let room = this
   sources.forEach(function(source){

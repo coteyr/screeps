@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-08-14 18:38:05
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-08-14 19:04:12
+* @Last Modified time: 2016-11-06 02:23:18
 */
 
 'use strict';
@@ -25,6 +25,7 @@ var Alarm = {
     var alerts = _.filter(Memory.alarms, function(a) { return a.time <= Game.time})
     alerts.forEach(function(alert){
       Game.notify(alert.message, 0)
+      Notify("Alarm Triggered", alert.message, 0)
       console.log("<h1>" + alert.message + "</h1>")
       if(alert.command) Alarm.runAlarm(alert.command)
     })

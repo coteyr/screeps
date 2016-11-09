@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-02 07:40:37
+* @Last Modified time: 2016-11-04 13:56:59
 */
 
 'use strict';
@@ -406,6 +406,17 @@ Room.prototype.strategy = function() {
   if(this.memory.strategy) return this.memory.strategy.toLowerCase()
 }
 Room.prototype.setStrategy = function(strategy) {
+  let room = this
   this.memory.strategy = strategy.toLowerCase()
+  if(this.strategyIs('Objects')) {
+    for(var name in Memory.creeps) {
+      var creep = Memory.creeps[name]
+      if(creep && creep.home == room.name) {
+        creep.target = this.name
+        creep.role = 'harvester'
+        creep.state = null
+      }
+    }
+  }
   return strategy.toLowerCase()
 }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 05:53:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-31 01:14:20
+* @Last Modified time: 2016-11-04 17:12:05
 */
 
 'use strict';
@@ -75,6 +75,8 @@ StructureSpawn.prototype.spawnACreep = function(role, body, home, target, er=fal
   if(result !== role + "_" + Memory.creeper) {
     Log.error('Problem Spawning Creep: ' + result)
     Log.error(role + ": " + JSON.stringify(body))
+  } else {
+    Reporting.accountAction('Spawn', this.room.name, BodyBuilder.getCost(body))
   }
 }
 
