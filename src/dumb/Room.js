@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-11-01 04:28:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-12 12:21:40
+* @Last Modified time: 2016-11-12 13:46:14
 */
 
 'use strict';
@@ -29,8 +29,8 @@ DumbRoom.prototype.eachSource = function() {
   let room = this
   let sources = Finder.findSources(this.name)
 
-  let idles = _.filter(Game.creeps, creep=> !creep.hasTarget() && creep.hasRoom())
-  sources.forEach(function(source){
+  let idles = _.filter(Game.creeps, creep => !creep.hasTarget() && creep.hasRoom())
+  sources.some(function(source){
     let count = _.size(_.filter(Game.creeps, creep => creep.hasTarget() && creep.target().id === source.id))
     if(count < Finder.findSourcePositionCountEach(room.name, source)) {
       if (_.size(idles) > 0) {
@@ -38,6 +38,7 @@ DumbRoom.prototype.eachSource = function() {
       } else {
         room.spawnWorker(source)
       }
+      return true
     }
   })
 }
@@ -58,53 +59,45 @@ DumbRoom.prototype.pickTarget = function(creep) {
   let spawner = Finder.findSpawn(this.name)
   if(spawner.hasRoom() && creep.hasSome()) {
     creep.setTarget(spawner)
+  } else if(creep.hasSome() && this.controller.ticksToDowngrade < 5000) {
+    creep.setTarget(this.controller)
   } else if(creep.hasSome() && Targeting.getTransferTarget(creep.pos, this)) {
     creep.setTarget(Targeting.getTransferTarget(creep.pos, this))
   } else if(creep.hasSome() && Targeting.findClosestConstruction(creep.pos)) {
     creep.setTarget(Targeting.findClosestConstruction(creep.pos))
-  } else if(creep.hasSome()){
+  } else if(!creep.isEmpty()){
     creep.setTarget(this.controller)
   }
 }
 
-DumbRoom.prototype.harvest = function(creep) {
-
-}
-
-DumbRoom.prototype.transfer = function(creep) {
-
-}
-
-DumbRoom.prototype.upgradeRCL = function(creep) {
-
-}
-
-DumbRoom.prototype.build = function(creep) {
-
-}
-
-DumbRoom.prototype.getCloseAndAction = function(creep, action, resetOnEmpty = true) {
+DumbRoom.prototype.getCloseAndAction = function(creep, action, resetOnEmpty = true, resetOnFull = false) {
   if(action === ERR_NOT_IN_RANGE) {
     creep.moveTo(creep.target())
+  } else if(action === ERR_FULL) {
+    delete creep.memory.target
   } else {
-    if(!resetOnEmpty) delete creep.memory.target
+    if(!resetOnEmpty && !resetOnFull) delete creep.memory.target
   }
   if(resetOnEmpty && creep.isEmpty()) delete creep.memory.target
+  if(resetOnFull && creep.isFull()) delete creep.memory.target
 }
 
 DumbRoom.prototype.workCreeps = function() {
   let me = this;
-  _.filter(Game.creeps).forEach(function(creep) {
+  _.filter(Game.creeps, (creep) => creep.room.name == me.name && creep.my).forEach(function(creep) {
     if(creep.needsTarget()) me.pickTarget(creep)
-    if(creep.needsTarget()) return false // still no targets so idle
-    this.chooseWork(creep, creep.target())
+    if(creep.needsTarget()) {
+      creep.moveTo(me.controller) // still no targets so idle
+    } else {
+      me.chooseWork(creep, creep.target())
+    }
   })
 }
 
 DumbRoom.prototype.chooseWork = function(creep, target) {
   if(target.isSource) {
-    this.getCloseAndAction(creep, creep.harvest(creep.target()))
-  } else if (target.structureType === STRUCTURE_SPAWN || target.structureType === STRUCTURE_EXTENSION) {
+    this.getCloseAndAction(creep, creep.harvest(creep.target()), false, true)
+  } else if (target.structureType === STRUCTURE_SPAWN || (target.structureType === STRUCTURE_EXTENSION && !target.progress && !target.progress === 0)) {
     this.getCloseAndAction(creep, creep.transfer(creep.target(), RESOURCE_ENERGY), false)
   } else if (target.structureType === STRUCTURE_CONTROLLER) {
     this.getCloseAndAction(creep, creep.upgradeController(creep.target()))
