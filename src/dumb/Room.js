@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-11-01 04:28:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-12 12:19:20
+* @Last Modified time: 2016-11-12 12:21:40
 */
 
 'use strict';
@@ -68,19 +68,19 @@ DumbRoom.prototype.pickTarget = function(creep) {
 }
 
 DumbRoom.prototype.harvest = function(creep) {
-  this.getCloseAndAction(creep, creep.harvest(creep.target()))
+
 }
 
 DumbRoom.prototype.transfer = function(creep) {
-  this.getCloseAndAction(creep, creep.transfer(creep.target(), RESOURCE_ENERGY), false)
+
 }
 
 DumbRoom.prototype.upgradeRCL = function(creep) {
-  this.getCloseAndAction(creep, creep.upgradeController(creep.target()))
+
 }
 
 DumbRoom.prototype.build = function(creep) {
-  this.getCloseAndAction(creep, creep.build(creep.target()))
+
 }
 
 DumbRoom.prototype.getCloseAndAction = function(creep, action, resetOnEmpty = true) {
@@ -103,14 +103,12 @@ DumbRoom.prototype.workCreeps = function() {
 
 DumbRoom.prototype.chooseWork = function(creep, target) {
   if(target.isSource) {
-    me.harvest(creep)
-  } else if (target.structureType === STRUCTURE_SPAWN) {
-    me.transfer(creep)
+    this.getCloseAndAction(creep, creep.harvest(creep.target()))
+  } else if (target.structureType === STRUCTURE_SPAWN || target.structureType === STRUCTURE_EXTENSION) {
+    this.getCloseAndAction(creep, creep.transfer(creep.target(), RESOURCE_ENERGY), false)
   } else if (target.structureType === STRUCTURE_CONTROLLER) {
-    me.upgradeRCL(creep)
+    this.getCloseAndAction(creep, creep.upgradeController(creep.target()))
   } else if (target.progress || target.progress === 0) { // construction site
-    me.build(creep)
-  } else if (target.structureType === STRUCTURE_EXTENSION) {
-    me.transfer(creep)
+    this.getCloseAndAction(creep, creep.build(creep.target()))
   }
 }
