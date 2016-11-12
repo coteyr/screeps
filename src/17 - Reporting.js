@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-10-08 01:22:46
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-04 17:21:44
+* @Last Modified time: 2016-11-09 12:28:20
 */
 
 'use strict';
@@ -15,6 +15,7 @@ let Reporting = {
     Memory.stats["empire." + key ] = value
   },
   tickStart: function() {
+    if(!Memory.stats) Memory.stats = {}
     Reporting.setupDefaults()
     Object.keys(Memory.stats.rooms).forEach(function(roomName){
       Reporting.setupDefaults(roomName)
@@ -37,6 +38,7 @@ let Reporting = {
     Reporting.log()
   },
   setupDefaults: function(room) {
+    if(!Memory.stats) Memory.stats = {}
     if(!Memory.stats.rooms) Memory.stats.rooms = {}
     if(!Memory.stats.counter) Memory.stats.counter = 0
   },
