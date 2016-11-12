@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-11-01 04:28:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-12 11:48:33
+* @Last Modified time: 2016-11-12 11:49:38
 */
 
 'use strict';
@@ -68,7 +68,7 @@ DumbRoom.prototype.pickTarget = function(creep) {
 }
 
 DumbRoom.prototype.harvest = function(creep) {
-  this.getCloseAndAction(creep, creep.harvest(creep.target())
+  this.getCloseAndAction(creep, creep.harvest(creep.target()))
   if(creep.isFull()) delete creep.memory.target
 }
 
