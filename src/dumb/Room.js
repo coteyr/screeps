@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-11-01 04:28:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-12 11:49:38
+* @Last Modified time: 2016-11-12 12:19:20
 */
 
 'use strict';
@@ -69,55 +69,48 @@ DumbRoom.prototype.pickTarget = function(creep) {
 
 DumbRoom.prototype.harvest = function(creep) {
   this.getCloseAndAction(creep, creep.harvest(creep.target()))
-  if(creep.isFull()) delete creep.memory.target
 }
 
 DumbRoom.prototype.transfer = function(creep) {
-  if(this.getCloseAndAction(creep, creep.transfer(creep.target(), RESOURCE_ENERGY))) {
-    creep.moveTo(creep.target())
-  } else {
-    delete creep.memory.target
-  }
+  this.getCloseAndAction(creep, creep.transfer(creep.target(), RESOURCE_ENERGY), false)
 }
 
 DumbRoom.prototype.upgradeRCL = function(creep) {
   this.getCloseAndAction(creep, creep.upgradeController(creep.target()))
-  if(creep.isEmpty()) delete creep.memory.target
 }
 
 DumbRoom.prototype.build = function(creep) {
   this.getCloseAndAction(creep, creep.build(creep.target()))
-  if(creep.isEmpty()) delete creep.memory.target
 }
 
-DumbRoom.prototype.getCloseAndAction = function(creep, action) {
+DumbRoom.prototype.getCloseAndAction = function(creep, action, resetOnEmpty = true) {
   if(action === ERR_NOT_IN_RANGE) {
     creep.moveTo(creep.target())
-    return false
   } else {
-    return true
+    if(!resetOnEmpty) delete creep.memory.target
   }
+  if(resetOnEmpty && creep.isEmpty()) delete creep.memory.target
 }
-
-
-
-
 
 DumbRoom.prototype.workCreeps = function() {
   let me = this;
   _.filter(Game.creeps).forEach(function(creep) {
     if(creep.needsTarget()) me.pickTarget(creep)
     if(creep.needsTarget()) return false // still no targets so idle
-    if(creep.target().isSource) {
-      me.harvest(creep)
-    } else if (creep.target().structureType == STRUCTURE_SPAWN) {
-      me.transfer(creep)
-    } else if (creep.target().structureType == STRUCTURE_CONTROLLER) {
-      me.upgradeRCL(creep)
-    } else if (creep.target().progress || creep.target().progress === 0) { // construction site
-      me.build(creep)
-    } else if (creep.target().structureType === STRUCTURE_EXTENSION) {
-      me.transfer(creep)
-    }
+    this.chooseWork(creep, creep.target())
   })
+}
+
+DumbRoom.prototype.chooseWork = function(creep, target) {
+  if(target.isSource) {
+    me.harvest(creep)
+  } else if (target.structureType === STRUCTURE_SPAWN) {
+    me.transfer(creep)
+  } else if (target.structureType === STRUCTURE_CONTROLLER) {
+    me.upgradeRCL(creep)
+  } else if (target.progress || target.progress === 0) { // construction site
+    me.build(creep)
+  } else if (target.structureType === STRUCTURE_EXTENSION) {
+    me.transfer(creep)
+  }
 }
