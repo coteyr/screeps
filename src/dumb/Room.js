@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-11-01 04:28:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-12 11:38:59
+* @Last Modified time: 2016-11-12 11:48:33
 */
 
 'use strict';
@@ -68,12 +68,12 @@ DumbRoom.prototype.pickTarget = function(creep) {
 }
 
 DumbRoom.prototype.harvest = function(creep) {
-  if(creep.harvest(creep.target()) === ERR_NOT_IN_RANGE) creep.moveTo(creep.target())
+  this.getCloseAndAction(creep, creep.harvest(creep.target())
   if(creep.isFull()) delete creep.memory.target
 }
 
 DumbRoom.prototype.transfer = function(creep) {
-  if(creep.transfer(creep.target(), RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+  if(this.getCloseAndAction(creep, creep.transfer(creep.target(), RESOURCE_ENERGY))) {
     creep.moveTo(creep.target())
   } else {
     delete creep.memory.target
@@ -81,13 +81,22 @@ DumbRoom.prototype.transfer = function(creep) {
 }
 
 DumbRoom.prototype.upgradeRCL = function(creep) {
-  if(creep.upgradeController(creep.target()) === ERR_NOT_IN_RANGE) creep.moveTo(creep.target())
+  this.getCloseAndAction(creep, creep.upgradeController(creep.target()))
   if(creep.isEmpty()) delete creep.memory.target
 }
 
 DumbRoom.prototype.build = function(creep) {
-  if(creep.build(creep.target()) === ERR_NOT_IN_RANGE) creep.moveTo(creep.target())
+  this.getCloseAndAction(creep, creep.build(creep.target()))
   if(creep.isEmpty()) delete creep.memory.target
+}
+
+DumbRoom.prototype.getCloseAndAction = function(creep, action) {
+  if(action === ERR_NOT_IN_RANGE) {
+    creep.moveTo(creep.target())
+    return false
+  } else {
+    return true
+  }
 }
 
 
