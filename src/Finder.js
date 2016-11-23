@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-09 05:37:35
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-07 15:25:47
+* @Last Modified time: 2016-11-23 10:30:57
 */
 
 'use strict';
@@ -81,7 +81,7 @@ var Finder = {
     return _.filter(Game.creeps, (creep) => creep.memory.role === role);
   },
   findPresentCreepCount: function(roomName) {
-    return _.size(_.filter(Game.creeps, (creep) => creep.room.name == roomName));
+    return _.size(_.filter(Game.creeps, (creep) => creep.room.name === roomName));
   },
   findHostileCreepCount: function(roomName) {
     var room = Game.rooms[roomName]
@@ -103,7 +103,7 @@ var Finder = {
     return _.size(Finder.findExoCreepAssignedToTarget(role, roomName, sourceRoomName)) + _.size(_.filter(Memory.spawn_queue, {'role': role, target: roomName, room: sourceRoomName}))
   },
   findExoCreepAssignedToTarget: function(role, targetRoomName, sourceRoomName) {
-    return        _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.exo_target === targetRoomName && creep.memory.home == sourceRoomName) // && creep.ticksToLive > REMOTE_RECYCLE_AGE)
+    return        _.filter(Game.creeps, (creep) => creep.memory.role === role && creep.memory.exo_target === targetRoomName && creep.memory.home === sourceRoomName) // && creep.ticksToLive > REMOTE_RECYCLE_AGE)
   },
   findSquad: function(roomName){
     return _.filter(Game.creeps, function(c){
@@ -127,7 +127,7 @@ var Finder = {
   },
   findExclusiveDropedEnergy: function(roomName) {
     var room = Game.rooms[roomName]
-    var dropped = _.filter(Finder.unbox(room, 'dropped-resources'), (r) => r.resourceType === RESOURCE_ENERGY && r.amount > 300 && r.pos.y < 48 && r.pos.y > 2 && r.pos.x < 48 && r.pos.x > 2)
+    var dropped = Finder.findDropedEnergy(roomName)
     var result
     dropped.some(function(blob){
       Log.info(blob.id)
@@ -142,7 +142,7 @@ var Finder = {
   },
   findDropedEnergy: function(roomName) {
     var room = Game.rooms[roomName]
-    var dropped = _.filter(this.unbox(room, 'dropped-resources'), (r) => r.resourceType === RESOURCE_ENERGY && r.amount > 300 && r.pos.y < 45 && r.pos.y > 10 && r.pos.x < 45 && r.pos.x > 4)
+    var dropped = _.filter(this.unbox(room, 'dropped-resources'), (r) => r.resourceType === RESOURCE_ENERGY && r.amount > 300 && r.pos.y < 48 && r.pos.y > 2 && r.pos.x < 48 && r.pos.x > 2)
     return dropped
   },
   findMineral: function(roomName){
@@ -200,12 +200,7 @@ var Finder = {
             biggest = source.energy
           }
         } else {
-          var count = 0 //Finder.findSourcePositionCount(roomName)
-          room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
-            if (spot.terrain === 'plain' || spot.terrain === 'swamp') {
-              count += 1;
-            }
-          })
+          let count = Finder.findSourcePositionCountEach(roomName, source)
           if(_.size(creeps) < count) {
             result = source
             biggest = source.energy
@@ -220,8 +215,8 @@ var Finder = {
     }
   },
   findSourcePositionCountEach: function(roomName, source) {
-    var room = Game.rooms[roomName]
-    var count = 0
+    let room = Game.rooms[roomName]
+    let count = 0
     room.lookForAtArea(LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true).forEach(function(spot) {
         if (spot.terrain === 'plain' || spot.terrain === 'swamp') {
           count += 1;
@@ -269,12 +264,10 @@ var Finder = {
     return flags
   },
   findTowers: function(roomName) {
-    var room = Game.rooms[roomName]
-    return _.filter(this.unbox(room, 'structures'), function(s){ return s.structureType === STRUCTURE_TOWER })
+    return Finder.findStructures(roomName, STRUCTURE_TOWER)
   },
   findExtensions: function(roomName) {
-    var room = Game.rooms[roomName]
-    return _.filter(this.unbox(room, 'structures'), function(s){ return s.structureType === STRUCTURE_EXTENSION })
+    return Finder.findStructures(roomName, STRUCTURE_EXTENSION)
   },
   findStructures: function(roomName, structureType) {
     var room = Game.rooms[roomName]
@@ -282,7 +275,7 @@ var Finder = {
   },
   findHostileStructures: function(roomName) {
     var room = Game.rooms[roomName]
-    return _.filter(this.unbox(room, 'structures'), function(s){ return s.my === false && s.structureType != STRUCTURE_ROAD && s.structureType != STRUCTURE_CONTROLLER})
+    return _.filter(this.unbox(room, 'structures'), function(s){ return s.my === false && s.structureType !== STRUCTURE_ROAD && s.structureType !== STRUCTURE_CONTROLLER})
   },
   findStructure: function(roomName, structureType) {
    return _.first(this.findStructures(roomName, structureType))
