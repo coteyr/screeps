@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-28 15:34:21
+* @Last Modified time: 2016-11-16 15:37:45
 */
 
 'use strict';
@@ -14,7 +14,6 @@ _.merge(WallDCreep.prototype, StateMachine.prototype, RecyclableCreep.prototype)
 
 
 WallDCreep.prototype.tickCreep = function() {
-  this.localState()
   this.checkState()
   this.recycleState()
 }

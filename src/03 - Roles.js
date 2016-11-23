@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-08 07:00:17
+* @Last Modified time: 2016-11-16 15:55:44
 */
 
 'use strict';
@@ -25,44 +25,44 @@ var ROLES = {
       { role: 'repairer',  priority: 4, body: {work: 2, carry: 2} }
     ]},
     {min: 800, max: 1300, roles: [
-      { role: 'harvester', priority: 1, body: {work: 4, carry: 3} },
-      { role: 'miner',     priority: 2, body: {work: 5, carry: 1, move: 3} },
-      { role: 'carrier',   priority: 3, body: {carry: 5} },
+      { role: 'harvester', priority: 0, body: {work: 4, carry: 3} },
+      { role: 'miner',     priority: 0, body: {work: 5, carry: 1, move: 3} },
+      { role: 'carrier',   priority: 1, body: {carry: 5} },
       { role: 'builder',   priority: 4, body: {work: 3, carry: 3} },
       { role: 'upgrader',  priority: 4, body: {work: 3, carry: 3} },
       { role: 'demo',      priority: 5, body: {work: 4, carry: 2} },
       { role: 'repairer',  priority: 4, body: {work: 4, carry: 4} },
-      { role: 'rampart-d', priority: 0, body: {attack: 6, move: 3}},
-      { role: 'wall-d',    priority: 0, body: {ranged: 3, move: 2}}
+      { role: 'rampart-d', priority: 2, body: {attack: 6, move: 3}},
+      { role: 'wall-d',    priority: 2, body: {ranged: 3, move: 2}}
     ]},
     {min: 1300, max: 1800, roles: [
-      { role: 'harvester', priority: 1, body: {work: 5, carry: 5} },
-      { role: 'miner',     priority: 2, body: {work: 5, carry: 1} },
-      { role: 'carrier',   priority: 3, body: {carry: 8} },
+      { role: 'harvester', priority: 0, body: {work: 5, carry: 5} },
+      { role: 'miner',     priority: 0, body: {work: 5, carry: 1} },
+      { role: 'carrier',   priority: 1, body: {carry: 8} },
       { role: 'builder',   priority: 4, body: {work: 2, carry: 4} },
       { role: 'upgrader',  priority: 4, body: {work: 2, carry: 5} },
       { role: 'demo',      priority: 5, body: {work: 8, carry: 4} },
       { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1, move: 1} },
       { role: 'repairer',  priority: 4, body: {work: 8, carry: 8, move: 2} },
-      { role: 'rampart-d', priority: 0, body: {attack: 8, move: 4}},
-      { role: 'wall-d',    priority: 0, body: {ranged: 6, move: 3}}
+      { role: 'rampart-d', priority: 2, body: {attack: 8, move: 4}},
+      { role: 'wall-d',    priority: 2, body: {ranged: 6, move: 3}}
     ]},
     {min: 1800, max: 2300, roles: [
-      { role: 'harvester',     priority: 1, body: {work: 5, carry: 5} },
-      { role: 'miner',         priority: 2, body: {work: 5, carry: 1} },
-      { role: 'carrier',       priority: 3, body: {carry: 20} },
+      { role: 'harvester',     priority: 0, body: {work: 5, carry: 5} },
+      { role: 'miner',         priority: 0, body: {work: 5, carry: 1} },
+      { role: 'carrier',       priority: 1, body: {carry: 20} },
       { role: 'builder',       priority: 4, body: {work: 10, carry: 6} },
       { role: 'upgrader',      priority: 4, body: {work: 2, carry: 5} },
       { role: 'demo',          priority: 5, body: {work: 8, carry: 4} },
       { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} },
       { role: 'repairer',      priority: 4, body: {work: 8, carry: 8} },
-      { role: 'rampart-d', priority: 0, body: {attack: 10, move: 5}},
-      { role: 'wall-d',    priority: 0, body: {ranged: 8, move: 4}}
+      { role: 'rampart-d', priority: 2, body: {attack: 10, move: 5}},
+      { role: 'wall-d',    priority: 2, body: {ranged: 8, move: 4}}
     ]},
     {min: 2300, max: 9000, roles: [
-      { role: 'harvester', priority: 1, body: {work: 5, carry: 5} },
-      { role: 'miner',     priority: 2, body: {work: 5, carry: 1} },
-      { role: 'carrier',   priority: 3, body: {carry: 10} },
+      { role: 'harvester', priority: 0, body: {work: 5, carry: 5} },
+      { role: 'miner',     priority: 0, body: {work: 5, carry: 1} },
+      { role: 'carrier',   priority: 1, body: {carry: 10} },
       { role: 'builder',   priority: 4, body: {work: 10, carry: 6} },
       { role: 'upgrader',  priority: 4, body: {work: 2, carry: 5} },
       { role: 'demo',      priority: 5, body: {work: 8, carry: 5} },
@@ -72,8 +72,8 @@ var ROLES = {
       { role: 'mass-upgrader', priority: 6, body: {work: 12, carry: 1} },
       { role: 'peddler',   priority: 6, body: {carry: 20} },
       { role: 'repairer',  priority: 4, body: {work: 8, carry: 8} },
-      { role: 'rampart-d', priority: 0, body: {attack: 12, move: 6}},
-      { role: 'wall-d',    priority: 0, body: {ranged: 10, move: 5}}
+      { role: 'rampart-d', priority: 2, body: {attack: 12, move: 6}},
+      { role: 'wall-d',    priority: 2, body: {ranged: 10, move: 5}}
 
     ]}
   ],
@@ -99,7 +99,7 @@ var ROLES = {
 
   getUpgraderMulti: function(room){
     if(room.needsConstruction()) return 1
-    return 2
+    return 4
   },
 
   getDemoMulti: function(room){
@@ -139,7 +139,8 @@ var ROLES = {
     if(room.terminal) return _.size(room.memory.sell)
   },
   getRepairerMulti: function(room){
-    if (room.carrierReady()) return 1
+    if (room.needsConstruction()) return 0
+    if (room.carrierReady()) return 2
     return 0
   },
   getRampartDMulti: function(room){

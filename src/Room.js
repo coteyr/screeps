@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-04 13:56:59
+* @Last Modified time: 2016-11-13 23:32:59
 */
 
 'use strict';
@@ -23,6 +23,7 @@ Room.prototype.tick = function() {
 };
 Room.prototype.upgradeWalls = function() {
   if(!this.memory.energy_spent_on_walls) this.memory.energy_spent_on_walls = 0
+  if(this.needsConstruction()) return false
   // return this.memory.energy_spent_on_walls < 500
   return true
 }
@@ -307,14 +308,6 @@ Room.prototype.isFull = function() {
 
 Room.prototype.hasRoom = function() {
   return !this.isFull()
-}
-
-Room.prototype.buildWalls = function() {
-  return this.memory.build_walls
-}
-
-Room.prototype.setBuildWalls = function(value) {
-  this.memory.build_walls = value;
 }
 
 Room.prototype.setTactic = function(value) {

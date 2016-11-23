@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-11-01 04:28:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-12 13:46:14
+* @Last Modified time: 2016-11-23 09:34:50
 */
 
 'use strict';
@@ -97,7 +97,9 @@ DumbRoom.prototype.workCreeps = function() {
 DumbRoom.prototype.chooseWork = function(creep, target) {
   if(target.isSource) {
     this.getCloseAndAction(creep, creep.harvest(creep.target()), false, true)
-  } else if (target.structureType === STRUCTURE_SPAWN || (target.structureType === STRUCTURE_EXTENSION && !target.progress && !target.progress === 0)) {
+  } else if (target.structureType === STRUCTURE_SPAWN) {
+    this.getCloseAndAction(creep, creep.transfer(creep.target(), RESOURCE_ENERGY), false)
+  } else if (target.structureType === STRUCTURE_EXTENSION) {
     this.getCloseAndAction(creep, creep.transfer(creep.target(), RESOURCE_ENERGY), false)
   } else if (target.structureType === STRUCTURE_CONTROLLER) {
     this.getCloseAndAction(creep, creep.upgradeController(creep.target()))
