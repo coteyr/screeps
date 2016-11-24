@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-15 16:33:03
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-16 15:55:44
+* @Last Modified time: 2016-11-24 06:38:05
 */
 
 'use strict';
@@ -324,6 +324,52 @@ var ARMY = {
     { role: 'exo-attacker',  arrayName: 'attack', multiplyer: 10, priority: 103, body: BodyBuilder.buildBody({attack: 1, move: 1}, 300, false, false, false)},
   ], rally: 5}
 }
+
+ROLES.roomNeeds = {
+  exoScout: function() {
+    return EXOROLES.getExoScoutMulti()
+  },
+  exoResponder: function() {
+    return EXOROLES.getExoResponderMulti()
+  },
+  exoReserver: function() {
+    return EXOROLES.getExoReserverMulti()
+  },
+  exoClaimer: function() {
+    return EXOROLES.getExoClaimerMulti()
+  },
+  exoMiner: function(sourceRoom, roomName){
+    return Finder.findSourceCount(roomName) * EXOROLES.getExoMinerMulti()
+  },
+  exoCarrier: function(sourceRoom, roomName) {
+    return Math.ceil(_.size(Finder.findStructures(roomName, STRUCTURE_ROAD)) / 15) + ((Game.map.getRoomLinearDistance(roomName, sourceRoom.name) - 1) * 2) *  EXOROLES.getExoCarrierMulti()
+  },
+  exoBuilder: function(sourceRoom, roomName) {
+    return Math.ceil(_.size(Finder.findConstructionSites(roomName)) / 10) * EXOROLES.getExoBuilderMulti()
+  },
+  exoUpgrader: function() {
+    return 8
+  },
+  exoAttacker: function(sourceRoom) {
+    let count = 0
+    ARMY[sourceRoom.tactic()].roles.forEach(function(r){
+      if(r.role === role) count += r.multiplyer
+    })
+    return count
+  },
+  exoHealer: function(sourceRoom) {
+    let count = 0
+    ARMY[sourceRoom.tactic()].roles.forEach(function(r){
+      if(r.role === role) count += r.multiplyer
+    })
+    return count
+  },
+  exoReaper:function(sourceRoom, roomName) {
+    return ((Game.map.getRoomLinearDistance(roomName, sourceRoom.name) - 1) * 2) *  EXOROLES.getExoReaperMulti()
+  }
+}
+
+
 
 
 // module.exports = ROLES, EXOROLES;

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-13 23:32:59
+* @Last Modified time: 2016-11-24 06:37:34
 */
 
 'use strict';
@@ -348,39 +348,7 @@ Room.prototype.addSellOrder = function(resource, amount) {
   global.listSales()
 }
 Room.prototype.needs = function(role, sourceRoom) {
-  if(role === 'exo-scout') {
-    return EXOROLES.getExoScoutMulti()
-  } else if (role === 'exo-responder') {
-    return EXOROLES.getExoResponderMulti()
-  } else if (role === 'exo-reserver') {
-    return EXOROLES.getExoReserverMulti()
-  } else if (role === 'exo-claimer') {
-    return EXOROLES.getExoClaimerMulti()
-  } else if (role === 'exo-miner') {
-    return Finder.findSourceCount(this.name) * EXOROLES.getExoMinerMulti()
-  } else if (role === 'exo-carrier'){
-    return Math.ceil(_.size(Finder.findStructures(this.name, STRUCTURE_ROAD)) / 15) + ((Game.map.getRoomLinearDistance(this.name, sourceRoom.name) - 1) * 2) *  EXOROLES.getExoCarrierMulti()
-  } else if (role === 'exo-builder') {
-    return Math.ceil(_.size(Finder.findConstructionSites(this.name)) / 10) * EXOROLES.getExoBuilderMulti()
-  } else if (role === 'exo-upgrader') {
-      return 8
-  } else if(role === 'exo-attacker') {
-    let count = 0
-    ARMY[sourceRoom.tactic()].roles.forEach(function(r){
-      if(r.role === role) count += r.multiplyer
-    })
-    return count
-  } else if(role === 'exo-healer') {
-    let count = 0
-    ARMY[sourceRoom.tactic()].roles.forEach(function(r){
-      if(r.role === role) count += r.multiplyer
-    })
-    return count
-  } else if(role === 'exo-reaper') {
-    return ((Game.map.getRoomLinearDistance(this.name, sourceRoom.name) - 1) * 2) *  EXOROLES.getExoReaperMulti()
-  } else {
-    return 0
-  }
+  return Roles.roomNeeds[role.toCamel()](sourceRoom, this.name)
 }
 Room.prototype.has = function(role,  sourceRoomName) {
   return Finder.findCreepCountAssignedToRoom(role, this.name, sourceRoomName)
