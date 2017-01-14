@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 06:00:56
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-09 01:08:47
+* @Last Modified time: 2017-01-04 23:05:19
 */
 
 'use strict';
@@ -32,6 +32,9 @@ module.exports.loop = function () {
       room.tick();
     } else if(room.strategyIs('dumb')) {
       _.merge(Room.prototype, DumbRoom.prototype)
+      room.tickRoom()
+    } else if (room.strategyIs('logic')) {
+      _.merge(Room.prototype, LogicRoom.prototype)
       room.tickRoom()
     } else {
       Log.error("<h1>Room " + room.name + " has no strategy and is idle!</h1>")

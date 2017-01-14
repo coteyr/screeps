@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 20:09:07
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-07 16:57:42
+* @Last Modified time: 2016-11-30 14:06:14
 */
 
 'use strict';
@@ -35,6 +35,10 @@ ExoCarrier.prototype.checkState = function() {
   if(this.stateIs('are-home')) Actions.targetWithState(this, Targeting.getTransferTarget(this.pos, this.room), 'travel')
   if(this.stateIs('travel')) Actions.moveToTarget(this, this.target(), 'dump', 1, 'are-home')
   if(this.stateIs('dump')) Actions.dump(this, this.target(), 'r-move-out', 'are-home')
+
+  if(this.stateIs('are-home') && this.room.name !== this.memory.home) this.setState('check-dropped')
+  if(this.room.name !== this.memory.home && this.hasSome()) this.setState('go-home')
+
 }
 
 

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-14 19:31:34
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-08 14:21:04
+* @Last Modified time: 2016-12-13 00:05:50
 */
 
 'use strict';
@@ -212,7 +212,9 @@ Creep.prototype.gotoRoom = function(roomName) {
     return true
   }  else {*/
     var pos = new RoomPosition(25, 25, roomName);
-    let flags = Finder.findFlags(this.room.name)
+    let flags = _.filter(Finder.findFlags(this.room.name), function(f){
+      return (f.color == COLOR_ORANGE && f.secondaryColor == COLOR_RED)
+    })
     if(_.size(flags) > 0) {
       this.moveCloseTo(flags[0].pos.x, flags[0].pos.y, 1)
 

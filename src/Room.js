@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-06-26 11:39:12
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-24 06:37:34
+* @Last Modified time: 2016-12-13 00:13:23
 */
 
 'use strict';
@@ -348,7 +348,7 @@ Room.prototype.addSellOrder = function(resource, amount) {
   global.listSales()
 }
 Room.prototype.needs = function(role, sourceRoom) {
-  return Roles.roomNeeds[role.toCamel()](sourceRoom, this.name)
+  return ROLES.roomNeeds[role.toCamel()](sourceRoom, this.name)
 }
 Room.prototype.has = function(role,  sourceRoomName) {
   return Finder.findCreepCountAssignedToRoom(role, this.name, sourceRoomName)
@@ -380,4 +380,14 @@ Room.prototype.setStrategy = function(strategy) {
     }
   }
   return strategy.toLowerCase()
+}
+Room.prototype.addWaypoint = function(x, y, name=null) {
+  this.createFlag(x, y, name, COLOR_ORANGE, COLOR_RED)
+}
+Room.prototype.clearWaypoints = function() {
+  let roomName = this.name
+  Object.keys(Game.flags).forEach(function(key) {
+    let flag = Game.flags[key]
+    if (flag.color == COLOR_ORANGE && flag.secondaryColor == COLOR_RED && flag.room.name == roomName) flag.remove()
+  })
 }

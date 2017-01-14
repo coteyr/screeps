@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-07-21 05:48:36
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-10-31 02:12:19
+* @Last Modified time: 2016-12-12 23:55:51
 */
 
 'use strict';
@@ -163,4 +163,21 @@ global.reTask = function(role, home, target) {
     creep.role = role
     creep.state = 'go-home'
   }
+}
+global.flagPath = function(creepName) {
+  let creep = Game.creeps[creepName]
+  let room = creep.room
+  let path = creep.memory['_move']
+  path = Room.deserializePath(path['path'])
+  global.clearFlagPath()
+  path.forEach(function(spot){
+
+    room.createFlag(spot['x'], spot['y'] , null, COLOR_RED, COLOR_WHITE)
+  })
+}
+global.clearFlagPath = function(){
+  Object.keys(Game.flags).forEach(function(key) {
+    let flag = Game.flags[key]
+    if (flag.color == COLOR_RED && flag.secondaryColor == COLOR_WHITE) flag.remove()
+  })
 }

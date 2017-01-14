@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2016-11-01 04:28:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2016-11-23 09:34:50
+* @Last Modified time: 2016-12-14 17:03:15
 */
 
 'use strict';
@@ -46,7 +46,11 @@ DumbRoom.prototype.eachSource = function() {
 DumbRoom.prototype.spawnWorker = function(source) {
   let role = DUMBROLES.getRole(this.energyCapacityAvailable, 'worker')
   Log.info('Spawning a worker')
-  this.spawn(role.body, role.role, source.id)
+  try {
+    this.spawn(role.body, role.role, source.id)
+  } catch (error) {
+    Log.error('Could not spawn worker')
+  }
 }
 
 DumbRoom.prototype.spawn = function(body, role, target) {
