@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 09:51:44
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-01-14 11:02:43
+* @Last Modified time: 2017-01-14 11:21:51
 */
 
 'use strict';
@@ -27,9 +27,7 @@ class Log {
     console.log(Formatter.size(Config.fonts.size, Formatter.font(Config.fonts.mono, Formatter.color(color, message))))
     // console.log("<span style=' font-family: " + Config.fonts.mono + "; font-size: " + Config.fonts.size + "; color: " + color + "'>" + message + '</span>')
   }
-  static write(messages){
-    console.log(messages.join(' '))
+  static json(object) {
+    console.log(Formatter.jsonSyntaxHighlight(object))
   }
-
-
 }

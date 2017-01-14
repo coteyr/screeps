@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 09:51:44
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-01-14 11:01:23
+* @Last Modified time: 2017-01-14 11:22:41
 */
 
 'use strict';
@@ -22,6 +22,26 @@ class Formatter {
   }
   static build(messages) {
     return messages.join(' ')
+  }
+  static jsonSyntaxHighlight(json) {
+    if (typeof json != 'string') {
+         json = JSON.stringify(json, undefined, 2);
+    }
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+      var color = Config.colors.green //'number';
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+            color = Config.colors.purple; //key
+        } else {
+            color = Config.colors.grey; // 'string';
+        }
+      } else if (/true|false/.test(match)) {
+          color = Config.colors.yellow; //boolean
+      } else if (/null/.test(match)) {
+          color = Config.colors.red; //'null';
+      }
+      return Formatter.wrap(['color', color], match)//'<span class="' + cls + '">' + match + '</span>';
+    });
   }
 
 }
