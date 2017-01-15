@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-15 07:54:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-01-15 09:27:23
+* @Last Modified time: 2017-01-15 09:46:10
 */
 
 'use strict';
@@ -11,7 +11,7 @@ class Time {
   constructor() {
     this.tickTime = 0
     this.samples = Storage.read('timeSamples', 0)
-    this.offset = -300
+    this.offset = Config.l10n.timezoneOffset
     this.now = new Date()
     this.gameTime = Game.time
     this.compaireTimes()
@@ -20,9 +20,7 @@ class Time {
     return this.now
   }
   currentTimeString() {
-    let utc = this.now.getTime() + (this.now.getTimezoneOffset() * 60000)
-    return new Date(utc + (60000 * this.offset)).toLocaleString()
-    //return this.now.getTimezoneOffset()
+    return Formatter.localTimeString(this.now)
   }
   gameTime() {
     return this.gameTime
@@ -51,5 +49,11 @@ class Time {
   storeTickAvrages() {
       Storage.write('timeSamples', this.samples + 1)
       Storage.write('averageTickTime', this.tickTime)
+  }
+  timeTillTick(tick){
+    return (tick - this.gameTime) * this.tickTime
+  }
+  timeAtTick(tick) {
+    return new Date(this.now.getTime() + this.timeTillTick(tick))
   }
 }

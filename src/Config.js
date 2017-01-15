@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 10:05:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-01-15 08:03:58
+* @Last Modified time: 2017-01-15 09:40:48
 */
 
 'use strict';
@@ -23,7 +23,7 @@ var Config = {
     size: '14px'
   },
   l10n: {
-
+    timeZoneOffset: -300
   }
 
 }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 09:51:44
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-01-15 09:11:10
+* @Last Modified time: 2017-01-15 09:44:38
 */
 
 'use strict';
@@ -50,6 +50,10 @@ class Formatter {
     } else {
       return attempt.toFixed(2)
     }
+  }
+  static localTimeString(date) {
+    let utc = date.getTime() + (date.getTimezoneOffset() * 60000)
+    return new Date(utc + (60000 * Config.l10n.timeZoneOffset)).toLocaleString()
   }
 
 }
