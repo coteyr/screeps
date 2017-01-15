@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 09:51:44
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-01-14 11:22:41
+* @Last Modified time: 2017-01-15 09:11:10
 */
 
 'use strict';
@@ -42,6 +42,14 @@ class Formatter {
       }
       return Formatter.wrap(['color', color], match)//'<span class="' + cls + '">' + match + '</span>';
     });
+  }
+  static toFixed(value){
+    let attempt = parseFloat(value)
+    if(Number.isNaN(attempt)) {
+      return "0.00"
+    } else {
+      return attempt.toFixed(2)
+    }
   }
 
 }

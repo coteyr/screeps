@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 10:05:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-01-14 10:13:09
+* @Last Modified time: 2017-01-15 08:03:58
 */
 
 'use strict';
@@ -21,6 +21,9 @@ var Config = {
     mono: 'Menlo,Monaco,Consolas,"Courier New",monospace',
     sans: 'Helvetica, Arial, sans-serif',
     size: '14px'
+  },
+  l10n: {
+
   }
 
 }
