@@ -19,7 +19,7 @@ To anyone that stumbles across this. Screeps is a game where you focus on automa
 
   - **Formatter** In an effort to contain all the nasty "'foo = " + bar + " baz'" type string building, specially when referring to css for output the Formatter class is used. Hopefully this will restrict that hard to read gloop to one file.
   - **Log** A single log class exists to format and unify all logging functions. Static methods exist for ease of use, and log levels are set in the *Config* object.
-  - **Time** The time class is designed to handle both world time and screeps time.
+  - **Time** The time class is designed to handle both world time and screeps time. Most importantly it can convert between the two (though only loosely because tick times shift)
   - **Storage** The storage class is meant to hold all memory access methods. The reason being that Memory.foo.bar some times needs to be adjusted to be Memory.foo_bar for performance reasons. Other memory storage needs like defaults are also handled.
 
 # Config

@@ -2,12 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 10:05:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-01-15 09:40:48
+* @Last Modified time: 2017-01-19 19:21:01
 */
 
 'use strict';
 
 var Config = {
+  logLevel: 4,
   colors: {
     yellow: '#ffe56d',
     gray: '#777777',
