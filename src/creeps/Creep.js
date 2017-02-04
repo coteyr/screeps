@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-03 18:41:00
+* @Last Modified time: 2017-02-03 19:07:05
 */
 
 'use strict';
@@ -20,9 +20,22 @@ Creep.prototype.setTask = function(task) {
 Creep.prototype.tick = function() {
   Log.info(["Ticking Creep", this.name])
   if(this.taskIs('mine')) {
-    _.merge(this.prototype, MinerCreep.prototype)
+    _.merge(Creep.prototype, MinerCreep.prototype)
   } else {
-    _.merge(this.prototype, NullCreep.prototype)
+    _.merge(Creep.prototype, NullCreep.prototype)
   }
   this.superTick()
+}
+Creep.prototype.targetIs = function(id) {
+  return this.memory.target === id
+}
+Creep.prototype.setTarget = function(target) {
+  this.memory.target = target.id
+  return true
+}
+Creep.prototype.hasTarget = function() {
+  return !_.isUndefined(this.memory.target) && !_.isNull(this.memory.target)
+}
+Creep.prototype.target = function() {
+  return Game.getObjectById(this.memory.target)
 }

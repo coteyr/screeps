@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-03 18:34:04
+* @Last Modified time: 2017-02-03 19:07:54
 */
 
 'use strict';
@@ -40,6 +40,6 @@ Room.prototype.needMiners = function() {
   _.each(miningCreeps, c => { works = works + c.partCount(WORK)})
   Log.info(sources)
   Log.info(works)
-  if(works < sources * 5 && miningCreeps.count < 4) return true
+  if(works < (sources * 5) && miningCreeps.length < 4) return true
   return false
 }

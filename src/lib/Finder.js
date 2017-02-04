@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:12:59
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-03 18:34:37
+* @Last Modified time: 2017-02-03 19:20:26
 */
 
 'use strict';
@@ -23,5 +23,11 @@ class Finder {
   }
   static findCreepsWithTask(room_name, task){
     return _.filter(Game.creeps, c => {return c.my && c.room.name == room_name && c.taskIs('mine')})
+  }
+  static findCreepsWithTarget(id) {
+    return _.filter(Game.creeps, c => {return c.my && c.targetIs(id)})
+  }
+  static findSpotsAroundTarget(id){
+
   }
 }
