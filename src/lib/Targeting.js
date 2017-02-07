@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-03 19:23:32
+* @Last Modified time: 2017-02-05 10:48:35
 */
 
 'use strict';
@@ -14,9 +14,25 @@ class Targeting {
     let least = 9000
     _.each(sources, s => { if(s.creepCount() <= least){
       let spots = Finder.findSpotsAroundTarget(s.id).length
-      least = s.creepCount();
-      result = s
+      if(s.creepCount() < spots){
+        least = s.creepCount();
+        result = s
+      }
     }})
+    return result
+  }
+  static findExclusiveEnergy(roomName) {
+    let energies = Finder.findDroppedEnergy(roomName)
+    let biggest = 0
+    let result = null
+    _.each(energies, e =>{
+      if(Finder.findCreepsWithTarget(e.id).length === 0) {
+        if(e.amount > biggest) {
+          biggest = e.amount
+          result = e
+        }
+      }
+    })
     return result
   }
 }
