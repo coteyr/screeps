@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-05 14:13:50
+* @Last Modified time: 2017-02-06 21:39:08
 */
 
 'use strict';
@@ -52,6 +52,9 @@ Creep.prototype.target = function() {
 }
 Creep.prototype.isEmpty = function() {
   return _.sum(this.carry) === 0
+}
+Creep.prototype.hasSome = function() {
+  return !this.isEmpty()
 }
 Creep.prototype.clearTarget = function() {
   delete this.memory.target
