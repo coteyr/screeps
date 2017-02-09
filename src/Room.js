@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-06 06:07:07
+* @Last Modified time: 2017-02-08 05:46:38
 */
 
 'use strict';
@@ -10,44 +10,60 @@
 Room.prototype.tick = function() {
   Log.debug(['Ticking Room:', this.name])
   if(!this.controller) return false
-  if(this.controller && this.controller.safeMode) {
-    Log.print(["Safe Mode Until", this.controller.safeModeTill()], this.name)
-  }
-  if(this.controller) this.controller.tick()
-  if(Finder.findIdleCreeps(this.name).length === 0) {
-    this.spawnCreep()
-  }
-  if(this.needMiners()){
-    let creep = _.first(Finder.findIdleCreeps(this.name))
-    if(creep) creep.setTask("mine")
-  } else if(this.needHaulers()){
-    Log.info("Need Haulers", this)
-    let  creep = _.first(Finder.findIdleCreeps(this.name))
-    if(creep) creep.setTask('haul')
-  } else if(this.needBuilders()){
-    Log.info("Need Builders", this)
-    let creep = _.first(Finder.findIdleCreeps(this.name))
-    if(creep) creep.setTask("build")
-  } else if(this.needUpgraders()) {
-    let creep = _.first(Finder.findIdleCreeps(this.name))
-    if(creep) creep.setTask("upgrade")
-  }
-  if(this.needExtensions()){
-    Log.info('I need Extensions', this)
-    this.addExtension()
-  }
-  if(this.needRoads()){
-    Log.info('I need Roads', this)
-    this.addRoads()
-  }
-  if(this.needWalls()) {
-    Log.info('I need Walls', this)
-    this.addWalls()
+  if(this.controller.my) {
+    if(this.controller && this.controller.safeMode) {
+      Log.print(["Safe Mode Until", this.controller.safeModeTill()], this.name)
+    }
+    if(this.controller) this.controller.tick()
+    if(Finder.findIdleCreeps(this.name).length === 0) {
+      this.spawnCreep()
+    }
+
+    if(this.needMiners()){
+      let creep = _.first(Finder.findIdleCreeps(this.name))
+      if(creep) creep.setTask("mine")
+    }
+    if(this.needHaulers()){
+      Log.info("Need Haulers", this)
+      let  creep = _.first(Finder.findIdleCreeps(this.name))
+      if(creep) creep.setTask('haul')
+    }
+    if(this.needUpgraders()) {
+      let creep = _.first(Finder.findIdleCreeps(this.name))
+      if(creep) creep.setTask("upgrade")
+    }
+    if(this.needBuilders()){
+      Log.info("Need Builders", this)
+      let creep = _.first(Finder.findIdleCreeps(this.name))
+      if(creep) creep.setTask("build")
+    }
+
+    if(this.needExtensions()){
+      Log.info('I need Extensions', this)
+      this.addExtension()
+    }
+    if(this.needRoads()){
+      Log.info('I need Roads', this)
+      this.addRoads()
+    }
+    if(this.needWalls()) {
+      Log.info('I need Walls', this)
+      this.addWalls()
+    }
+    if(this.needWalls()) {
+      Log.info('I need Ramps', this)
+      this.addRamps()
+    }
+    if(this.needTowers()) {
+      Log.info('I need Towers', this)
+      this.addTowers()
+    }
   }
 
 
 
-  _.each(Finder.findCreeps(this.name), c => {c.tick()})
+  _.each(Finder.findCreeps(this.name), c => { c.tick() })
+  _.each(Finder.findMyTowers(this.name), t => { t.tick() })
 
 
 
@@ -103,6 +119,16 @@ Room.prototype.needWalls = function() {
   // check wall pattern
   return true
 }
+Room.prototype.needRamps = function() {
+  if(Finder.findConstructionSites(this.name, STRUCTURE_RAMP).length > 1) return false
+  return true
+}
+
+Room.prototype.needTowers = function() {
+  if(Finder.findMyTowers(this.name).length >= 1) return false //CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.controller.level]) return false
+  if(Finder.findConstructionSites(this.name, STRUCTURE_TOWER).length > 0) return false
+  return true
+}
 
 Room.prototype.addExtension = function() {
   let spawn = _.first(Finder.findSpawns(this.name))
@@ -111,24 +137,49 @@ Room.prototype.addExtension = function() {
   let limiter = 100
   let ring = 2 // We don't want to build right next to it
   let worked = false
+  let side = 'top'
 
   // enter into ring
     y = y - ring
     x = x - ring
   while (!worked && limiter > 0) {
     limiter = limiter - 1
-    if(x >= spawn.pos.x + ring) {
-      y = y + 2
+    if(x >= spawn.pos.x + ring && side === 'top') {
       x = spawn.pos.x - ring
-      if(y > spawn.pos.y + ring) {
-        ring = ring + 1
-        x = spawn.pos.x - ring
-        y = spawn.pos.y - ring
-      }
+      side = 'bottom'
     }
+    if(x >= spawn.pos.x + ring && side === 'bottom') {
+      x = spawn.pos.x - ring
+      side = 'left'
+    }
+    if(y >= spawn.pos.y + ring && side === 'left') {
+      y = spawn.pos.y - ring
+      side = 'right'
+    }
+    if(y >= spawn.pos.y + ring && side === 'right') {
+      ring = ring + 1
+      y = spawn.pos.y - ring
+      x = spawn.pos.x - ring
+      side = 'bottom'
+
+      Log.info(["New Ring", ring])
+    }
+
+
     Log.info(["Trying", x, ",", y])
-    worked = (this.createConstructionSite(x, y, STRUCTURE_EXTENSION) == OK)
-    x = x + 2
+    Log.info(this.lookAtArea(x - 1, y - 1, x + 1, y + 1, true))
+    if(_.filter(this.lookAtArea(x - 1, y - 1, x + 1, y + 1, true), t => { return (t.type === 'terrain' && t.terrain === 'wall')  }).length === 0) {
+      worked = (this.createConstructionSite(x, y, STRUCTURE_EXTENSION) == OK)
+    }
+
+
+    if(side === 'top' || side === 'bottom') {
+      x = x + 2
+    }
+    if(side === 'left' || side === 'right') {
+      y = y + 2
+    }
+
   }
 }
 
@@ -159,6 +210,21 @@ Room.prototype.addRoads = function() {
   }
 }
 
+Room.prototype.addTowers = function() {
+  let spawns = Finder.findSpawns(this.name)
+  let result = false
+  _.each(spawns, s => {
+    let x = s.pos.x
+    let y = s.pos.y
+    while(result === false) {
+      x = x + 1
+      y = y + 1
+      result = (this.createConstructionSite(x, y, STRUCTURE_TOWER) === OK)
+    }
+  })
+  return result
+}
+
 Room.prototype.addWalls = function() {
   let spots = Storage.read(this.name + '-wall-spots', [])
   if(spots.length === 0) {
@@ -170,21 +236,21 @@ Room.prototype.addWalls = function() {
     let spawns = Finder.findSpawns(this.name)
     let controller = this.controller
     _.each(sources, s => {
-      if(s.pos.y - 2 < top) top = s.pos.y - 2
-      if(s.pos.y + 2 > bottom) bottom = s.pos.y + 2
-      if(s.pos.x - 2 < left) left = s.pos.x - 2
-      if(s.pos.x + 2 > right) right = s.pos.x + 2
+      if(s.pos.y - Config.wallSpacing < top) top = s.pos.y - Config.wallSpacing
+      if(s.pos.y + Config.wallSpacing > bottom) bottom = s.pos.y + Config.wallSpacing
+      if(s.pos.x - Config.wallSpacing < left) left = s.pos.x - Config.wallSpacing
+      if(s.pos.x + Config.wallSpacing > right) right = s.pos.x + Config.wallSpacing
     })
     _.each(spawns, s => {
-      if(s.pos.y - 2 < top) top = s.pos.y - 2
-      if(s.pos.y + 2 > bottom) bottom = s.pos.y + 2
-      if(s.pos.x - 2 < left) left = s.pos.x - 2
-      if(s.pos.x + 2 > right) right = s.pos.x + 2
+      if(s.pos.y - Config.wallSpacing < top) top = s.pos.y - Config.wallSpacing
+      if(s.pos.y + Config.wallSpacing > bottom) bottom = s.pos.y + Config.wallSpacing
+      if(s.pos.x - Config.wallSpacing < left) left = s.pos.x - Config.wallSpacing
+      if(s.pos.x + Config.wallSpacing > right) right = s.pos.x + Config.wallSpacing
     })
-    if(controller.pos.y - 2 < top) top = controller.pos.y - 2
-    if(controller.pos.y + 2 > bottom) bottom = controller.pos.y + 2
-    if(controller.pos.x - 2 < left) left = controller.pos.x - 2
-    if(controller.pos.x + 2 > right) right = controller.pos.x + 2
+    if(controller.pos.y - Config.wallSpacing < top) top = controller.pos.y - Config.wallSpacing
+    if(controller.pos.y + Config.wallSpacing > bottom) bottom = controller.pos.y + Config.wallSpacing
+    if(controller.pos.x - Config.wallSpacing < left) left = controller.pos.x - Config.wallSpacing
+    if(controller.pos.x + Config.wallSpacing > right) right = controller.pos.x + Config.wallSpacing
 
     if(top < 2) top = 2
     if(bottom > 47) bottom = 47
@@ -206,6 +272,22 @@ Room.prototype.addWalls = function() {
     for(y = top; y < bottom; y++) {
       spots.push({x: left, y: y})
       spots.push({x: right, y: y})
+    }
+    for(x = left - 2; x < right + 2; x++) {
+      spots.push({x: x, y: top - 2})
+      spots.push({x: x, y: bottom + 2})
+    }
+    for(y = top - 2; y < bottom + 2; y++) {
+      spots.push({x: left - 2, y: y})
+      spots.push({x: right + 2, y: y})
+    }
+    for(x = left - 4; x < right + 4; x++) {
+      spots.push({x: x, y: top - 4})
+      spots.push({x: x, y: bottom + 4})
+    }
+    for(y = top - 4; y < bottom + 4; y++) {
+      spots.push({x: left - 4, y: y})
+      spots.push({x: right + 4, y: y})
     }
     Storage.write(this.name + '-wall-spots', spots)
     return true
@@ -241,17 +323,11 @@ Room.prototype.addWalls = function() {
         ramps.push({'x': s.x, 'y': s.y})
       }
     })*/
+    _.merge(pathLeft, pathRight, pathTop, pathBottom)
+    Log.warn(pathLeft.length)
     _.each(pathLeft, p => {
-      _.merge(ramps, _.remove(spots, s => { return s.x === p.x && s.y === p.y }))
-    })
-    _.each(pathRight, p => {
-      _.merge(ramps, _.remove(spots, s => { return s.x === p.x && s.y === p.y }))
-    })
-    _.each(pathTop, p => {
-      _.merge(ramps, _.remove(spots, s => { return s.x === p.x && s.y === p.y }))
-    })
-    _.each(pathBottom, p => {
-      _.merge(ramps, _.remove(spots, s => { return s.x === p.x && s.y === p.y }))
+      let removed = _.remove(spots, s => { return s.x === p.x && s.y === p.y })
+      if(removed.length > 0) ramps.push(removed[0])
     })
     Log.info(ramps.length)
     Storage.write(this.name + '-ramp-spots', ramps)
@@ -265,4 +341,8 @@ Room.prototype.addWalls = function() {
     pos = pos + 1
   }
   return worked
+}
+Room.prototype.addRamps = function() {
+  let ramps = Storage.read(this.name + '-ramp-spots', [])
+  _.each(ramps, r => { this.createConstructionSite(r.x, r.y, STRUCTURE_RAMPART) })
 }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 19:38:18
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-06 21:59:16
+* @Last Modified time: 2017-02-07 04:43:57
 */
 
 'use strict';
@@ -21,5 +21,7 @@ BuilderCreep.prototype.buildThings = function() {
 
 BuilderCreep.prototype.orignalBuild = Creep.prototype.build
 BuilderCreep.prototype.build = function(target) {
-  if(this.orignalBuild(this.target()) === ERR_NOT_IN_RANGE) this.moveTo(this.target());
+  let result = this.orignalBuild(target)
+  if(result === ERR_INVALID_TARGET) this.clearTarget()
+  if(result === ERR_NOT_IN_RANGE) this.moveTo(target);
 }

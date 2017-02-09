@@ -2,17 +2,17 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:12:59
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-05 10:43:20
+* @Last Modified time: 2017-02-07 18:04:08
 */
 
 'use strict';
 
 class Finder {
   static findCreeps(room_name) {
-    return _.filter(Game.creeps, c => {return c.my && c.room.name == room_name})
+    return _.filter(Game.creeps, c => {return c.my && c.room.name === room_name})
   }
   static findIdleCreeps(room_name) {
-    return _.filter(Game.creeps, c => {return c.my && c.room.name == room_name && c.taskIs('idle')})
+    return _.filter(Game.creeps, c => {return c.my && c.room.name === room_name && c.taskIs('idle')})
   }
   static findIdleSpawn(room_name) {
     return _.find(Game.spawns, s => { return s.room.name === room_name && _.isNull(s.spawning)})
@@ -22,7 +22,7 @@ class Finder {
     return room.find(FIND_SOURCES)
   }
   static findCreepsWithTask(room_name, task){
-    return _.filter(Game.creeps, c => {return c.my && c.room.name == room_name && c.taskIs(task)})
+    return _.filter(Game.creeps, c => {return c.my && c.room.name === room_name && c.taskIs(task)})
   }
   static findCreepsWithTarget(id) {
     return _.filter(Game.creeps, c => {return c.my && c.targetIs(id)})
@@ -38,28 +38,39 @@ class Finder {
       })
     return spots
   }
-  static findDroppedEnergy(roomName) {
+  static findObjects(roomName, objectType) {
     let room = Game.rooms[roomName]
-    return _.filter(room.find(FIND_DROPPED_ENERGY), r => { return r.resourceType === RESOURCE_ENERGY})
+    return room.find(objectType)
+  }
+  static findMyStructures(roomName, structureType) {
+    return _.filter(Finder.findObjects(roomName, FIND_MY_STRUCTURES), s => { return s.structureType === structureType})
+  }
+  static findDroppedEnergy(roomName) {
+    return _.filter(Finder.findObjects(roomName, FIND_DROPPED_ENERGY), r => { return r.resourceType === RESOURCE_ENERGY})
   }
   static findExtensions(roomName){
-    let room = Game.rooms[roomName]
-    return _.filter(room.find(FIND_MY_STRUCTURES), s => { return s.structureType == STRUCTURE_EXTENSION})
+    return Finder.findMyStructures(roomName, STRUCTURE_EXTENSION)
   }
   static findConstructionSites(roomName, type = null){
-    let room = Game.rooms[roomName]
-    if(!_.isNull(type)) return _.filter(room.find(FIND_CONSTRUCTION_SITES), c => { return c.my && c.structureType === type})
-    return _.filter(room.find(FIND_CONSTRUCTION_SITES), c => { return c.my })
+    if(!_.isNull(type)) return _.filter(Finder.findObjects(roomName, FIND_CONSTRUCTION_SITES), c => { return c.my && c.structureType === type})
+    return _.filter(Finder.findObjects(roomName, FIND_CONSTRUCTION_SITES), c => { return c.my })
   }
   static findSpawns(roomName) {
-    let room = Game.rooms[roomName]
-    return _.filter(room.find(FIND_MY_STRUCTURES), s => { return s.structureType == STRUCTURE_SPAWN })
+    return Finder.findMyStructures(roomName, STRUCTURE_SPAWN)
+  }
+  static findMyTowers(roomName) {
+    return Finder.findMyStructures(roomName, STRUCTURE_TOWER)
   }
   static findEnergyStoreInNeed(roomName) {
     let spawns = _.filter(Finder.findSpawns(roomName), s => { return s.hasRoom() })
+    let towers = _.filter(Finder.findMyTowers(roomName), t => { return t.hasRoom() })
+    let criticalTower = null
+    _.each(towers, t => { if(t.critical()) criticalTower = t })
+    if(criticalTower) return criticalTower
     if(spawns.length > 0) return _.first(spawns)
     let extensions = _.filter(Finder.findExtensions(roomName), e => { return e.hasRoom() })
     if(extensions.length > 0) return _.first(extensions)
+    if(towers.length > 0) return _.first(towers)
 
   }
 }

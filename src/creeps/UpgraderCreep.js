@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 19:38:18
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-03 19:44:23
+* @Last Modified time: 2017-02-08 00:26:36
 */
 
 'use strict';
@@ -23,4 +23,5 @@ UpgraderCreep.prototype.superTick = function() {
         this.moveTo(this.room.controller);
     }
   }
+
 }

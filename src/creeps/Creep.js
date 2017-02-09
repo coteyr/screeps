@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-06 22:02:15
+* @Last Modified time: 2017-02-08 00:56:54
 */
 
 'use strict';
@@ -15,6 +15,7 @@ Creep.prototype.taskIs = function(task) {
 }
 Creep.prototype.setTask = function(task) {
   this.memory.task = task
+  Log.debug(task)
   return true
 }
 Creep.prototype.tick = function() {
@@ -59,4 +60,22 @@ Creep.prototype.hasSome = function() {
 Creep.prototype.clearTarget = function() {
   delete this.memory.target
   return true
+}
+Creep.prototype.validateTarget = function(validTargets) {
+  let valid = false
+  _.each(validTargets, t => {
+    if(t.structureType === validTargets) valid = true
+  })
+  if(!valid) this.clearTarget()
+  return valid
+}
+
+Creep.prototype.originalMove = Creep.prototype.move
+Creep.prototype.move = function(direction) {
+  let things = this.pos.look()
+  _.each(things, t => {
+    if(Finder.findConstructionSites(this.room.name).length < Config.maxConstructionSites &&t.type === 'terrain' && t.terrain === 'swamp') this.room.createConstructionSite(this.pos, STRUCTURE_ROAD)
+    if(t.type === 'structure' && t.structure.structureType === STRUCTURE_ROAD) this.repair(t.structure)
+  })
+  this.originalMove(direction)
 }

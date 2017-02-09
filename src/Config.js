@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 10:05:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-05 20:50:42
+* @Last Modified time: 2017-02-07 19:02:34
 */
 
 'use strict';
@@ -34,9 +34,28 @@ var Config = {
     450: [WORK, WORK, CARRY, CARRY, MOVE, MOVE],
     500: [WORK, WORK, CARRY, CARRY, MOVE, MOVE],
     550: [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE],
-    550: [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE],
-    600: [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE],
-    650: [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE]
+    600: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+    650: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+    700: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+    750: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+    800: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+    850: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+  },
+  wallSpacing: 4,
+  maxConstructionSites: 10,
+  tower: {
+    criticalEnergy: 200,
+    repairPercent: 10,
+    walls: {
+      1: 1,
+      2: 1,
+      3: 5000,
+      4: 10000,
+      5: 100000,
+      6: 1000000,
+      7: 2000000,
+      8: 3000000
+    }
   }
 
 }

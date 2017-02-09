@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-05 10:48:35
+* @Last Modified time: 2017-02-07 04:24:41
 */
 
 'use strict';
@@ -25,8 +25,10 @@ class Targeting {
     let energies = Finder.findDroppedEnergy(roomName)
     let biggest = 0
     let result = null
+    let most = 999
     _.each(energies, e =>{
-      if(Finder.findCreepsWithTarget(e.id).length === 0) {
+      if(Finder.findCreepsWithTarget(e.id).length <= most) {
+        most = Finder.findCreepsWithTarget(e.id).length
         if(e.amount > biggest) {
           biggest = e.amount
           result = e
