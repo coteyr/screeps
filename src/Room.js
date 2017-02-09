@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-09 01:49:18
+* @Last Modified time: 2017-02-09 01:54:09
 */
 
 'use strict';
@@ -24,25 +24,15 @@ Room.prototype.buildOut = function() {
   if(this.needWalls()) this.addRamps()
   if(this.needTowers()) this.addTowers()
 }
+Room.prototype.assignCreep = function(task) {
+  let creep = _.first(Finder.findIdleCreeps(this.name))
+  if(creep) creep.setTask(task)
+}
 Room.prototype.assignCreeps = function() {
-    if(this.needMiners()){
-      let creep = _.first(Finder.findIdleCreeps(this.name))
-      if(creep) creep.setTask("mine")
-    }
-    if(this.needHaulers()){
-      Log.info("Need Haulers", this)
-      let  creep = _.first(Finder.findIdleCreeps(this.name))
-      if(creep) creep.setTask('haul')
-    }
-    if(this.needUpgraders()) {
-      let creep = _.first(Finder.findIdleCreeps(this.name))
-      if(creep) creep.setTask("upgrade")
-    }
-    if(this.needBuilders()){
-      Log.info("Need Builders", this)
-      let creep = _.first(Finder.findIdleCreeps(this.name))
-      if(creep) creep.setTask("build")
-    }
+    if(this.needMiners()) this.assignTask('mine')
+    if(this.needHaulers()) this.assignTask('haul')
+    if(this.needUpgraders()) this.assignTask("upgrade")
+    if(this.needBuilders()) this.assignTask("build")
 }
 Room.prototype.tickChildren = function() {
   _.each(Finder.findCreeps(this.name), c => { c.tick() })
