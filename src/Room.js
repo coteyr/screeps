@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-09 01:47:50
+* @Last Modified time: 2017-02-09 01:49:18
 */
 
 'use strict';
@@ -11,10 +11,11 @@ Room.prototype.tick = function() {
   Log.debug(['Ticking Room:', this.name])
   if(!this.controller) return false
   if(this.controller.my) {
-  if(Finder.findIdleCreeps(this.name).length === 0) this.spawnCreep()
-  this.assignCreeps()
-  this.buildOut()
-  this.tickChildren()
+    if(Finder.findIdleCreeps(this.name).length === 0) this.spawnCreep()
+    this.assignCreeps()
+    this.buildOut()
+    this.tickChildren()
+  }
 }
 Room.prototype.buildOut = function() {
   if(this.needExtensions()) this.addExtension()
