@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-08 05:46:38
+* @Last Modified time: 2017-02-09 01:47:50
 */
 
 'use strict';
@@ -11,14 +11,19 @@ Room.prototype.tick = function() {
   Log.debug(['Ticking Room:', this.name])
   if(!this.controller) return false
   if(this.controller.my) {
-    if(this.controller && this.controller.safeMode) {
-      Log.print(["Safe Mode Until", this.controller.safeModeTill()], this.name)
-    }
-    if(this.controller) this.controller.tick()
-    if(Finder.findIdleCreeps(this.name).length === 0) {
-      this.spawnCreep()
-    }
-
+  if(Finder.findIdleCreeps(this.name).length === 0) this.spawnCreep()
+  this.assignCreeps()
+  this.buildOut()
+  this.tickChildren()
+}
+Room.prototype.buildOut = function() {
+  if(this.needExtensions()) this.addExtension()
+  if(this.needRoads()) this.addRoads()
+  if(this.needWalls()) this.addWalls()
+  if(this.needWalls()) this.addRamps()
+  if(this.needTowers()) this.addTowers()
+}
+Room.prototype.assignCreeps = function() {
     if(this.needMiners()){
       let creep = _.first(Finder.findIdleCreeps(this.name))
       if(creep) creep.setTask("mine")
@@ -37,38 +42,12 @@ Room.prototype.tick = function() {
       let creep = _.first(Finder.findIdleCreeps(this.name))
       if(creep) creep.setTask("build")
     }
-
-    if(this.needExtensions()){
-      Log.info('I need Extensions', this)
-      this.addExtension()
-    }
-    if(this.needRoads()){
-      Log.info('I need Roads', this)
-      this.addRoads()
-    }
-    if(this.needWalls()) {
-      Log.info('I need Walls', this)
-      this.addWalls()
-    }
-    if(this.needWalls()) {
-      Log.info('I need Ramps', this)
-      this.addRamps()
-    }
-    if(this.needTowers()) {
-      Log.info('I need Towers', this)
-      this.addTowers()
-    }
-  }
-
-
-
+}
+Room.prototype.tickChildren = function() {
   _.each(Finder.findCreeps(this.name), c => { c.tick() })
   _.each(Finder.findMyTowers(this.name), t => { t.tick() })
-
-
-
+  if(this.controller) this.controller.tick()
 }
-
 Room.prototype.spawnCreep = function() {
   let spawn = Finder.findIdleSpawn(this.name)
   if(spawn) {

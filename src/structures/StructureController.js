@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:38:13
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-02 22:24:00
+* @Last Modified time: 2017-02-09 01:44:52
 */
 
 'use strict';
@@ -20,6 +20,7 @@ StructureController.prototype.safeModeTill = function() {
 
 StructureController.prototype.tick = function() {
   this.displayNextLevelTimer()
+  if(this.safeMode) Log.print(["Safe Mode Until", this.controller.safeModeTill()], this.room.name)
 }
 
 StructureController.prototype.displayNextLevelTimer = function() {
