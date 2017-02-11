@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-07 18:01:40
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-07 19:02:10
+* @Last Modified time: 2017-02-10 23:02:44
 */
 
 'use strict';
@@ -16,21 +16,30 @@ StructureTower.prototype.isFull = function() {
 StructureTower.prototype.critical = function() {
   return this.energy < Config.tower.criticalEnergy
 }
+StructureTower.prototype.danger = function() {
+  return this.energy < Config.tower.dangerEnergy
+}
+
 
 StructureTower.prototype.tick = function(){
-  this.doAttack()
-  this.doRepair()
+  this.doAttack() || this.doRepair()
+
   this.doHeal()
 }
 
 StructureTower.prototype.doAttack = function() {
-  return false
+  let target = Targeting.findNearestTarget(this.pos)
+  if(target) {
+    Log.warn('attacking')
+    this.attack(target)
+    return true
+  }
 }
 StructureTower.prototype.doHeal = function() {
   return false
 }
 StructureTower.prototype.doRepair = function() {
-  if(this.critical()) return false
+  if(this.danger()) return false
   let needsRepair = _.filter(Finder.findObjects(this.room.name, FIND_STRUCTURES), s => {
     if(s.structureType === STRUCTURE_WALL) return s.hits < Config.tower.walls[this.room.controller.level]
     return s.hits < (s.hitsMax / Config.tower.repairPercent)

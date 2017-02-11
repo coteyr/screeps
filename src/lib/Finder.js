@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:12:59
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-07 18:04:08
+* @Last Modified time: 2017-02-10 22:48:52
 */
 
 'use strict';
@@ -61,6 +61,12 @@ class Finder {
   static findMyTowers(roomName) {
     return Finder.findMyStructures(roomName, STRUCTURE_TOWER)
   }
+  static findMyRamps(roomName) {
+    return Finder.findMyStructures(roomName, STRUCTURE_RAMPART)
+  }
+  static findWalls(roomName) {
+    return _.filter(Finder.findObjects(roomName, FIND_STRUCTURES), o => { return o.structureType === STRUCTURE_WALL })
+  }
   static findEnergyStoreInNeed(roomName) {
     let spawns = _.filter(Finder.findSpawns(roomName), s => { return s.hasRoom() })
     let towers = _.filter(Finder.findMyTowers(roomName), t => { return t.hasRoom() })
@@ -71,6 +77,5 @@ class Finder {
     let extensions = _.filter(Finder.findExtensions(roomName), e => { return e.hasRoom() })
     if(extensions.length > 0) return _.first(extensions)
     if(towers.length > 0) return _.first(towers)
-
   }
 }

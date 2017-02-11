@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-07 04:24:41
+* @Last Modified time: 2017-02-10 22:59:45
 */
 
 'use strict';
@@ -36,5 +36,8 @@ class Targeting {
       }
     })
     return result
+  }
+  static findNearestTarget(pos) {
+    pos.findClosestByRange(FIND_HOSTILE_CREEPS)
   }
 }
