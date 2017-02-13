@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:37:15
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-05 10:51:07
+* @Last Modified time: 2017-02-13 03:13:23
 */
 
 'use strict';
@@ -15,8 +15,11 @@ MinerCreep.prototype.superTick = function() {
     }
 }
 MinerCreep.prototype.harvestTarget = function() {
-  if(this.harvest(this.target()) == ERR_NOT_IN_RANGE) {
+  let result = this.harvest(this.target())
+  if(result === ERR_NOT_IN_RANGE) {
     this.moveTo(this.target());
+  } else if (result === ERR_NOT_ENOUGH_RESOURCES) {
+    this.clearTarget()
   }
   this.drop(RESOURCE_ENERGY)
 }

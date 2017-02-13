@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 19:38:18
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-08 01:52:17
+* @Last Modified time: 2017-02-12 21:55:16
 */
 
 'use strict';
@@ -26,7 +26,7 @@ HaulingCreep.prototype.deliverEnergy = function() {
   if(this.needsTarget()) return this.setTask('idle')
   if(this.hasTarget()) this.transfer(this.target())
   if(this.isEmpty()) this.clearTarget()
-  if(this.target() && this.validateTarget([STRUCTURE_SPAWN, STRUCTURE_EXTENSION, STRUCTURE_TOWER]) && this.target().isFull()) this.clearTarget()
+  if(this.target() && this.validateTarget([STRUCTURE_SPAWN, STRUCTURE_EXTENSION, STRUCTURE_TOWER, STRUCTURE_STORAGE]) && this.target().isFull()) this.clearTarget()
 }
 
 
