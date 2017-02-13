@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-10 22:53:41
+* @Last Modified time: 2017-02-12 20:48:56
 */
 
 'use strict';
@@ -11,7 +11,6 @@ Room.prototype.tick = function() {
   Log.debug(['Ticking Room:', this.name])
   if(!this.controller) return false
   if(this.controller.my) {
-    Log.info(Finder.findIdleCreeps(this.name).length)
     if(Finder.findIdleCreeps(this.name).length === 0) this.spawnCreep()
     this.assignCreeps()
     this.buildOut()
@@ -22,8 +21,9 @@ Room.prototype.buildOut = function() {
   if(this.needExtensions()) this.addExtension()
   if(this.needRoads()) this.addRoads()
   if(this.needWalls()) this.addWalls()
-  if(this.needWalls()) this.addRamps()
+  if(this.needRamps()) this.addRamps()
   if(this.needTowers()) this.addTowers()
+  if(this.needStorage()) this.addStorage()
 }
 Room.prototype.assignTask = function(task) {
   let creep = _.first(Finder.findIdleCreeps(this.name))
@@ -60,7 +60,7 @@ Room.prototype.needHaulers = function() {
   let haulingCreeps = Finder.findCreepsWithTask(this.name, 'haul')
   let carries = 0
   _.each(haulingCreeps, c => { carries = carries + c.partCount(CARRY)})
-  return (carries * 50) < (this.energyCapacityAvailable / 10) && !this.isFull()
+  return (carries * 50) < (this.energyCapacityAvailable / 25) && !this.isFull()
 }
 Room.prototype.needBuilders = function() {
   let builderCreeps = Finder.findCreepsWithTask(this.name, 'build')
@@ -82,29 +82,41 @@ Room.prototype.needExtensions = function() {
 }
 Room.prototype.needRoads = function() {
   return false
-  if(Finder.findConstructionSites(this.name, STRUCTURE_ROAD).length >= Config.maxConstructionSites) return false
+  if(Finder.findConstructionSites(this.name, STRUCTURE_ROAD).length >= 1) return false
   // do a check for roads need to cache
   return true
 }
 Room.prototype.needWalls = function() {
-  if(Finder.findConstructionSites(this.name, STRUCTURE_WALL).length >= Config.maxConstructionSites) return false
+  if(Finder.findConstructionSites(this.name, STRUCTURE_WALL).length >= 1) return false
   if(this.controller && this.controller.level < 3) return false
-  let walls = Finder.findWalls(this.name).length
-  return Storage.read(this.name + '-wall-spots', []).length === 0 || walls < Storage.read(this.name + '-wall-spots', []).length
+  let walls = Finder.findWalls(this.name)
+  let spots = []
+  _.each(Storage.read(this.name + '-wall-spots', []), s => {
+    if(this.lookForAt(LOOK_STRUCTURES, s.x, s.y).length == 0) {
+      if(_.filter(this.lookForAt(LOOK_TERRAIN, s.x, s.y), t => { return t === 'wall' }).length === 0) {
+        spots.push({x: s.x, y: s.y})
+      }
+    }
+  })
+  return Storage.read(this.name + '-wall-spots', []).length === 0 || spots.length > 0
 }
 Room.prototype.needRamps = function() {
 
-  if(Finder.findConstructionSites(this.name, STRUCTURE_RAMP).length >= Config.maxConstructionSites ) return false
+  if(Finder.findConstructionSites(this.name, STRUCTURE_RAMPART).length >= 1 ) return false
   let ramps = Finder.findMyRamps(this.name).length
   return Storage.read(this.name + '-ramp-spots', []).length === 0 || ramps < Storage.read(this.name + '-ramp-spots', []).length
 }
 
 Room.prototype.needTowers = function() {
   if(Finder.findMyTowers(this.name).length >= 1) return false //CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.controller.level]) return false
-  if(Finder.findConstructionSites(this.name, STRUCTURE_TOWER).length > 0) return false
+  if(Finder.findConstructionSites(this.name, STRUCTURE_TOWER).length >= 1) return false
   return true
 }
 
+Room.prototype.needStorage = function() {
+  if(Finder.findConstructionSites(this.name, STRUCTURE_STORAGE).length >= 1) return false
+  return this.controller.level >= 4 && _.isUndefined(this.storage)
+}
 Room.prototype.addExtension = function() {
   let extensionSpots = Storage.read(this.name + '-extension-spots', [])
   if(extensionSpots.length === 0) {
@@ -160,21 +172,31 @@ Room.prototype.addTowers = function() {
   })
   return result
 }
+Room.prototype.addStorage = function() {
+  let x = this.controller.pos.x
+  let y = this.controller.pos.y
+  let result = false
+  while (result === false) {
+    x++
+    y++
+    result = (this.createConstructionSite(x, y, STRUCTURE_STORAGE) === OK)
+  }
+  return result
+}
 
 Room.prototype.addWalls = function() {
+  Log.info("Should add walls")
   let spots = Storage.read(this.name + '-wall-spots', [])
   Log.warn(spots.length)
   if(spots.length === 0) {
-    Log.warn('t')
-    RoomBuildout.addWalls(this.name)
-    RoomBuildout.addRamps(this.name)
+    RoomBuilder.addWalls(this.name)
+    RoomBuilder.addRamps(this.name)
     return true
   } else {
     let pos = 0
     let worked = false
 
     while(pos < spots.length && worked === false) {
-      Log.info(["Trying", spots[pos].x, spots[pos].y ])
       worked = (this.createConstructionSite(spots[pos].x, spots[pos].y, STRUCTURE_WALL) === OK)
       pos = pos + 1
     }

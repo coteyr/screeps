@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-09 01:53:17
+* @Last Modified time: 2017-02-12 06:28:36
 */
 
 'use strict';
@@ -74,7 +74,7 @@ Creep.prototype.originalMove = Creep.prototype.move
 Creep.prototype.move = function(direction) {
   let things = this.pos.look()
   _.each(things, t => {
-    if(Finder.findConstructionSites(this.room.name).length < Config.maxConstructionSites &&t.type === 'terrain' && t.terrain === 'swamp') this.room.createConstructionSite(this.pos, STRUCTURE_ROAD)
+    if(Finder.findConstructionSites(this.room.name).length < Config.maxConstructionSites && (t.type === 'terrain' && t.terrain === 'plain' || t.type === 'terrain' && t.terrain === 'swamp')) this.room.createConstructionSite(this.pos, STRUCTURE_ROAD)
     if(t.type === 'structure' && t.structure.structureType === STRUCTURE_ROAD) this.repair(t.structure)
   })
   this.originalMove(direction)
