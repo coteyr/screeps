@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-10 22:17:29
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-10 22:39:46
+* @Last Modified time: 2017-02-15 05:15:55
 */
 
 'use strict';
@@ -24,39 +24,35 @@ class RoomBuilder {
   // enter into ring
     y = y - ring
     x = x - ring
-    while ( limiter > 0) {
+
+    while (limiter > 0) {
       limiter = limiter - 1
-      if(x >= spawn.pos.x + ring && side === 'top') {
-        x = spawn.pos.x - ring
-        side = 'bottom'
-      }
-      if(x >= spawn.pos.x + ring && side === 'bottom') {
-        x = spawn.pos.x - ring
-        side = 'left'
-      }
-      if(y >= spawn.pos.y + ring && side === 'left') {
-        y = spawn.pos.y - ring
-        side = 'right'
-      }
-      if(y >= spawn.pos.y + ring && side === 'right') {
-        ring = ring + 1
-        y = spawn.pos.y - ring
-        x = spawn.pos.x - ring
-        side = 'bottom'
-      }
-      if(_.filter(room.lookAtArea(x - 1, y - 1, x + 1, y + 1, true), t => { return (t.type === 'terrain' && t.terrain === 'wall')  }).length === 0) {
-        extensionSpots.push({x: x, y: y})
-      }
-      if(side === 'top' || side === 'bottom') {
+      while (x < spawn.pos.x + ring) {
+        extensionSpots.push({x: x, y: spawn.pos.y - ring})
+        extensionSpots.push({x: x, y: spawn.pos.y + ring})
         x = x + 2
       }
-      if(side === 'left' || side === 'right') {
+      while (y < spawn.pos.y + ring) {
+        extensionSpots.push({x: spawn.pos.x - ring, y: y})
+        extensionSpots.push({x: spawn.pos.x + ring, y: y})
         y = y + 2
       }
-
+      ring = ring + 1
+      x = spawn.pos.x - ring
+      y = spawn.pos.y - ring
     }
-    Storage.write(room.name + '-extension-spots', extensionSpots)
-    return extensionSpots
+    let spots = []
+    _.each(extensionSpots, e => {
+      if(x > room.memory.right || e.y > room.memory.bottom || e.x < room.memory.left || e.y < room.memory.top) return false
+      if(_.filter(room.lookAtArea(e.x - 1, e.y - 1, e.x + 1, e.y + 1, true), t => { return (t.type === 'terrain' && t.terrain === 'wall')  }).length === 0) {
+
+          spots.push({x: e.x, y: e.y})
+          room.visual.circle(e.x, e.y)
+
+      }
+    })
+    Storage.write(room.name + '-extension-spots', spots)
+    return spots
   }
   static addWalls(roomName) {
     let room = Game.rooms[roomName]
@@ -122,6 +118,10 @@ class RoomBuilder {
       spots.push({x: right + 4, y: y})
     }
     Storage.write(room.name + '-wall-spots', spots)
+    room.memory.top = top
+    room.memory.bottom = bottom
+    room.memory.left = left
+    room.memory.right = right
     return true
   }
 

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-12 06:28:36
+* @Last Modified time: 2017-02-15 05:20:51
 */
 
 'use strict';
@@ -74,8 +74,28 @@ Creep.prototype.originalMove = Creep.prototype.move
 Creep.prototype.move = function(direction) {
   let things = this.pos.look()
   _.each(things, t => {
-    if(Finder.findConstructionSites(this.room.name).length < Config.maxConstructionSites && (t.type === 'terrain' && t.terrain === 'plain' || t.type === 'terrain' && t.terrain === 'swamp')) this.room.createConstructionSite(this.pos, STRUCTURE_ROAD)
     if(t.type === 'structure' && t.structure.structureType === STRUCTURE_ROAD) this.repair(t.structure)
+    if(this.pos.x > this.room.memory.right || this.pos.x < this.room.memory.left || this.pos.y > this.room.memory.bottom || this.pos.y < this.room.memory.top) return false
+    if(Finder.findConstructionSites(this.room.name).length < Config.maxConstructionSites && (t.type === 'terrain' && t.terrain === 'plain' || t.type === 'terrain' && t.terrain === 'swamp')) this.room.createConstructionSite(this.pos, STRUCTURE_ROAD)
   })
   this.originalMove(direction)
+}
+
+Creep.prototype.goTo = function(pos) {
+  let opts = {costCallback: function(roomName, costMatrix) {
+    for(let x = 0; x++; x < 50) {
+      costMatrix.set(x, 0, 255)
+      costMatrix.set(x, 49, 255)
+      costMatrix.set(0, x, 255)
+      costMatrix.set(49, x, 255)
+    }
+    //_.each(Finder.findCreepsWithTask(pos.room.name, 'mine'), c => {
+    //  costMatrix.set(c.pos, 255)
+    //})
+    },
+  reusePath: 5,
+  ignoreCreeps:  (this.pos.x < 13 || this.pos.x > 26) || (this.pos.y < 9 || this.pos.y > 22)
+  }
+  // Log.info(JSON.stringify(arguments))
+  this.moveTo(pos, opts)
 }

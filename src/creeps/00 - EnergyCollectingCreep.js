@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-06 21:45:14
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-10 08:05:42
+* @Last Modified time: 2017-02-13 11:44:07
 */
 
 'use strict';
@@ -13,7 +13,7 @@ EnergyCollectingCreep.prototype.orignalPickup = Creep.prototype.pickup
 
 EnergyCollectingCreep.prototype.pickup = function(target) {
   let result = this.orignalPickup(target)
-  if( result === ERR_NOT_IN_RANGE) this.moveTo(target)
+  if( result === ERR_NOT_IN_RANGE) this.goTo(target)
   if( result === ERR_INVALID_TARGET) this.clearTarget()
 }
 

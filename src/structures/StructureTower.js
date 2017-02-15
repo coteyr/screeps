@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-07 18:01:40
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-10 23:02:44
+* @Last Modified time: 2017-02-15 05:22:48
 */
 
 'use strict';
@@ -41,6 +41,7 @@ StructureTower.prototype.doHeal = function() {
 StructureTower.prototype.doRepair = function() {
   if(this.danger()) return false
   let needsRepair = _.filter(Finder.findObjects(this.room.name, FIND_STRUCTURES), s => {
+    if(s.pos.x > s.room.memory.right || s.pos.x < s.room.memory.left || s.pos.y > s.room.memory.bottom || s.pos.y < s.room.memory.top) return false
     if(s.structureType === STRUCTURE_WALL) return s.hits < Config.tower.walls[this.room.controller.level]
     return s.hits < (s.hitsMax / Config.tower.repairPercent)
   })

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-12 20:48:56
+* @Last Modified time: 2017-02-15 05:12:39
 */
 
 'use strict';
@@ -64,7 +64,7 @@ Room.prototype.needHaulers = function() {
 }
 Room.prototype.needBuilders = function() {
   let builderCreeps = Finder.findCreepsWithTask(this.name, 'build')
-  return builderCreeps.length < Finder.findConstructionSites(this.name).length && builderCreeps.length < this.controller.level * 2
+  return builderCreeps.length < 3//Finder.findConstructionSites(this.name).length && builderCreeps.length < this.controller.level * 2
 }
 Room.prototype.needUpgraders = function() {
   let upgradingCreeps = Finder.findCreepsWithTask(this.name, 'upgrade')
@@ -120,7 +120,7 @@ Room.prototype.needStorage = function() {
 Room.prototype.addExtension = function() {
   let extensionSpots = Storage.read(this.name + '-extension-spots', [])
   if(extensionSpots.length === 0) {
-    RoomBuildout.buildOutExtensions
+    RoomBuilder.buildOutExtensions(this.name)
   } else {
     let spot = 0
     let worked = false

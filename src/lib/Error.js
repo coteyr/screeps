@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-12 21:38:54
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-13 03:10:21
+* @Last Modified time: 2017-02-14 13:51:38
 */
 
 'use strict';
@@ -69,12 +69,12 @@ class Error {
   }
   static logError(returnValue, object = null) {
     let name = "Unknown"
-    if(!_.isUndefined(object.name)) name = object.name
-    if(!_.isUndefined(object.room)) name = object.room.name
+    if(!_.isNull(object) && !_.isUndefined(object) && !_.isUndefined(object.name)) name = object.name
+    if(!_.isNull(object) && !_.isUndefined(object) && !_.isUndefined(object.room)) name = object.room.name
     if(returnValue === OK) {
       Log.debug('OK')
     } else {
-      Log.error(['Error Processing Command:', Formatter.color(Config.colors.purple, niceError(returnValue))], name)
+      Log.error(['Error Processing Command:', Formatter.color(Config.colors.purple, Error.niceError(returnValue))], name)
     }
   }
 }

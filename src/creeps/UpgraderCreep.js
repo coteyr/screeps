@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 19:38:18
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-08 00:26:36
+* @Last Modified time: 2017-02-13 11:45:16
 */
 
 'use strict';
@@ -13,14 +13,14 @@ UpgraderCreep.prototype.superTick = function() {
       this.setTarget(Targeting.findExclusiveEnergy(this.room.name))
     } else {
       if(this.pickup(this.target()) == ERR_NOT_IN_RANGE) {
-        this.moveTo(this.target())
+        this.goTo(this.target())
       } else {
         this.clearTarget()
       }
     }
   } else {
     if(this.upgradeController(this.room.controller) == ERR_NOT_IN_RANGE) {
-        this.moveTo(this.room.controller);
+        this.goTo(this.room.controller);
     }
   }
 
