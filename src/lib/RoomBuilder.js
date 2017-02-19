@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-10 22:17:29
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-15 05:15:55
+* @Last Modified time: 2017-02-19 13:48:39
 */
 
 'use strict';
@@ -54,74 +54,72 @@ class RoomBuilder {
     Storage.write(room.name + '-extension-spots', spots)
     return spots
   }
-  static addWalls(roomName) {
-    let room = Game.rooms[roomName]
+  static findTop(structures) {
     let top = 50
     let bottom = 0
     let left = 50
     let right = 0
-    let sources = Finder.findSources(room.name)
-    let spawns = Finder.findSpawns(room.name)
-    let controller = room.controller
-    _.each(sources, s => {
+    _.each(structures, s => {
       if(s.pos.y - Config.wallSpacing < top) top = s.pos.y - Config.wallSpacing
       if(s.pos.y + Config.wallSpacing > bottom) bottom = s.pos.y + Config.wallSpacing
       if(s.pos.x - Config.wallSpacing < left) left = s.pos.x - Config.wallSpacing
       if(s.pos.x + Config.wallSpacing > right) right = s.pos.x + Config.wallSpacing
     })
-    _.each(spawns, s => {
-      if(s.pos.y - Config.wallSpacing < top) top = s.pos.y - Config.wallSpacing
-      if(s.pos.y + Config.wallSpacing > bottom) bottom = s.pos.y + Config.wallSpacing
-      if(s.pos.x - Config.wallSpacing < left) left = s.pos.x - Config.wallSpacing
-      if(s.pos.x + Config.wallSpacing > right) right = s.pos.x + Config.wallSpacing
-    })
-    if(controller.pos.y - Config.wallSpacing < top) top = controller.pos.y - Config.wallSpacing
-    if(controller.pos.y + Config.wallSpacing > bottom) bottom = controller.pos.y + Config.wallSpacing
-    if(controller.pos.x - Config.wallSpacing < left) left = controller.pos.x - Config.wallSpacing
-    if(controller.pos.x + Config.wallSpacing > right) right = controller.pos.x + Config.wallSpacing
-
     if(top < 2) top = 2
     if(bottom > 47) bottom = 47
     if(left < 2) left = 2
     if(right > 47) right = 47
-
-    let middle = [left + ((right - left) / 2), top + ((bottom - top) / 2)]
-    let radius = (right - left) + 1
+    return {'top': top, 'left': left, 'bottom': bottom, 'right': right}
+  }
+  static findMainArea(roomName) {
+    let room = Game.rooms[roomName]
+    let sources = Finder.findSources(room.name)
+    let spawns = Finder.findSpawns(room.name)
+    let controller = room.controller
+    let boundries = RoomBuilder.findBoundries(sources.concat(spawns, [controller]))
+    room.memory.top = boundries.top
+    room.memory.bottom = boundries.bottom
+    room.memory.left = boundries.left
+    room.memory.right = boundries.right
+    return true
+  }
+  static needMainArea(roomName) {
+    let room = Game.rooms[roomName]
+    return _.isUndefined(room.memory.top) || _.isUndefined(room.memory.bottom) || _.isUndefined(room.memory.left) || _.isUndefined(room.memory.right)
+  }
+  static addWalls(roomName) {
+    if(RoomBuilder.needMainArea(roomName)) RoomBuilder.findMainArea(roomName)
+    let room = Game.rooms[roomName]
     let spots = []
     let ramps = []
     let x = 0
     let y = 0
-
-
-    for(x = left; x < right; x++) {
-      spots.push({x: x, y: top})
-      spots.push({x: x, y: bottom})
+    for(x = room.memory.left; x < room.memory.right; x++) {
+      spots.push({x: x, y: room.memory.top})
+      spots.push({x: x, y: room.memory.bottom})
+      room.visual.rect(x, room.memory.top, 1, 1, { fill: Config.colors.purple })
     }
-    for(y = top; y < bottom; y++) {
-      spots.push({x: left, y: y})
-      spots.push({x: right, y: y})
+    for(y = room.memory.top; y < room.memory.bottom; y++) {
+      spots.push({x: room.memory.left, y: y})
+      spots.push({x: room.memory.right, y: y})
     }
-    for(x = left - 2; x < right + 2; x++) {
-      spots.push({x: x, y: top - 2})
-      spots.push({x: x, y: bottom + 2})
+    for(x = room.memory.left - 2; x < room.memory.right + 2; x++) {
+      spots.push({x: x, y: room.memory.top - 2})
+      spots.push({x: x, y: room.memory.bottom + 2})
     }
-    for(y = top - 2; y < bottom + 2; y++) {
-      spots.push({x: left - 2, y: y})
-      spots.push({x: right + 2, y: y})
+    for(y = room.memory.top - 2; y < room.memory.bottom + 2; y++) {
+      spots.push({x: room.memory.left - 2, y: y})
+      spots.push({x: room.memory.right + 2, y: y})
     }
-    for(x = left - 4; x < right + 4; x++) {
-      spots.push({x: x, y: top - 4})
-      spots.push({x: x, y: bottom + 4})
+    for(x = room.memory.left - 4; x < room.memory.right + 4; x++) {
+      spots.push({x: x, y: room.memory.top - 4})
+      spots.push({x: x, y: room.memory.bottom + 4})
     }
-    for(y = top - 4; y < bottom + 4; y++) {
-      spots.push({x: left - 4, y: y})
-      spots.push({x: right + 4, y: y})
+    for(y = room.memory.top - 4; y < room.memory.bottom + 4; y++) {
+      spots.push({x: room.memory.left - 4, y: y})
+      spots.push({x: room.memory.right + 4, y: y})
     }
     Storage.write(room.name + '-wall-spots', spots)
-    room.memory.top = top
-    room.memory.bottom = bottom
-    room.memory.left = left
-    room.memory.right = right
     return true
   }
 
