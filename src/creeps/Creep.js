@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-15 05:20:51
+* @Last Modified time: 2017-02-17 16:59:56
 */
 
 'use strict';
@@ -84,17 +84,19 @@ Creep.prototype.move = function(direction) {
 Creep.prototype.goTo = function(pos) {
   let opts = {costCallback: function(roomName, costMatrix) {
     for(let x = 0; x++; x < 50) {
-      costMatrix.set(x, 0, 255)
-      costMatrix.set(x, 49, 255)
-      costMatrix.set(0, x, 255)
-      costMatrix.set(49, x, 255)
+      costMatrix.set(x, 0, 256)
+      costMatrix.set(x, 49, 256)
+      costMatrix.set(0, x, 256)
+      costMatrix.set(49, x, 256)
     }
+    costMatrix.set(21, 18, 256)
+    costMatrix.set(21, 20, 256)
     //_.each(Finder.findCreepsWithTask(pos.room.name, 'mine'), c => {
     //  costMatrix.set(c.pos, 255)
     //})
     },
   reusePath: 5,
-  ignoreCreeps:  (this.pos.x < 13 || this.pos.x > 26) || (this.pos.y < 9 || this.pos.y > 22)
+  ignoreCreeps: (this.pos.x < 13 || this.pos.x > 26) || (this.pos.y < 9 || this.pos.y > 22)
   }
   // Log.info(JSON.stringify(arguments))
   this.moveTo(pos, opts)

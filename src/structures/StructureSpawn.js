@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:42:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-12 21:53:40
+* @Last Modified time: 2017-02-17 22:37:00
 */
 
 'use strict';
@@ -17,7 +17,13 @@ StructureSpawn.prototype.spawn = function() {
     Log.info(['Spawning Creep at', this.name])
   }
 }
-
+StructureSpawn.prototype.spawnAttack = function(tactic, roomName) {
+  let id = Counter.number()
+  let body = Config.bodies[tactic]
+  if (this.canCreateCreep(body, id) === OK) {
+    Error.worked(this.createCreep(body, id, {task: 'attack', targetRoom: roomName, home: this.room.name}))
+  }
+}
 StructureSpawn.prototype.hasRoom = function() {
   return this.energy < this.energyCapacity
 }

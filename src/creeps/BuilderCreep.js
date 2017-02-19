@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 19:38:18
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-13 11:44:31
+* @Last Modified time: 2017-02-17 13:57:33
 */
 
 'use strict';
@@ -16,7 +16,9 @@ BuilderCreep.prototype.superTick = function() {
 BuilderCreep.prototype.buildThings = function() {
   if(this.needsTarget()) this.setTarget(_.first(Finder.findConstructionSites(this.room.name)))
   if(this.hasTarget()) this.build(this.target())
+  if(this.needsTarget()) this.setTask('idle')
   if(this.isEmpty()) this.clearTarget()
+
 }
 
 BuilderCreep.prototype.orignalBuild = Creep.prototype.build
