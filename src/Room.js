@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-21 13:10:38
+* @Last Modified time: 2017-02-24 17:35:06
 */
 
 'use strict';
@@ -56,38 +56,31 @@ Room.prototype.spawnCreep = function() {
   }
 }
 
+
+
+Room.prototype.needCreep = function(task, part, partCount, max = 2) {
+  let creeps = Finder.findCreepsWithTask(this.name, task)
+  if(creeps.length >= max) return false
+  let works = 0
+  _.each(creeps, c => { works += c.partCount(WORK) })
+  return works < partCount
+}
 Room.prototype.needMiners = function() {
   let sources = Finder.findSources(this.name).length
-  let miningCreeps = Finder.findCreepsWithTask(this.name, 'mine')
-  let works = 0
-  _.each(miningCreeps, c => { works = works + c.partCount(WORK)})
-  if(works < (sources * 5) && miningCreeps.length < 4) return true
-  return false
+  return this.needCreep('mine', WORK, sources * 5, 4)
 }
 Room.prototype.needHaulers = function() {
-  let haulingCreeps = Finder.findCreepsWithTask(this.name, 'haul')
-  let carries = 0
-  _.each(haulingCreeps, c => { carries = carries + c.partCount(CARRY)})
-  Log.debug(["I need", this.energyCapacityAvailable * 0.50, "carries. I have", carries * 50])
-  return ((carries * 50) < (this.energyCapacityAvailable * 0.50))
+  let needCarries = (this.energyCapacityAvailable / 2) / 50
+  return this.needCreep('haul', CARRY, needCarries, 3)
 }
 Room.prototype.needBuilders = function() {
-  let builderCreeps = Finder.findCreepsWithTask(this.name, 'build')
-  return builderCreeps.length < Finder.findConstructionSites(this.name).length && builderCreeps.length < 3
+  return this.needCreep('build', WORK, Finder.findConstructionSites(this.name).length, 3)
 }
 Room.prototype.needUpgraders = function() {
-  let upgradingCreeps = Finder.findCreepsWithTask(this.name, 'upgrade')
-  let works = 0
-  _.each(upgradingCreeps, c => { works = works + c.partCount(WORK)})
-  if(works < 10) return true
-  return false
+  return this.needCreep('upgrade', WORK, 10)
 }
 Room.prototype.needRepairers = function() {
-  let repairingCreeps = Finder.findCreepsWithTask(this.name, "repair")
-  let repairs = 0
-  _.each(repairingCreeps, c => { repairs = repairs + c.partCount(WORK)})
-  if(repairs < 10) return true
-  return false
+  return this.needCreep('repair', WORK, 10)
 }
 
 Room.prototype.needExtensions = function() {
