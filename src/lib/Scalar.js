@@ -2,30 +2,35 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-18 13:17:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-18 14:56:18
+* @Last Modified time: 2017-02-24 17:43:09
 */
 
 'use strict';
 class Scalar {
-  static smallest(collection, method) {
+  static bounder(collection, method, biggest = true) {
     let smallest = Number.MAX_SAFE_INTEGER
-    let value = null
-    _.each(collection, item => {
-      if(item.apply(method)< smallest)
-        smallest = item.apply(method)
-        value = item
+    let largest = Number.MIN_SAFE_INTEGER
+    let smallValue = null
+    let largeValue = null
+    _.each(collection, i => {
+      let value = i.apply(method)
+      if(value < smallest) {
+        smallest = value
+        smallValue = i
+      }
+      if(value > largest) {
+        largest = value
+        largeValue = i
+      }
     })
-    return value
+    if(biggest) return largeValue
+    return smallValue
+  }
+  static smallest(collection, method) {
+    return Scalar.bounder(collection, method, false)
   }
   static largest(collection, method) {
-    let largest = Number.MIN_SAFE_INTEGER
-    let value = null
-    _.each(collection, item => {
-      if(item.apply(method) > largest)
-        largest = item.apply(method)
-        value = item
-    })
-    return value
+    return Scalar.bounder(collection, method, true)
   }
   static inBounds(pos, roomName) {
     let room = Game.rooms[roomName]
