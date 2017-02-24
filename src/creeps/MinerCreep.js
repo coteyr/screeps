@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:37:15
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-16 03:32:47
+* @Last Modified time: 2017-02-21 12:25:25
 */
 
 'use strict';
@@ -15,6 +15,7 @@ MinerCreep.prototype.superTick = function() {
     }
 }
 MinerCreep.prototype.harvestTarget = function() {
+  this.room.visual.text('\u26CF', this.pos, {color: Config.colors.yellow, size: 0.25})
   let result = this.harvest(this.target())
   if(result === ERR_NOT_IN_RANGE) {
     this.goTo(this.target());

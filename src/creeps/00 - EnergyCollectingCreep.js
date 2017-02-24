@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-06 21:45:14
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-16 04:04:23
+* @Last Modified time: 2017-02-21 16:40:52
 */
 
 'use strict';
@@ -21,11 +21,11 @@ EnergyCollectingCreep.prototype.pickup = function(target) {
 }
 
 EnergyCollectingCreep.prototype.collectEnergy = function() {
-  Log.info('Collect')
   if(this.needsTarget()) this.setTarget(Targeting.findExclusiveEnergy(this.room.name))
   if(this.hasTarget()) this.pickup(this.target())
   if(this.needsTarget()) this.setTask('idle')
   if(this.hasSome()) this.clearTarget()
+  if(this.target() && this.validateTarget([STRUCTURE_CONTAINER, RESOURCE_ENERGY] ) && this.target().isFull()) this.clearTarget()
 }
 
 EnergyCollectingCreep.prototype.useEnergy = function (collectMethod, useMethod)  {

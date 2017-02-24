@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-18 13:32:08
+* @Last Modified time: 2017-02-21 16:32:45
 */
 
 'use strict';
@@ -39,7 +39,6 @@ class Targeting {
         }
       }
     })
-    Log.info(JSON.stringify(result))
     return result
   }
   static findNearestTarget(pos) {
@@ -55,5 +54,12 @@ class Targeting {
     if(!_.isNull(creep)) return creep
     let towers = _.filter(Finder.findObjects(pos.roomName, FIND_STRUCTURES), s => { return s.structureType === STRUCTURE_TOWER && s.my === false })
     if(towers.length > 0) return pos.findClosestByRange(towers)
+  }
+  static findRepairTarget(pos) {
+    Log.info(JSON.stringify(pos))
+    let room = Game.rooms[pos.roomName]
+    let targets = _.filter(Finder.findObjects(pos.roomName, FIND_STRUCTURES), s => { return s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL && s.structureType != STRUCTURE_RAMPART})
+    Log.error(targets.length)
+    return pos.findClosestByRange(targets)
   }
 }

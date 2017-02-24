@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-17 16:59:56
+* @Last Modified time: 2017-02-21 16:03:55
 */
 
 'use strict';
@@ -28,6 +28,8 @@ Creep.prototype.tick = function() {
     _.merge(Creep.prototype, BuilderCreep.prototype)
   } else if(this.taskIs('haul')) {
     _.merge(Creep.prototype, HaulingCreep.prototype)
+  } else if(this.taskIs('repair')) {
+    _.merge(Creep.prototype, RepairCreep.prototype)
   } else {
     _.merge(Creep.prototype, NullCreep.prototype)
   }
@@ -64,7 +66,8 @@ Creep.prototype.clearTarget = function() {
 Creep.prototype.validateTarget = function(validTargets) {
   let valid = false
   _.each(validTargets, t => {
-    if(t.structureType === validTargets) valid = true
+    if(t.structureType && t.structureType === t) valid = true
+    if(t.resourceType && t.resourceType === t) valid = true
   })
   if(!valid) this.clearTarget()
   return valid
@@ -96,8 +99,10 @@ Creep.prototype.goTo = function(pos) {
     //})
     },
   reusePath: 5,
-  ignoreCreeps: (this.pos.x < 13 || this.pos.x > 26) || (this.pos.y < 9 || this.pos.y > 22)
+  ignoreCreeps: (this.pos.x < 13 || this.pos.x > 26) || (this.pos.y < 9 || this.pos.y > 22),
+  visualizePathStyle: {opacity: 0.75, stroke: Config.colors.blue}
   }
   // Log.info(JSON.stringify(arguments))
+  this.room.visual.circle(pos, { fill: Config.colors.blue,  opacity: 1.0, radius: 0.25} )
   this.moveTo(pos, opts)
 }

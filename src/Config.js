@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 10:05:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-17 22:37:59
+* @Last Modified time: 2017-02-21 11:16:07
 */
 
 'use strict';
@@ -13,7 +13,7 @@ var Config = {
     yellow: '#ffe56d',
     gray: '#777777',
     red: '#f93842',
-    blue: '#5d80b2;',
+    blue: '#5d80b2',
     green: '#65fd62',
     purple: '#b99cfb',
     white: '#ffffff'

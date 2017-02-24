@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-10 22:17:29
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-19 13:48:39
+* @Last Modified time: 2017-02-19 14:16:32
 */
 
 'use strict';
@@ -94,31 +94,33 @@ class RoomBuilder {
     let ramps = []
     let x = 0
     let y = 0
-    for(x = room.memory.left; x < room.memory.right; x++) {
-      spots.push({x: x, y: room.memory.top})
-      spots.push({x: x, y: room.memory.bottom})
-      room.visual.rect(x, room.memory.top, 1, 1, { fill: Config.colors.purple })
-    }
-    for(y = room.memory.top; y < room.memory.bottom; y++) {
-      spots.push({x: room.memory.left, y: y})
-      spots.push({x: room.memory.right, y: y})
-    }
-    for(x = room.memory.left - 2; x < room.memory.right + 2; x++) {
-      spots.push({x: x, y: room.memory.top - 2})
-      spots.push({x: x, y: room.memory.bottom + 2})
-    }
-    for(y = room.memory.top - 2; y < room.memory.bottom + 2; y++) {
-      spots.push({x: room.memory.left - 2, y: y})
-      spots.push({x: room.memory.right + 2, y: y})
-    }
-    for(x = room.memory.left - 4; x < room.memory.right + 4; x++) {
+    for(x = room.memory.left - 4; x <= room.memory.right + 4; x++) {
+      if(x <= room.memory.right && x >= room.memory.left) {
+        spots.push({x: x, y: room.memory.top})
+        spots.push({x: x, y: room.memory.bottom})
+      }
+      if (x <= room.memory.right + 2 && x >= room.memory.left - 2) {
+        spots.push({x: x, y: room.memory.top - 2})
+        spots.push({x: x, y: room.memory.bottom + 2})
+      }
       spots.push({x: x, y: room.memory.top - 4})
       spots.push({x: x, y: room.memory.bottom + 4})
     }
-    for(y = room.memory.top - 4; y < room.memory.bottom + 4; y++) {
+    for(y = room.memory.top - 4; y <= room.memory.bottom + 4; y++) {
+      if(y <= room.memory.bottom && y >= room.memory.top) {
+        spots.push({x: room.memory.left, y: y})
+        spots.push({x: room.memory.right, y: y})
+      }
+      if(y <= room.memory.bottom + 2 && y >= room.memory.top - 2) {
+        spots.push({x: room.memory.left - 2, y: y})
+        spots.push({x: room.memory.right + 2, y: y})
+      }
       spots.push({x: room.memory.left - 4, y: y})
       spots.push({x: room.memory.right + 4, y: y})
     }
+    _.each(spots, s => {
+      room.visual.rect(s.x - 0.5, s.y - 0.5, 1, 1, { fill: Config.colors.purple })
+    })
     Storage.write(room.name + '-wall-spots', spots)
     return true
   }
@@ -132,34 +134,11 @@ class RoomBuilder {
     let pathRight = room.findPath(room.controller.pos, room.controller.pos.findClosestByRange(FIND_EXIT_RIGHT), {ignoreDestructibleStructures: true, ignoreCreeps: true})
     let pathTop = room.findPath(room.controller.pos, room.controller.pos.findClosestByRange(FIND_EXIT_TOP), {ignoreDestructibleStructures: true, ignoreCreeps: true})
     let pathBottom = room.findPath(room.controller.pos, room.controller.pos.findClosestByRange(FIND_EXIT_BOTTOM), {ignoreDestructibleStructures: true, ignoreCreeps: true})
-    /*_.each(spots, s => {
-      if(_.filter(pathLeft, p => { return p.x === s.x && p.y === s.y}).length > 0) {
-        Log.info(['Removing Spot Left', s.x, s.y])
-        _.remove(spots, r => {return r.x === s.x && r.y === s.y})
-        ramps.push({'x': s.x, 'y': s.y})
-      }
-      if(_.filter(pathRight, p => { return p.x === s.x && p.y === s.y}).length > 0) {
-        Log.info(['Removing Spot Right', s.x, s.y])
-        _.remove(spots, r => {return r.x === s.x && r.y === s.y})
-        ramps.push({'x': s.x, 'y': s.y})
-      }
-      if(_.filter(pathTop, p => { return p.x === s.x && p.y === s.y}).length > 0) {
-        Log.info(['Removing Spot Top', s.x, s.y])
-        _.remove(spots, r => {return r.x === s.x && r.y === s.y})
-        ramps.push({'x': s.x, 'y': s.y})
-      }
-      if(_.filter(pathBottom, p => { return p.x === s.x && p.y === s.y}).length > 0)  {
-        Log.info(['Removing Spot Bottom', s.x, s.y])
-        _.remove(spots, r => {return r.x === s.x && r.y === s.y})
-        ramps.push({'x': s.x, 'y': s.y})
-      }
-    })*/
     _.merge(pathLeft, pathRight, pathTop, pathBottom)
     _.each(pathLeft, p => {
       let removed = _.remove(spots, s => { return s.x === p.x && s.y === p.y })
       if(removed.length > 0) ramps.push(removed[0])
     })
-    Log.info(ramps.length)
     Storage.write(room.name + '-ramp-spots', ramps)
     Storage.write(room.name + '-wall-spots', spots)
     return true

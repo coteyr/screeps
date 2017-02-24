@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-18 14:55:47
+* @Last Modified time: 2017-02-21 13:10:38
 */
 
 'use strict';
@@ -40,6 +40,7 @@ Room.prototype.assignCreeps = function() {
     if(_.isUndefined(this.memory.attack)) {
       if(this.needUpgraders()) this.assignTask("upgrade")
       if(this.needBuilders()) this.assignTask("build")
+      if(this.needRepairers()) this.assignTask("repair")
     }
 }
 Room.prototype.tickChildren = function() {
@@ -67,8 +68,8 @@ Room.prototype.needHaulers = function() {
   let haulingCreeps = Finder.findCreepsWithTask(this.name, 'haul')
   let carries = 0
   _.each(haulingCreeps, c => { carries = carries + c.partCount(CARRY)})
-  Log.debug(["I need", this.energyCapacityAvailable * 1, "carries. I have", carries * 50])
-  return ((carries * 50) < (this.energyCapacityAvailable * 1)) && !this.isFull()
+  Log.debug(["I need", this.energyCapacityAvailable * 0.50, "carries. I have", carries * 50])
+  return ((carries * 50) < (this.energyCapacityAvailable * 0.50))
 }
 Room.prototype.needBuilders = function() {
   let builderCreeps = Finder.findCreepsWithTask(this.name, 'build')
@@ -79,6 +80,13 @@ Room.prototype.needUpgraders = function() {
   let works = 0
   _.each(upgradingCreeps, c => { works = works + c.partCount(WORK)})
   if(works < 10) return true
+  return false
+}
+Room.prototype.needRepairers = function() {
+  let repairingCreeps = Finder.findCreepsWithTask(this.name, "repair")
+  let repairs = 0
+  _.each(repairingCreeps, c => { repairs = repairs + c.partCount(WORK)})
+  if(repairs < 10) return true
   return false
 }
 
