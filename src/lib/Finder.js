@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:12:59
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-21 13:06:42
+* @Last Modified time: 2017-02-27 18:46:07
 */
 
 'use strict';
@@ -90,5 +90,8 @@ class Finder {
   }
   static findFlag(roomName, flagName) {
     return Game.flags[flagName]
+  }
+  static findSpawnConstruction(roomName){
+    return _.first(Finder.findConstructionSites(roomName, STRUCTURE_SPAWN))
   }
 }

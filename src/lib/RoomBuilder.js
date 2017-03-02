@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-10 22:17:29
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-19 14:16:32
+* @Last Modified time: 2017-03-01 21:25:33
 */
 
 'use strict';
@@ -13,7 +13,8 @@ class RoomBuilder {
     let room = Game.rooms[roomName]
     if(_.isNull(room)) return false
     let spawn = _.first(Finder.findSpawns(room.name))
-    if(_.isNull(room)) return false
+    if(_.isUndefined(spawn)) return false
+    if(_.isUndefined(room.memory.top) || _.isUndefined(room.memory.right) || _.isUndefined(room.memory.left) || _.isUndefined(room.memory.bottom)) return false
     let y = spawn.pos.y
     let x = spawn.pos.x
     let limiter = 100
@@ -43,7 +44,7 @@ class RoomBuilder {
     }
     let spots = []
     _.each(extensionSpots, e => {
-      if(x > room.memory.right || e.y > room.memory.bottom || e.x < room.memory.left || e.y < room.memory.top) return false
+      if(e.x > room.memory.right || e.y > room.memory.bottom || e.x < room.memory.left || e.y < room.memory.top) return false
       if(_.filter(room.lookAtArea(e.x - 1, e.y - 1, e.x + 1, e.y + 1, true), t => { return (t.type === 'terrain' && t.terrain === 'wall')  }).length === 0) {
 
           spots.push({x: e.x, y: e.y})
@@ -54,16 +55,27 @@ class RoomBuilder {
     Storage.write(room.name + '-extension-spots', spots)
     return spots
   }
-  static findTop(structures) {
+  static findBoundries(structures, spawns, roomName) {
     let top = 50
     let bottom = 0
     let left = 50
     let right = 0
+    let room = Game.rooms[roomName]
     _.each(structures, s => {
       if(s.pos.y - Config.wallSpacing < top) top = s.pos.y - Config.wallSpacing
       if(s.pos.y + Config.wallSpacing > bottom) bottom = s.pos.y + Config.wallSpacing
       if(s.pos.x - Config.wallSpacing < left) left = s.pos.x - Config.wallSpacing
-      if(s.pos.x + Config.wallSpacing > right) right = s.pos.x + Config.wallSpacing
+      if(s.pos.x + Config.wallSpacing > right) right = s.pos.y + Config.wallSpacing
+        _.each(spawns, p => {
+          let path = room.findPath(p.pos, s.pos, {ignoreCreeps: true, ignoreDestructibleStructures: true})
+          Log.error(path.length)
+          _.each(path, a => {
+            if(a.y - Config.wallSpacing < top) top = a.y - Config.wallSpacing
+            if(a.y + Config.wallSpacing > bottom) bottom = a.y + Config.wallSpacing
+            if(a.x - Config.wallSpacing < left) left = a.x - Config.wallSpacing
+            if(a.x + Config.wallSpacing > right) right = a.x + Config.wallSpacing
+          })
+        })
     })
     if(top < 2) top = 2
     if(bottom > 47) bottom = 47
@@ -76,7 +88,7 @@ class RoomBuilder {
     let sources = Finder.findSources(room.name)
     let spawns = Finder.findSpawns(room.name)
     let controller = room.controller
-    let boundries = RoomBuilder.findBoundries(sources.concat(spawns, [controller]))
+    let boundries = RoomBuilder.findBoundries(sources.concat(spawns, [controller]), spawns, roomName)
     room.memory.top = boundries.top
     room.memory.bottom = boundries.bottom
     room.memory.left = boundries.left
@@ -118,9 +130,55 @@ class RoomBuilder {
       spots.push({x: room.memory.left - 4, y: y})
       spots.push({x: room.memory.right + 4, y: y})
     }
+    let finalSpots = []
     _.each(spots, s => {
-      room.visual.rect(s.x - 0.5, s.y - 0.5, 1, 1, { fill: Config.colors.purple })
+      if(s.x < 2) s.x = 2
+      if(s.x > 47) s.x = 47
+      if(s.y < 2) s.y = 2
+      if(s.y > 47) s.y = 47
+      finalSpots.push(s)
     })
+    Storage.write(room.name + '-wall-spots', finalSpots)
+    RoomBuilder.addRamps(room.name)
+    RoomBuilder.pruneWalls(room.name)
+    return true
+  }
+
+  static pruneWalls(roomName) {
+    let room = Game.rooms[roomName]
+    let spots = Storage.read(room.name + '-wall-spots', [])
+    let prune = []
+    let exitTop = room.controller.pos.findClosestByRange(FIND_EXIT_TOP)
+    //let exitBottom = room.controller.pos.findClosestByRange(FIND_EXIT_BOTTOM)
+    //let exitRight = room.controller.pos.findClosestByRange(FIND_EXIT_RIGHT)
+    //let exitLeft = room.controller.pos.findClosestByRange(FIND_EXIT_LEFT)
+    //Log.error(exitTop)
+
+    _.each(spots, s => {
+        let pos = new RoomPosition(s.x, s.y, roomName)
+        let path = room.findPath(exitTop, pos, {costCallback: function(roomNam, costMatrix) {
+          _.each(Storage.read(room.name + '-wall-spots', []), w =>{
+            costMatrix.set(w.x, w.y, 255)
+          })
+        }})
+        //check if path crosses wall
+        let crossed = false
+        _.each(path, p => {
+          _.each(Storage.read(room.name + '-wall-spots', []), w => {
+            if(p.x == w.x && p.y == w.y) crossed = true
+          })
+        })
+        if(!crossed) {
+          Log.error(['Cant reach', s.x, s.y, 'without crossing walls'])
+          room.visual.rect(s.x - 0.5, s.y - 0.5, 1, 1, { fill: Config.colors.yellow })
+          prune.push({ 'x': s.x, 'y': s.y })
+        }
+    })
+
+    _.each(prune, p => {
+      _.remove(spots, s=> { return s.x === p.x && s.y === p.y })
+    })
+
     Storage.write(room.name + '-wall-spots', spots)
     return true
   }
@@ -130,18 +188,40 @@ class RoomBuilder {
     let spots = Storage.read(room.name + '-wall-spots', [])
     if(spots.length === 0) return false
     let ramps = []
-    let pathLeft = room.findPath(room.controller.pos, room.controller.pos.findClosestByRange(FIND_EXIT_LEFT), {ignoreDestructibleStructures: true, ignoreCreeps: true})
-    let pathRight = room.findPath(room.controller.pos, room.controller.pos.findClosestByRange(FIND_EXIT_RIGHT), {ignoreDestructibleStructures: true, ignoreCreeps: true})
-    let pathTop = room.findPath(room.controller.pos, room.controller.pos.findClosestByRange(FIND_EXIT_TOP), {ignoreDestructibleStructures: true, ignoreCreeps: true})
-    let pathBottom = room.findPath(room.controller.pos, room.controller.pos.findClosestByRange(FIND_EXIT_BOTTOM), {ignoreDestructibleStructures: true, ignoreCreeps: true})
-    _.merge(pathLeft, pathRight, pathTop, pathBottom)
-    _.each(pathLeft, p => {
+    let exitTop = room.controller.pos.findClosestByPath(FIND_EXIT_TOP)
+    let exitBottom = room.controller.pos.findClosestByPath(FIND_EXIT_BOTTOM)
+    let exitRight = room.controller.pos.findClosestByPath(FIND_EXIT_RIGHT)
+    let exitLeft = room.controller.pos.findClosestByPath(FIND_EXIT_LEFT)
+    let pathLeft = []
+    let pathRight = []
+    let pathTop = []
+    let pathBottom = []
+    if(exitLeft)   pathLeft = room.findPath(room.controller.pos, exitLeft, {ignoreDestructibleStructures: true, ignoreCreeps: true})
+    if(exitRight)  pathRight = room.findPath(room.controller.pos, exitRight, {ignoreDestructibleStructures: true, ignoreCreeps: true})
+    if(exitTop)    pathTop = room.findPath(room.controller.pos, exitTop, {ignoreDestructibleStructures: true, ignoreCreeps: true})
+    if(exitBottom) pathBottom = room.findPath(room.controller.pos, exitBottom, {ignoreDestructibleStructures: true, ignoreCreeps: true})
+    let paths = pathLeft.concat(pathRight, pathTop, pathBottom)
+    _.each(paths, p => {
+      room.visual.rect(p.x - 0.5, p.y - 0.5, 1, 1, { fill: Config.colors.red })
       let removed = _.remove(spots, s => { return s.x === p.x && s.y === p.y })
       if(removed.length > 0) ramps.push(removed[0])
     })
     Storage.write(room.name + '-ramp-spots', ramps)
     Storage.write(room.name + '-wall-spots', spots)
     return true
+  }
+
+  static clearBuiltWalls(roomName) {
+    let room = Game.rooms[roomName]
+    _.each(Finder.findWalls(roomName), w => {
+      w.destroy()
+    })
+  }
+  static clearBuiltRamps(roomName) {
+    let room = Game.rooms[roomName]
+    _.each(Finder.findMyRamps(roomName), r => {
+      r.destroy()
+    })
   }
 }
 

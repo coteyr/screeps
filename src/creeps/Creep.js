@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-21 16:03:55
+* @Last Modified time: 2017-02-27 19:01:44
 */
 
 'use strict';
@@ -30,6 +30,10 @@ Creep.prototype.tick = function() {
     _.merge(Creep.prototype, HaulingCreep.prototype)
   } else if(this.taskIs('repair')) {
     _.merge(Creep.prototype, RepairCreep.prototype)
+  } else if(this.taskIs('claim')) {
+    _.merge(Creep.prototype, ClaimCreep.prototype)
+  } else if(this.taskIs('remote_build')) {
+    _.merge(Creep.prototype, RemoteBuildCreep.prototype)
   } else {
     _.merge(Creep.prototype, NullCreep.prototype)
   }
@@ -55,6 +59,9 @@ Creep.prototype.target = function() {
 }
 Creep.prototype.isEmpty = function() {
   return _.sum(this.carry) === 0
+}
+Creep.prototype.isFull = function() {
+  return _.sum(this.carry) >= this.carryCapacity
 }
 Creep.prototype.hasSome = function() {
   return !this.isEmpty()
@@ -92,14 +99,14 @@ Creep.prototype.goTo = function(pos) {
       costMatrix.set(0, x, 256)
       costMatrix.set(49, x, 256)
     }
-    costMatrix.set(21, 18, 256)
-    costMatrix.set(21, 20, 256)
+    /*costMatrix.set(21, 18, 256)
+    costMatrix.set(21, 20, 256)*/
     //_.each(Finder.findCreepsWithTask(pos.room.name, 'mine'), c => {
     //  costMatrix.set(c.pos, 255)
     //})
     },
   reusePath: 5,
-  ignoreCreeps: (this.pos.x < 13 || this.pos.x > 26) || (this.pos.y < 9 || this.pos.y > 22),
+  ignoreCreeps: (Game.time % 5 === 0),
   visualizePathStyle: {opacity: 0.75, stroke: Config.colors.blue}
   }
   // Log.info(JSON.stringify(arguments))

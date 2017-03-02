@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-24 17:35:06
+* @Last Modified time: 2017-02-27 20:07:51
 */
 
 'use strict';
@@ -13,16 +13,22 @@ Room.prototype.tick = function() {
   if(this.controller.my) {
     if(!_.isUndefined(this.memory.attack) && Finder.findAttackCreeps(this.name).length < 5) {
       this.spawnAttackCreep()
+    } else if(!_.isUndefined(this.memory.claim)) {
+      this.spawnClaimCreep()
     } else if(Finder.findIdleCreeps(this.name).length === 0) {
       this.spawnCreep()
+    } else if(!_.isUndefined(this.memory.build)) {
+      this.spawnRemoteBuildCreep()
     }
     this.assignCreeps()
     this.buildOut()
-    this.tickChildren()
+
   }
+  this.tickChildren()
   this.attackMoves()
 }
 Room.prototype.buildOut = function() {
+  if(RoomBuilder.needMainArea(this.name)) RoomBuilder.findMainArea(this.name)
   if(this.needExtensions()) this.addExtension()
   if(this.needRoads()) this.addRoads()
   if(this.needWalls()) this.addWalls()
@@ -219,6 +225,12 @@ Room.prototype.addRamps = function() {
 Room.prototype.isFull = function() {
   return this.energyAvailable >= this.energyCapacityAvailable
 }
+Room.prototype.build = function(roomName) {
+  this.memory.build = roomName
+}
+Room.prototype.claim = function(roomName) {
+  this.memory.claim = roomName
+}
 Room.prototype.attack = function(roomName) {
   this.memory.attack = roomName
 }
@@ -232,6 +244,20 @@ Room.prototype.spawnAttackCreep = function() {
     if(spawn) {
       spawn.spawnAttack(tactic, this.memory.attack)
     }
+  }
+}
+Room.prototype.spawnClaimCreep = function() {
+  let spawn = Finder.findIdleSpawn(this.name)
+  if(spawn) {
+    if(spawn.spawnClaim(this.memory.claim)) {
+      delete this.memory.claim
+    }
+  }
+}
+Room.prototype.spawnRemoteBuildCreep = function() {
+  let spawn = Finder.findIdleSpawn(this.name)
+  if(spawn) {
+    spawn.spawnRemoteBuild(this.memory.build)
   }
 }
 Room.prototype.attackMoves = function() {
