@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-27 19:01:44
+* @Last Modified time: 2017-03-06 22:43:28
 */
 
 'use strict';
@@ -112,4 +112,11 @@ Creep.prototype.goTo = function(pos) {
   // Log.info(JSON.stringify(arguments))
   this.room.visual.circle(pos, { fill: Config.colors.blue,  opacity: 1.0, radius: 0.25} )
   this.moveTo(pos, opts)
+}
+
+Creep.prototype.orignalBuild = Creep.prototype.build
+Creep.prototype.build = function(target) {
+  let result = this.orignalBuild(target)
+  if(result === ERR_INVALID_TARGET) this.clearTarget()
+  if(result === ERR_NOT_IN_RANGE) this.goTo(target)
 }

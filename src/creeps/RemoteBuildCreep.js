@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:37:33
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-05 01:59:44
+* @Last Modified time: 2017-03-06 22:44:08
 */
 
 'use strict';
@@ -35,16 +35,4 @@ RemoteBuildCreep.prototype.superTick = function() {
     this.setTask('idle')
     delete Game.rooms[this.memory.home].memory.build
   }
-}
-RemoteBuildCreep.prototype.orignalBuild = Creep.prototype.build
-RemoteBuildCreep.prototype.build = function(target) {
-  let result = this.orignalBuild(target)
-  if(result === ERR_INVALID_TARGET) this.clearTarget()
-  if(result === ERR_NOT_IN_RANGE) this.goTo(target)
-}
-RemoteBuildCreep.prototype.orignalHarvest = Creep.prototype.harvest
-RemoteBuildCreep.prototype.harvest = function(target) {
-  let result = this.orignalHarvest(target)
-  if(result === ERR_NOT_IN_RANGE) this.goTo(target)
-  return result
 }
