@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-06 20:23:33
+* @Last Modified time: 2017-03-06 22:38:13
 */
 
 'use strict';
@@ -28,9 +28,8 @@ Room.prototype.tick = function() {
   this.attackMoves()
 }
 Room.prototype.buildOut = function() {
-  if(RoomBuilder.needMainArea(this.name)) RoomBuilder.findMainArea(this.name)
+  RoomBuilder.buildPlan(this.name)
   if(this.needExtensions()) this.addExtension()
-  if(this.needRoads()) this.addRoads()
   if(this.needWalls()) this.addWalls()
   if(this.needRamps()) this.addRamps()
   if(this.needTowers()) this.addTowers()
@@ -94,12 +93,6 @@ Room.prototype.needExtensions = function() {
   let extensions = Finder.findExtensions(this.name).length
   if(extensions < CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][this.controller.level]) return true
 }
-Room.prototype.needRoads = function() {
-  return false
-  if(Finder.findConstructionSites(this.name, STRUCTURE_ROAD).length >= 1) return false
-  // do a check for roads need to cache
-  return true
-}
 Room.prototype.needWalls = function() {
   if(Finder.findConstructionSites(this.name, STRUCTURE_WALL).length >= 1) return false
   if(this.controller && this.controller.level < 3) return false
@@ -133,93 +126,26 @@ Room.prototype.needStorage = function() {
 }
 Room.prototype.addExtension = function() {
   let extensionSpots = Storage.read(this.name + '-extension-spots', [])
-  if(extensionSpots.length === 0) {
-    RoomBuilder.buildOutExtensions(this.name)
-  } else {
-    let spot = 0
-    let worked = false
-    while (spot < extensionSpots.length && worked == false) {
-      worked = (this.createConstructionSite(extensionSpots[spot].x, extensionSpots[spot].y, STRUCTURE_EXTENSION) === OK)
-      spot = spot + 1
-    }
-  }
-}
-
-Room.prototype.addRoads = function() {
-  let worked = false
-  let spawns = Finder.findSpawns(this.name)
-  _.each(spawns, spawn => {
-    let sources = Finder.findSources(this.name)
-    _.each(sources, source => {
-      let path = this.findPath(spawn.pos, source.pos, {ignoreCreeps: true})
-      let spot = 0
-      while(spot < path.length && !worked) {
-        worked = this.createConstructionSite(path[spot].x, path[spot].y, STRUCTURE_ROAD) === OK
-        spot = spot + 1
-      }
-    })
-  })
-  if(!worked){
-    let sources = Finder.findSources(this.name)
-    _.each(sources, source => {
-      let path = this.findPath(this.controller.pos, source.pos, {ignoreCreeps: true})
-      let spot = 0
-      while(spot < path.length && !worked) {
-        worked = this.createConstructionSite(path[spot].x, path[spot].y, STRUCTURE_ROAD) === OK
-        spot = spot + 1
-      }
-    })
-  }
+  RoomBuilder.addConstructionSite(this.name, extensionSpots, STRUCTURE_EXTENSION)
 }
 
 Room.prototype.addTowers = function() {
-  let spawns = Finder.findSpawns(this.name)
-  let result = false
-  _.each(spawns, s => {
-    let x = s.pos.x
-    let y = s.pos.y
-    while(result === false) {
-      x = x + 1
-      y = y + 1
-      result = (this.createConstructionSite(x, y, STRUCTURE_TOWER) === OK)
-    }
-  })
-  return result
+  let extensionSpots = Storage.read(this.name + '-extension-spots', [])
+  return RoomBuilder.addConstructionSite(this.name, extensionSpots, STRUCTURE_TOWER)
 }
 Room.prototype.addStorage = function() {
-  let x = this.controller.pos.x
-  let y = this.controller.pos.y
-  let result = false
-  while (result === false) {
-    x++
-    y++
-    result = (this.createConstructionSite(x, y, STRUCTURE_STORAGE) === OK)
-  }
-  return result
+  let extensionSpots = Storage.read(this.name + '-extension-spots', [])
+  let spots = Scalar.orderByPos(this.controller.pos, extensionSpots)
+  RoomBuilder.addConstructionSite(this.name, spots, STRUCTURE_STORAGE)
 }
 
 Room.prototype.addWalls = function() {
-  Log.info("Should add walls")
   let spots = Storage.read(this.name + '-wall-spots', [])
-  Log.warn(spots.length)
-  if(spots.length === 0) {
-    RoomBuilder.addWalls(this.name)
-    RoomBuilder.addRamps(this.name)
-    return true
-  } else {
-    let pos = 0
-    let worked = false
-
-    while(pos < spots.length && worked === false) {
-      worked = (this.createConstructionSite(spots[pos].x, spots[pos].y, STRUCTURE_WALL) === OK)
-      pos = pos + 1
-    }
-    return worked
-  }
+  RoomBuilder.addConstructionSite(this.name, spots, STRUCTURE_WALL)
 }
 Room.prototype.addRamps = function() {
   let ramps = Storage.read(this.name + '-ramp-spots', [])
-  _.each(ramps, r => { this.createConstructionSite(r.x, r.y, STRUCTURE_RAMPART) })
+  RoomBuilder.addConstructionSite(this.name, ramps, STRUCTURE_RAMPART)
 }
 Room.prototype.isFull = function() {
   return this.energyAvailable >= this.energyCapacityAvailable

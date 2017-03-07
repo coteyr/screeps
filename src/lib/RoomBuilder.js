@@ -2,19 +2,30 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-10 22:17:29
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-06 20:56:27
+* @Last Modified time: 2017-03-06 22:39:29
 */
 
 'use strict';
 
 class RoomBuilder {
+  static buildPlan(roomName) {
+    let room = Game.rooms[roomName]
+    if(RoomBuilder.needMainArea(roomName)) RoomBuilder.findMainArea(roomName)
+    if(_.isUndefined(room.memory.planed)) {
+      RoomBuilder.addWalls(roomName)
+      RoomBuilder.addRamps(roomName)
+      RoomBuilder.pruneWalls(roomName)
+      RoomBuilder.buildOutExtensions(roomName)
+      room.memory.planed = true
+    }
+  }
   static buildOutExtensions(roomName) {
     let extensionSpots = []
     let room = Game.rooms[roomName]
     if(_.isNull(room)) return false
     let spawn = _.first(Finder.findSpawns(room.name))
     if(_.isUndefined(spawn)) return false
-    if(needMainArea(roomName))  return false
+    if(RoomBuilder.needMainArea(roomName))  return false
     let y = spawn.pos.y
     let x = spawn.pos.x
 
@@ -210,6 +221,11 @@ class RoomBuilder {
     _.each(Finder.findMyRamps(roomName), r => {
       w.destroy()
     })
+  }
+  static addConstructionSite(roomName, spots, structure) {
+    if(spots.length === 0) return true
+    let room = Game.rooms[roomName]
+    return _.some(spots, s => { return room.createConstructionSite(s.x, s.y, structure) === OK })
   }
 }
 
