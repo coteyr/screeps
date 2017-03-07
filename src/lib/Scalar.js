@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-18 13:17:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-24 17:43:09
+* @Last Modified time: 2017-03-06 20:57:15
 */
 
 'use strict';
@@ -34,7 +34,12 @@ class Scalar {
   }
   static inBounds(pos, roomName) {
     let room = Game.rooms[roomName]
-    if(_.isUndefined(room.memory.top) || is_Undefined(room.memory.bottom) || _.isUndefined(room.memory.left) || _.isUndefined(room.memory.right)) return true
+    if(RoomBuilder.needMainArea(roomName)) return true
     return pos.x > room.memory.left && pos.x < room.memory.right && pos.y > room.memory.top && pos.y < room.memory.bottom
+  }
+  static orderByPos(pos, collection) {
+    return _.sortBy(collection, o => {
+      return pos.getRangeTo(o.x, o.y)
+    })
   }
 }

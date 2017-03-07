@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:37:33
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-27 20:10:26
+* @Last Modified time: 2017-03-05 01:59:44
 */
 
 'use strict';
@@ -31,7 +31,7 @@ RemoteBuildCreep.prototype.superTick = function() {
       }
     }
   }
-  if(Finder.findSpawns(this.room.name).length > 0) {
+  if(this.room.name == this.memory.targetRoom && Finder.findSpawns(this.room.name).length > 0) {
     this.setTask('idle')
     delete Game.rooms[this.memory.home].memory.build
   }

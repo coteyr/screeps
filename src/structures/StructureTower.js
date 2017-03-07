@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-07 18:01:40
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-21 12:42:38
+* @Last Modified time: 2017-03-04 09:57:38
 */
 
 'use strict';
@@ -50,12 +50,12 @@ StructureTower.prototype.doRepair = function() {
   let most = 0
   let target = null
   _.each(needsRepair, s => {
-    if(s.structureType !== STRUCTURE_WALL) {
+
       if((s.hitsMax - s.hits) > most) {
         most = s.hitsMax - s.hits
         target = s
       }
-    }
+
   })
-  if(target) this.repair(target)
+  this.repair(target)
 }

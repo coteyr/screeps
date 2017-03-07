@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-10 22:17:29
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-01 21:25:33
+* @Last Modified time: 2017-03-06 20:56:27
 */
 
 'use strict';
@@ -14,44 +14,32 @@ class RoomBuilder {
     if(_.isNull(room)) return false
     let spawn = _.first(Finder.findSpawns(room.name))
     if(_.isUndefined(spawn)) return false
-    if(_.isUndefined(room.memory.top) || _.isUndefined(room.memory.right) || _.isUndefined(room.memory.left) || _.isUndefined(room.memory.bottom)) return false
+    if(needMainArea(roomName))  return false
     let y = spawn.pos.y
     let x = spawn.pos.x
-    let limiter = 100
-    let ring = 2 // We don't want to build right next to it
 
-    let side = 'top'
+    x = room.memory.left + 2
+    y = room.memory.top + 1
 
-  // enter into ring
-    y = y - ring
-    x = x - ring
-
-    while (limiter > 0) {
-      limiter = limiter - 1
-      while (x < spawn.pos.x + ring) {
-        extensionSpots.push({x: x, y: spawn.pos.y - ring})
-        extensionSpots.push({x: x, y: spawn.pos.y + ring})
+    while (y < room.memory.bottom) {
+      while (x < room.memory.right) {
+        extensionSpots.push({x: x, y: y})
         x = x + 2
       }
-      while (y < spawn.pos.y + ring) {
-        extensionSpots.push({x: spawn.pos.x - ring, y: y})
-        extensionSpots.push({x: spawn.pos.x + ring, y: y})
-        y = y + 2
+      if(y % 2 === 0) {
+        x = room.memory.left + 1
+      } else {
+        x = room.memory.left + 2
       }
-      ring = ring + 1
-      x = spawn.pos.x - ring
-      y = spawn.pos.y - ring
+      y = y + 1
     }
     let spots = []
     _.each(extensionSpots, e => {
-      if(e.x > room.memory.right || e.y > room.memory.bottom || e.x < room.memory.left || e.y < room.memory.top) return false
-      if(_.filter(room.lookAtArea(e.x - 1, e.y - 1, e.x + 1, e.y + 1, true), t => { return (t.type === 'terrain' && t.terrain === 'wall')  }).length === 0) {
-
-          spots.push({x: e.x, y: e.y})
-          room.visual.circle(e.x, e.y)
-
+      if((e.x < spawn.pos.x - 1 || e.x > spawn.pos.x + 1 || e.y > spawn.pos.y + 1 || e.y < spawn.pos.y - 1)) {
+        spots.push({x: e.x, y: e.y})
       }
     })
+    spots = Scalar.orderByPos(spawn.pos, spots)
     Storage.write(room.name + '-extension-spots', spots)
     return spots
   }
@@ -220,7 +208,7 @@ class RoomBuilder {
   static clearBuiltRamps(roomName) {
     let room = Game.rooms[roomName]
     _.each(Finder.findMyRamps(roomName), r => {
-      r.destroy()
+      w.destroy()
     })
   }
 }

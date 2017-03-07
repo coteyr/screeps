@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-27 20:07:51
+* @Last Modified time: 2017-03-06 20:23:33
 */
 
 'use strict';
@@ -15,13 +15,13 @@ Room.prototype.tick = function() {
       this.spawnAttackCreep()
     } else if(!_.isUndefined(this.memory.claim)) {
       this.spawnClaimCreep()
-    } else if(Finder.findIdleCreeps(this.name).length === 0) {
-      this.spawnCreep()
     } else if(!_.isUndefined(this.memory.build)) {
       this.spawnRemoteBuildCreep()
+    } else if(Finder.findIdleCreeps(this.name).length === 0) {
+      this.spawnCreep()
     }
     this.assignCreeps()
-    this.buildOut()
+    if (Game.time % 2 === 0) this.buildOut()
 
   }
   this.tickChildren()
@@ -93,7 +93,6 @@ Room.prototype.needExtensions = function() {
   if(Finder.findConstructionSites(this.name, STRUCTURE_EXTENSION).length >= Config.maxConstructionSites) return false
   let extensions = Finder.findExtensions(this.name).length
   if(extensions < CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][this.controller.level]) return true
-  return Storage.read(this.name + '-extension-spots', []).length === 0 || extensions < Storage.read(this.name + '-extension-spots', []).length
 }
 Room.prototype.needRoads = function() {
   return false
