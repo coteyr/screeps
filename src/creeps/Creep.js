@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-06 22:43:28
+* @Last Modified time: 2017-03-08 21:53:20
 */
 
 'use strict';
@@ -119,4 +119,5 @@ Creep.prototype.build = function(target) {
   let result = this.orignalBuild(target)
   if(result === ERR_INVALID_TARGET) this.clearTarget()
   if(result === ERR_NOT_IN_RANGE) this.goTo(target)
+  return result
 }

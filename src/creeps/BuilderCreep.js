@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 19:38:18
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-06 22:44:38
+* @Last Modified time: 2017-03-08 21:53:31
 */
 
 'use strict';
@@ -19,11 +19,4 @@ BuilderCreep.prototype.buildThings = function() {
   if(this.needsTarget()) this.setTask('idle')
   if(this.isEmpty()) this.clearTarget()
 
-}
-
-BuilderCreep.prototype.orignalBuild = Creep.prototype.build
-BuilderCreep.prototype.build = function(target) {
-  let result = this.orignalBuild(target)
-  if(result === ERR_INVALID_TARGET) this.clearTarget()
-  if(result === ERR_NOT_IN_RANGE) this.goTo(target)
 }
