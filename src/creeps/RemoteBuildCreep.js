@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:37:33
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-06 22:44:08
+* @Last Modified time: 2017-03-09 08:58:28
 */
 
 'use strict';
@@ -28,6 +28,10 @@ RemoteBuildCreep.prototype.superTick = function() {
       let target = Finder.findSpawnConstruction(this.room.name)
       if(target) {
         this.build(target)
+        if(this.isEmpty()) {
+          this.clearTarget()
+          this.memory.collect == true
+        }
       }
     }
   }
@@ -35,4 +39,13 @@ RemoteBuildCreep.prototype.superTick = function() {
     this.setTask('idle')
     delete Game.rooms[this.memory.home].memory.build
   }
+}
+
+RemoteBuildCreep.prototype.orignalHarvest = Creep.prototype.harvest
+
+RemoteBuildCreep.prototype.harvest = function(target) {
+  let result = this.orignalHarvest(target)
+  if(result === ERR_INVALID_TARGET) this.clearTarget()
+  if(result === ERR_NOT_IN_RANGE) this.goTo(target)
+  return result
 }

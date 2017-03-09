@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 10:05:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-02 03:59:00
+* @Last Modified time: 2017-03-09 10:05:32
 */
 
 'use strict';
@@ -106,8 +106,8 @@ var Config = {
     1: 25,
     2: 50,
     3: 75,
-    4: 100,
-    5: 150,
+    4: 200,
+    5: 200,
     6: 200,
     7: 250,
     8: 300

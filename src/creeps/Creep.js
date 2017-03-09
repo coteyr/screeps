@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-08 21:53:20
+* @Last Modified time: 2017-03-09 10:47:51
 */
 
 'use strict';
@@ -34,6 +34,8 @@ Creep.prototype.tick = function() {
     _.merge(Creep.prototype, ClaimCreep.prototype)
   } else if(this.taskIs('remote_build')) {
     _.merge(Creep.prototype, RemoteBuildCreep.prototype)
+  } else if(this.taskIs('attack')) {
+    return true
   } else {
     _.merge(Creep.prototype, NullCreep.prototype)
   }
@@ -43,13 +45,14 @@ Creep.prototype.targetIs = function(id) {
   return this.memory.target === id
 }
 Creep.prototype.setTarget = function(target) {
+  Log.info([this.name, 'Set Target', target.name], this.room.name)
   if(_.isNull(target) || _.isUndefined(target)) return false
   if(_.isUndefined(target.id)) return false
   this.memory.target = target.id
   return true
 }
 Creep.prototype.hasTarget = function() {
-  return !_.isUndefined(this.memory.target) && !_.isNull(this.memory.target) && !_.isNull(Game.getObjectById(this.memory.target))
+  return !_.isUndefined(this.memory.target) && !_.isNull(this.memory.target) && !_.isNull(Game.getObjectById(this.memory.target)) && Game.getObjectById(this.memory.target).room.name === this.room.name
 }
 Creep.prototype.needsTarget = function() {
   return !this.hasTarget()

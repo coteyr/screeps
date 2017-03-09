@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-08 22:13:03
+* @Last Modified time: 2017-03-09 06:54:06
 */
 
 'use strict';
@@ -12,6 +12,7 @@ Room.prototype.tick = function() {
   if(!this.controller) return false
   if(this.controller.my) {
     if(!_.isUndefined(this.memory.attack) && Finder.findAttackCreeps(this.name).length < 5) {
+      Log.error('1')
       this.spawnAttackCreep()
     } else if(!_.isUndefined(this.memory.claim)) {
       this.spawnClaimCreep()
@@ -126,24 +127,24 @@ Room.prototype.needStorage = function() {
 }
 Room.prototype.addStructure = function(memoryLocation, structure) {
   let spots = Storage.read (this.name + '-' + memoryLocation, [])
-  return RoomBuilder.addConstructionSite(this.name, spots, structure)
+  return RoomBuilder.addConstructionSite(this.name, this.name, spots, structure)
 }
 Room.prototype.addExtension = function() {
-  return RoomBuilder.addConstructionSite('extension-spots', STRUCTURE_EXTENSION)
+  return RoomBuilder.addConstructionSite(this.name, 'extension-spots', STRUCTURE_EXTENSION)
 }
 
 Room.prototype.addTowers = function() {
-  return RoomBuilder.addConstructionSite('extension-spots', STRUCTURE_TOWER)
+  return RoomBuilder.addConstructionSite(this.name, 'extension-spots', STRUCTURE_TOWER)
 }
 Room.prototype.addStorage = function() {
-  return RoomBuilder.addConstructionSite('extension-spots', STRUCTURE_STORAGE)
+  return RoomBuilder.addConstructionSite(this.name, 'extension-spots', STRUCTURE_STORAGE)
 }
 
 Room.prototype.addWalls = function() {
-  return RoomBuilder.addConstructionSite('wall-spots', STRUCTURE_WALL)
+  return RoomBuilder.addConstructionSite(this.name, 'wall-spots', STRUCTURE_WALL)
 }
 Room.prototype.addRamps = function() {
-  return RoomBuilder.addConstructionSite('ramp-spots', STRUCTURE_RAMPART)
+  return RoomBuilder.addConstructionSite(this.name, 'ramp-spots', STRUCTURE_RAMPART)
 }
 Room.prototype.isFull = function() {
   return this.energyAvailable >= this.energyCapacityAvailable
@@ -203,6 +204,7 @@ Room.prototype.attackMoves = function() {
     if(c.needsTarget()) c.setTarget(Targeting.findAttackTarget(c.pos))
     if(c.hasTarget()) {
       if(c.attack(c.target()) === ERR_NOT_IN_RANGE) {
+        Visualizer.target(c.target())
         c.moveTo(c.target(), {ignoreDestructibleStructures: true})
       }
     }

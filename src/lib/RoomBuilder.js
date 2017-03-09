@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-10 22:17:29
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-06 22:39:29
+* @Last Modified time: 2017-03-09 10:01:26
 */
 
 'use strict';
@@ -10,11 +10,12 @@
 class RoomBuilder {
   static buildPlan(roomName) {
     let room = Game.rooms[roomName]
+    if(Finder.findSpawns(room.name).length === 0) return false
     if(RoomBuilder.needMainArea(roomName)) RoomBuilder.findMainArea(roomName)
     if(_.isUndefined(room.memory.planed)) {
       RoomBuilder.addWalls(roomName)
       RoomBuilder.addRamps(roomName)
-      RoomBuilder.pruneWalls(roomName)
+      //RoomBuilder.pruneWalls(roomName)
       RoomBuilder.buildOutExtensions(roomName)
       room.memory.planed = true
     }
@@ -138,8 +139,8 @@ class RoomBuilder {
       finalSpots.push(s)
     })
     Storage.write(room.name + '-wall-spots', finalSpots)
-    RoomBuilder.addRamps(room.name)
-    RoomBuilder.pruneWalls(room.name)
+    //RoomBuilder.addRamps(room.name)
+    //RoomBuilder.pruneWalls(room.name)
     return true
   }
 

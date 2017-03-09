@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:12:59
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-27 18:46:07
+* @Last Modified time: 2017-03-09 02:57:11
 */
 
 'use strict';
@@ -51,10 +51,12 @@ class Finder {
   static findDroppedEnergy(roomName) {
     let room = Game.rooms[roomName]
     let minEnergy = Config.minEnergy[room.controller.level]
+    Log.error(['xxx', minEnergy])
     let containers = _.filter(Finder.findObjects(roomName, FIND_STRUCTURES), s => { return s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > minEnergy})
-    Log.info(containers.length)
     if(containers.length > 0) return containers
-    return _.filter(Finder.findObjects(roomName, FIND_DROPPED_ENERGY), r => { return r.resourceType === RESOURCE_ENERGY && r.amount >= minEnergy && r.pos.x > room.memory.left && r.pos.x < room.memory.right && r.pos.y > room.memory.top && r.pos.y < room.memory.bottom})
+    let drops =  _.filter(Finder.findObjects(roomName, FIND_DROPPED_ENERGY), r => { return r.resourceType === RESOURCE_ENERGY && r.amount >= minEnergy && r.pos.x > room.memory.left && r.pos.x < room.memory.right && r.pos.y > room.memory.top && r.pos.y < room.memory.bottom})
+    if(drops.length > 0) return drops
+    return room.storage
   }
   static findExtensions(roomName){
     return Finder.findMyStructures(roomName, STRUCTURE_EXTENSION)

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-21 16:32:45
+* @Last Modified time: 2017-03-09 03:01:18
 */
 
 'use strict';
@@ -54,6 +54,9 @@ class Targeting {
     if(!_.isNull(creep)) return creep
     let towers = _.filter(Finder.findObjects(pos.roomName, FIND_STRUCTURES), s => { return s.structureType === STRUCTURE_TOWER && s.my === false })
     if(towers.length > 0) return pos.findClosestByRange(towers)
+    let spawns = _.filter(Finder.findObjects(pos.roomName, FIND_STRUCTURES), s => { return s.structureType === STRUCTURE_SPAWN && s.my === false })
+    if(spawns.length > 0) return pos.findClosestByRange(spawns)
+
   }
   static findRepairTarget(pos) {
     Log.info(JSON.stringify(pos))
