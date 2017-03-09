@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-06 22:38:13
+* @Last Modified time: 2017-03-08 22:13:03
 */
 
 'use strict';
@@ -124,28 +124,26 @@ Room.prototype.needStorage = function() {
   if(Finder.findConstructionSites(this.name, STRUCTURE_STORAGE).length >= 1) return false
   return this.controller.level >= 4 && _.isUndefined(this.storage)
 }
+Room.prototype.addStructure = function(memoryLocation, structure) {
+  let spots = Storage.read (this.name + '-' + memoryLocation, [])
+  return RoomBuilder.addConstructionSite(this.name, spots, structure)
+}
 Room.prototype.addExtension = function() {
-  let extensionSpots = Storage.read(this.name + '-extension-spots', [])
-  RoomBuilder.addConstructionSite(this.name, extensionSpots, STRUCTURE_EXTENSION)
+  return RoomBuilder.addConstructionSite('extension-spots', STRUCTURE_EXTENSION)
 }
 
 Room.prototype.addTowers = function() {
-  let extensionSpots = Storage.read(this.name + '-extension-spots', [])
-  return RoomBuilder.addConstructionSite(this.name, extensionSpots, STRUCTURE_TOWER)
+  return RoomBuilder.addConstructionSite('extension-spots', STRUCTURE_TOWER)
 }
 Room.prototype.addStorage = function() {
-  let extensionSpots = Storage.read(this.name + '-extension-spots', [])
-  let spots = Scalar.orderByPos(this.controller.pos, extensionSpots)
-  RoomBuilder.addConstructionSite(this.name, spots, STRUCTURE_STORAGE)
+  return RoomBuilder.addConstructionSite('extension-spots', STRUCTURE_STORAGE)
 }
 
 Room.prototype.addWalls = function() {
-  let spots = Storage.read(this.name + '-wall-spots', [])
-  RoomBuilder.addConstructionSite(this.name, spots, STRUCTURE_WALL)
+  return RoomBuilder.addConstructionSite('wall-spots', STRUCTURE_WALL)
 }
 Room.prototype.addRamps = function() {
-  let ramps = Storage.read(this.name + '-ramp-spots', [])
-  RoomBuilder.addConstructionSite(this.name, ramps, STRUCTURE_RAMPART)
+  return RoomBuilder.addConstructionSite('ramp-spots', STRUCTURE_RAMPART)
 }
 Room.prototype.isFull = function() {
   return this.energyAvailable >= this.energyCapacityAvailable
