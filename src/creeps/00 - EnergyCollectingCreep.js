@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-06 21:45:14
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 11:03:06
+* @Last Modified time: 2017-03-11 05:15:17
 */
 
 'use strict';
@@ -13,7 +13,7 @@ EnergyCollectingCreep.prototype.orignalPickup = Creep.prototype.pickup
 
 EnergyCollectingCreep.prototype.pickup = function(target) {
   let result = null
-  if(target.structureType == STRUCTURE_CONTAINER) result = this.withdraw(target, RESOURCE_ENERGY)
+  if(target.structureType == STRUCTURE_CONTAINER || target.structureType == STRUCTURE_STORAGE) result = this.withdraw(target, RESOURCE_ENERGY)
   if(target.resourceType == RESOURCE_ENERGY) result = this.orignalPickup(target)
   if( result === ERR_NOT_IN_RANGE) this.goTo(target)
   if( result === ERR_INVALID_TARGET) this.clearTarget()

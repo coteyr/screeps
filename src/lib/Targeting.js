@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 03:01:18
+* @Last Modified time: 2017-03-11 07:26:32
 */
 
 'use strict';
@@ -27,7 +27,7 @@ class Targeting {
     let result = null
     let most = 99999
      _.each(energies, e =>{
-      if(Finder.findCreepsWithTarget(e.id).length <= most) {
+      if(e && e.id && Finder.findCreepsWithTarget(e.id).length <= 1) {
         most = Finder.findCreepsWithTarget(e.id).length
         if(e.store && e.store[RESOURCE_ENERGY] > biggest) {
           biggest = e.store[RESOURCE_ENERGY]
@@ -36,6 +36,9 @@ class Targeting {
         if(e.amount > biggest) {
           biggest = e.amount
           result = e
+        }
+        if(e.isFull && e.isFull()) {
+          return e
         }
       }
     })

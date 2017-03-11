@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-10 22:17:29
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 10:01:26
+* @Last Modified time: 2017-03-09 11:42:17
 */
 
 'use strict';
@@ -223,10 +223,15 @@ class RoomBuilder {
       w.destroy()
     })
   }
-  static addConstructionSite(roomName, spots, structure) {
-    if(spots.length === 0) return true
+  static addConstructionSite(roomName, mem, structure) {
+    let spots = Storage.read(roomName + '-' + mem, [])
+    if(spots.length === 0) {
+      return true
+    }
     let room = Game.rooms[roomName]
-    return _.some(spots, s => { return room.createConstructionSite(s.x, s.y, structure) === OK })
+    return _.some(spots, s => {
+      return room.createConstructionSite(s.x, s.y, structure) === OK
+    })
   }
 }
 

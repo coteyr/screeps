@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:12:59
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 02:57:11
+* @Last Modified time: 2017-03-11 05:11:17
 */
 
 'use strict';
@@ -23,6 +23,10 @@ class Finder {
   static findSources(room_name) {
     let room = Game.rooms[room_name]
     return room.find(FIND_SOURCES)
+  }
+  static findMinirals(roomName) {
+    let room = Game.rooms[roomName]
+    return room.find(FIND_MINERALS)
   }
   static findCreepsWithTask(room_name, task){
     return _.filter(Game.creeps, c => {return c.my && c.room.name === room_name && c.taskIs(task)})
@@ -51,15 +55,20 @@ class Finder {
   static findDroppedEnergy(roomName) {
     let room = Game.rooms[roomName]
     let minEnergy = Config.minEnergy[room.controller.level]
-    Log.error(['xxx', minEnergy])
     let containers = _.filter(Finder.findObjects(roomName, FIND_STRUCTURES), s => { return s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > minEnergy})
-    if(containers.length > 0) return containers
-    let drops =  _.filter(Finder.findObjects(roomName, FIND_DROPPED_ENERGY), r => { return r.resourceType === RESOURCE_ENERGY && r.amount >= minEnergy && r.pos.x > room.memory.left && r.pos.x < room.memory.right && r.pos.y > room.memory.top && r.pos.y < room.memory.bottom})
-    if(drops.length > 0) return drops
-    return room.storage
+     //if(containers.length > 0) return containers
+    let drops =  _.filter(Finder.findObjects(roomName, FIND_DROPPED_ENERGY), r => { return r.resourceType === RESOURCE_ENERGY && r.amount >= (minEnergy * 2) && r.pos.x > room.memory.left && r.pos.x < room.memory.right && r.pos.y > room.memory.top && r.pos.y < room.memory.bottom})
+    // if(drops.length > 0) return drops
+    return [room.storage].concat(containers, drops)
   }
   static findExtensions(roomName){
     return Finder.findMyStructures(roomName, STRUCTURE_EXTENSION)
+  }
+  static findLabs(roomName) {
+    return Finder.findMyStructures(roomName, STRUCTURE_LAB)
+  }
+  static findExtractor(roomName) {
+    return Finder.findMyStructures(roomName, STRUCTURE_EXTRACTOR)
   }
   static findConstructionSites(roomName, type = null){
     if(!_.isNull(type)) return _.filter(Finder.findObjects(roomName, FIND_CONSTRUCTION_SITES), c => { return c.my && c.structureType === type})

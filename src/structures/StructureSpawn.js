@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:42:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 11:05:20
+* @Last Modified time: 2017-03-09 23:01:39
 */
 
 'use strict';
@@ -50,8 +50,8 @@ StructureSpawn.prototype.spawnRemoteBuild = function(roomName) {
   return true
 }
 StructureSpawn.prototype.spawnAttack = function(tactic, roomName) {
-  let body = Config.bodies[tactic]
-  Log.error('3')
+  let body = Config.bodies[tactic]['body']
+  Log.warn('44444444444444444')
   return this.startSpawn(body, roomName, 'attack')
 }
 StructureSpawn.prototype.hasRoom = function() {

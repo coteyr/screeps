@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 10:47:51
+* @Last Modified time: 2017-03-10 03:11:17
 */
 
 'use strict';
@@ -19,6 +19,7 @@ Creep.prototype.setTask = function(task) {
   return true
 }
 Creep.prototype.tick = function() {
+  // if(Game.cpu.getUsed() > (Game.cpu.tickLimit * 0.5)) return false
   if(this.spawning) return false
   if(this.taskIs('mine')) {
     _.merge(Creep.prototype, MinerCreep.prototype)
@@ -45,7 +46,6 @@ Creep.prototype.targetIs = function(id) {
   return this.memory.target === id
 }
 Creep.prototype.setTarget = function(target) {
-  Log.info([this.name, 'Set Target', target.name], this.room.name)
   if(_.isNull(target) || _.isUndefined(target)) return false
   if(_.isUndefined(target.id)) return false
   this.memory.target = target.id
