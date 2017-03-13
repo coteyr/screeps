@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-11 05:08:30
+* @Last Modified time: 2017-03-12 04:04:10
 */
 
 'use strict';
@@ -21,7 +21,7 @@ Room.prototype.tick = function() {
       this.spawnCreep()
     }
     this.assignCreeps()
-    if (Game.time % 2 === 0) this.buildOut()
+    if (Game.time % 10 === 0) this.buildOut()
 
   }
   this.tickChildren()
@@ -271,16 +271,25 @@ Room.prototype.attackMoves = function() {
       }
     }
     try {
-    let walls = _.filter(this.lookAtArea(c.pos.y - 1, c.pos.x - 1, c.pos.y + 1, c.pos.x + 1, true), s =>  { return s.type === "structure" && s.structure.structureType === "constructedWall" })//{ Log.info(JSON.stringify(s)) }) //return s.structureType == "constructedWall" }) // s.structureType === STRUCTURE_WALL })
-    let smallest = 999999999
-    let wall = null
-    _.each(walls, w => {
-      if(w.structure.hits < smallest) {
-        smallest = w.structure.hits
-        wall = w.structure
+      if(c.memory.wall) {
+        c.attack(wall)
+      } else {
+
+        let walls = _.filter(this.lookAtArea(c.pos.y - 1, c.pos.x - 1, c.pos.y + 1, c.pos.x + 1, true), s =>  { return s.type === "structure" && s.structure.structureType === "constructedWall" })//{ Log.info(JSON.stringify(s)) }) //return s.structureType == "constructedWall" }) // s.structureType === STRUCTURE_WALL })
+        let smallest = 999999999
+        let wall = null
+
+        _.each(walls, w => {
+          if(w.structure.hits < smallest) {
+            smallest = w.structure.hits
+            wall = w.structure
+          }
+        })
+        if(!_.isNull(wall)) {
+          c.memory.wall = wall.id
+          c.attack(wall)
+        }
       }
-    })
-    if(!_.isNull(wall)) c.attack(wall)
   } catch(error) {
 
   }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 10:05:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 23:03:39
+* @Last Modified time: 2017-03-12 03:50:57
 */
 
 'use strict';
@@ -30,6 +30,7 @@ var Config = {
   bodies: {
     small: {body: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK], size: 5},
     tiny: {body: [MOVE, ATTACK], size: -1},
+    rapid: {body: [ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE], size: -1},
     claim: [CLAIM, CLAIM, MOVE, MOVE],
     default: [WORK, CARRY, MOVE],
     300:  [WORK,                         CARRY, MOVE],
