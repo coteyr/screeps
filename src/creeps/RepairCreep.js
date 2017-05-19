@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 19:38:18
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-27 20:18:21
+* @Last Modified time: 2017-03-27 17:08:00
 */
 
 'use strict';
@@ -20,5 +20,5 @@ RepairCreep.prototype.repairThings = function() {
   if(this.hasTarget() && this.target().hits >= this.target().hitsMax) this.clearTarget()
   if(this.needsTarget()) this.setTask('idle')
   // if(this.isEmpty()) this.clearTarget()
-
 }
+

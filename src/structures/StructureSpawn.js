@@ -2,11 +2,17 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:42:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 23:01:39
+* @Last Modified time: 2017-03-30 21:25:47
 */
 
 'use strict';
 
+StructureSpawn.prototype.tick = function() {
+  if(this.spawning) return true
+  _.each(Finder.findCreepsNearSpawn(this), c => {
+    if(c.ticksToLive < 1450) this.renewCreep(c)
+  })
+}
 StructureSpawn.prototype.canSpawn = function(body) {
   return this.canCreateCreep(body) === OK
 }
@@ -51,7 +57,6 @@ StructureSpawn.prototype.spawnRemoteBuild = function(roomName) {
 }
 StructureSpawn.prototype.spawnAttack = function(tactic, roomName) {
   let body = Config.bodies[tactic]['body']
-  Log.warn('44444444444444444')
   return this.startSpawn(body, roomName, 'attack')
 }
 StructureSpawn.prototype.hasRoom = function() {

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-12 04:04:10
+* @Last Modified time: 2017-03-31 23:49:24
 */
 
 'use strict';
@@ -21,22 +21,42 @@ Room.prototype.tick = function() {
       this.spawnCreep()
     }
     this.assignCreeps()
-    if (Game.time % 10 === 0) this.buildOut()
+    this.buildOut()
 
   }
   this.tickChildren()
   this.attackMoves()
+  Storage.addStat('room-proc')
 }
 Room.prototype.buildOut = function() {
   RoomBuilder.buildPlan(this.name)
-  if(this.needExtensions()) this.addExtension()
-  if(this.needWalls()) this.addWalls()
-  if(this.needRamps()) this.addRamps()
-  if(this.needTowers()) this.addTowers()
-  if(this.needStorage()) this.addStorage()
-  if(this.needExtractor()) this.addExtractor()
-  if(this.needTerminal()) this.addTerminal()
-  if(this.needLab()) this.addLab()
+  //if(this.needWalls()) Log.error('I need Walls')
+  switch(Game.time % 10) {
+    case 1:
+      if(this.needExtensions()) this.addExtension()
+      break
+    case 2:
+      if(this.needWalls()) this.addWalls()
+      break
+    case 3:
+      if(this.needRamps()) this.addRamps()
+      break
+    case 4:
+      if(this.needTowers()) this.addTowers()
+      break
+    case 5:
+      if(this.needStorage()) this.addStorage()
+      break
+    case 6:
+      if(this.needExtractor()) this.addExtractor()
+      break
+    case 7:
+      if(this.needTerminal()) this.addTerminal()
+      break
+    case 8:
+      if(this.needLab()) this.addLab()
+      break
+  }
 }
 Room.prototype.assignTask = function(task) {
   let creep = _.first(Finder.findIdleCreeps(this.name))
@@ -46,14 +66,16 @@ Room.prototype.assignCreeps = function() {
     if(this.needMiners()) this.assignTask('mine')
     if(this.needHaulers()) this.assignTask('haul')
     if(_.isUndefined(this.memory.attack)) {
-      if(this.needUpgraders()) this.assignTask("upgrade")
       if(this.needBuilders()) this.assignTask("build")
+      if(this.needUpgraders()) this.assignTask("upgrade")
+
       if(this.needRepairers()) this.assignTask("repair")
     }
 }
 Room.prototype.tickChildren = function() {
   _.each(Finder.findCreeps(this.name), c => { c.tick() })
   _.each(Finder.findMyTowers(this.name), t => { t.tick() })
+  _.each(Finder.findSpawns(this.name), s => { s.tick() })
   if(this.controller) this.controller.tick()
 }
 Room.prototype.spawnCreep = function() {
@@ -92,26 +114,28 @@ Room.prototype.needRepairers = function() {
 }
 
 Room.prototype.needExtensions = function() {
-  if(Finder.findConstructionSites(this.name, STRUCTURE_EXTENSION).length >= Config.maxConstructionSites) return false
+  let sites = Finder.findConstructionSites(this.name, STRUCTURE_EXTENSION).length
+  if( sites >= Config.maxConstructionSites) return false
   let extensions = Finder.findExtensions(this.name).length
-  if(extensions < CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][this.controller.level]) {
+  if(extensions + sites < CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][this.controller.level]) {
     Log.info('I need Extensions')
     return true
   }
 }
 Room.prototype.needWalls = function() {
-  if(Finder.findConstructionSites(this.name, STRUCTURE_WALL).length >= 1) return false
+  // Should _.chunk the spot check
   if(this.controller && this.controller.level < 3) return false
+  if(Finder.findConstructionSites(this.name, STRUCTURE_WALL).length >= 1) return false
+  let spots = Storage.read(this.name + '-wall-spots', []);
+  if (spots.length === 0) return true;
   let walls = Finder.findWalls(this.name)
-  let spots = []
-  _.each(Storage.read(this.name + '-wall-spots', []), s => {
-    if(this.lookForAt(LOOK_STRUCTURES, s.x, s.y).length == 0) {
-      if(_.filter(this.lookForAt(LOOK_TERRAIN, s.x, s.y), t => { return t === 'wall' }).length === 0) {
-        spots.push({x: s.x, y: s.y})
-      }
-    }
+  if(Game.time % 12 !== 0 && spots.length === walls.length) return false
+  let needed = []
+  _.each(spots, s => {
+    //if(this.lookForAt(LOOK_STRUCTURES, s.x, s.y).length == 0) needed.push({x: s.x, y: s.y})
+    if(_.filter(walls, w => { return w.pos.x === s.x && w.pos.y == s.y }).length === 0) needed.push({x: s.x, y: s.y})
   })
-  return Storage.read(this.name + '-wall-spots', []).length === 0 || spots.length > 0
+  return needed.length > 0
 }
 Room.prototype.needRamps = function() {
 
@@ -195,6 +219,7 @@ Room.prototype.addLab = function() {
   }
 }
 Room.prototype.addWalls = function() {
+  Log.warn('Trying to build a wall', this.name)
   return RoomBuilder.addConstructionSite(this.name, 'wall-spots', STRUCTURE_WALL)
 }
 Room.prototype.addRamps = function() {
@@ -239,63 +264,71 @@ Room.prototype.spawnRemoteBuildCreep = function() {
     spawn.spawnRemoteBuild(this.memory.build)
   }
 }
-Room.prototype.attackMoves = function() {
-
-  let flag = Finder.findFlag(this.name, 'Rally')
-  let creeps = Finder.findAttackCreeps(this.name)
-  let homeCreeps = _.filter(creeps, c => { return c.memory.home === this.name && c.room.name === this.name})
-  let travelCreeps = _.filter(creeps, c => { return c.memory.home !== this.name && this.name !== c.memory.targetRoom && c.room.name === this.name})
-  let attackingCreeps = _.filter(creeps, c => { return this.name === c.room.name && this.name === c.memory.targetRoom})
-
+Room.prototype.attackingCreepMoves = function(attackingCreeps) {
+  if(!CpuConservation.haveCpu()) return false
+  _.each(attackingCreeps, c => {
+    if(Game.rooms[c.memory.home].memory.tactic === 'deny') {
+      DenyTactic.doAttack(c, this)
+    } else {
+      NormalTactic.doAttack(c, this)
+    }
+  })
+}
+Room.prototype.homeCreepMoves = function(homeCreeps) {
+  if(!CpuConservation.haveCpu()) return false
+  let flag = Finder.findFlagByColor(this.name, COLOR_RED, COLOR_RED)
+  let opts = {
+    reusePath: 5,
+    visualizePathStyle: {opacity: 0.75, stroke: Config.colors.red},
+    ignoreCreeps: true,
+    reusePath: 20
+  }
   _.each(homeCreeps, c => {
     if(homeCreeps.length < Config.bodies[this.memory.tactic]['size'] && this.memory.attack) {
       c.moveTo(flag.pos)
     } else {
+
       if(Config.bodies[this.memory.tactic]['size'] > 0) delete this.memory.attack
-      let pos = new RoomPosition(25, 25, c.memory.targetRoom)
-      c.moveTo(pos)
+      let route = Game.map.findRoute(c.room, c.memory.targetRoom, {routeCallback(roomName, fromRoomName) {
+          /*if(roomName == 'W7S87') {  // avoid this room
+            return Infinity;
+          }*/
+          return 1;
+      }})
+      let exit = c.pos.findClosestByRange(route[0].exit);
+      c.moveTo(exit, opts);
     }
   })
-  _.each(travelCreeps, c => {
-      let pos = new RoomPosition(25, 25, c.memory.targetRoom)
-      c.moveTo(pos)
-  })
-
-
-  _.each(attackingCreeps, c => {
-    if(c.needsTarget()) c.setTarget(Targeting.findAttackTarget(c.pos))
-    if(c.hasTarget()) {
-      if(c.attack(c.target()) === ERR_NOT_IN_RANGE) {
-        Visualizer.target(c.target())
-        c.moveTo(c.target(), {ignoreDestructibleStructures: true})
-      }
-    }
-    try {
-      if(c.memory.wall) {
-        c.attack(wall)
-      } else {
-
-        let walls = _.filter(this.lookAtArea(c.pos.y - 1, c.pos.x - 1, c.pos.y + 1, c.pos.x + 1, true), s =>  { return s.type === "structure" && s.structure.structureType === "constructedWall" })//{ Log.info(JSON.stringify(s)) }) //return s.structureType == "constructedWall" }) // s.structureType === STRUCTURE_WALL })
-        let smallest = 999999999
-        let wall = null
-
-        _.each(walls, w => {
-          if(w.structure.hits < smallest) {
-            smallest = w.structure.hits
-            wall = w.structure
-          }
-        })
-        if(!_.isNull(wall)) {
-          c.memory.wall = wall.id
-          c.attack(wall)
-        }
-      }
-  } catch(error) {
-
+}
+Room.prototype.travelCreepMoves = function(travelCreeps) {
+  if(!CpuConservation.haveCpu()) return false
+  let says = ['Lead', 'us', 'for', 'the', 'swarm']
+  let opts = {reusePath: 5,
+    visualizePathStyle: {opacity: 0.75, stroke: Config.colors.red},
+    ignoreCreeps: true,
+    reusePath: 20
   }
+  _.each(travelCreeps, c => {
+
+    c.say(says[Game.time % 5], true)
+      let route = Game.map.findRoute(c.room, c.memory.targetRoom, {routeCallback(roomName, fromRoomName) {
+          /*if(roomName == 'W7S87') {  // avoid this room
+            return Infinity;
+          }*/
+          return 1;
+      }})
+      let exit = c.pos.findClosestByRange(route[0].exit);
+      c.moveTo(exit, opts);
   })
-
-
-
+}
+Room.prototype.attackMoves = function() {
+  if(!CpuConservation.haveCpu()) return false
+  let creeps = Finder.findAttackCreeps(this.name)
+  let homeCreeps = _.filter(creeps, c => { return c.memory.home === this.name && c.room.name === this.name})
+  let travelCreeps = _.filter(creeps, c => { return this.name == c.room.name && c.memory.home !== this.name && c.memory.targetRoom !== this.name})
+  let attackingCreeps = _.filter(creeps, c => { return this.name === c.room.name && this.name === c.memory.targetRoom})
+  this.attackingCreepMoves(attackingCreeps)
+  this.travelCreepMoves(travelCreeps)
+  this.homeCreepMoves(homeCreeps)
 
 }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:37:15
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-21 12:25:25
+* @Last Modified time: 2017-03-27 00:15:59
 */
 
 'use strict';
@@ -28,7 +28,11 @@ MinerCreep.prototype.harvestTarget = function() {
 MinerCreep.prototype.orignalHarvest = Creep.prototype.harvest
 
 MinerCreep.prototype.harvest = function(target) {
-  let result = this.orignalHarvest(target)
+  let result = this.work(this.orignalHarvest, target, Config.defaultRange)
+  if(result) {
+
+  }
+  /* let result = this.orignalHarvest(target)
   if(result === OK) {
     if(_.filter(Finder.findConstructionSites(this.room.name), c => { c.structureType === STRUCTURE_CONTAINER }).length > 0) return true
     let worked = false
@@ -36,6 +40,6 @@ MinerCreep.prototype.harvest = function(target) {
       if(l.structueType === STRUCTURE_CONTAINER) worked = true
     })
     if(!worked) this.room.createConstructionSite(this.pos, STRUCTURE_CONTAINER)
-  }
+  } */
   return result
 }

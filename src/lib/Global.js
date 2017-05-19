@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-19 13:50:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-08 21:53:05
+* @Last Modified time: 2017-04-03 23:23:35
 */
 
 'use strict';
@@ -41,7 +41,35 @@ global.clearBuiltWalls = function(roomName) {
   RoomBuilder.clearBuiltWalls(roomName)
   RoomBuilder.clearBuiltRamps(roomName)
 }
+global.removeWall = function(roomName, x, y) {
+  RoomBuilder.removeWallSpot(roomName, x, y)
+  global.showWalls(roomName)
+  global.showRamps(roomName)
+}
 global.planExtensions = function(roomName) {
   RoomBuilder.buildOutExtensions(roomName)
+}
+global.resetTarget = function(roomName) {
+  _.each(Game.creeps, c => {
+    if(c.room.name === roomName) {
+      c.clearTarget()
+      delete c.memory.wall
+    }
+  })
+}
+global.reAttack = function(source, destination) {
+  _.each(Game.creeps, c => {
+    if(c.memory.task === 'attack' && c.memory.targetRoom === source) {
+      c.memory.targetRoom = destination
+    }
+  })
+}
+global.clearAttack =  function() {
+  _.each(Game.rooms, r => { delete r.memory.attack })
+}
+global.displayCpuAccounting = function() {
+  _.each(Object.keys(STATS), key => {
+    Log.print([key, ':', STATS[key]])
+  })
 }
 

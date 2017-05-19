@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-18 13:17:52
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-06 20:57:15
+* @Last Modified time: 2017-03-28 06:08:40
 */
 
 'use strict';
@@ -13,14 +13,16 @@ class Scalar {
     let smallValue = null
     let largeValue = null
     _.each(collection, i => {
-      let value = i.apply(method)
-      if(value < smallest) {
-        smallest = value
-        smallValue = i
-      }
-      if(value > largest) {
-        largest = value
-        largeValue = i
+      if(!_.isUndefined(i)) {
+        let value = eval('i.' + method) //i.apply(method)
+        if(value < smallest) {
+          smallest = value
+          smallValue = i
+        }
+        if(value > largest) {
+          largest = value
+          largeValue = i
+        }
       }
     })
     if(biggest) return largeValue

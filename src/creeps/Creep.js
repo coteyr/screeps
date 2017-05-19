@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-10 03:11:17
+* @Last Modified time: 2017-03-31 05:27:01
 */
 
 'use strict';
@@ -41,6 +41,7 @@ Creep.prototype.tick = function() {
     _.merge(Creep.prototype, NullCreep.prototype)
   }
   this.superTick()
+  Storage.addStat('creep-proc')
 }
 Creep.prototype.targetIs = function(id) {
   return this.memory.target === id
@@ -83,16 +84,6 @@ Creep.prototype.validateTarget = function(validTargets) {
   return valid
 }
 
-Creep.prototype.originalMove = Creep.prototype.move
-Creep.prototype.move = function(direction) {
-  let things = this.pos.look()
-  _.each(things, t => {
-    if(t.type === 'structure' && t.structure.structureType === STRUCTURE_ROAD) this.repair(t.structure)
-    if(this.pos.x > this.room.memory.right || this.pos.x < this.room.memory.left || this.pos.y > this.room.memory.bottom || this.pos.y < this.room.memory.top) return false
-    if(Finder.findConstructionSites(this.room.name).length < Config.maxConstructionSites && (t.type === 'terrain' && t.terrain === 'plain' || t.type === 'terrain' && t.terrain === 'swamp')) this.room.createConstructionSite(this.pos, STRUCTURE_ROAD)
-  })
-  this.originalMove(direction)
-}
 
 Creep.prototype.goTo = function(pos) {
   let opts = {costCallback: function(roomName, costMatrix) {
@@ -109,18 +100,54 @@ Creep.prototype.goTo = function(pos) {
     //})
     },
   reusePath: 5,
-  ignoreCreeps: (Game.time % 5 === 0),
-  visualizePathStyle: {opacity: 0.75, stroke: Config.colors.blue}
+  ignoreCreeps: Game.time % 10 === 0,  //false,
+  visualizePathStyle: {opacity: 0.75, stroke: Config.colors.blue},
+  maxRooms: 1
   }
   // Log.info(JSON.stringify(arguments))
   this.room.visual.circle(pos, { fill: Config.colors.blue,  opacity: 1.0, radius: 0.25} )
-  this.moveTo(pos, opts)
+  return this.moveTo(pos, opts)
 }
 
 Creep.prototype.orignalBuild = Creep.prototype.build
 Creep.prototype.build = function(target) {
-  let result = this.orignalBuild(target)
-  if(result === ERR_INVALID_TARGET) this.clearTarget()
-  if(result === ERR_NOT_IN_RANGE) this.goTo(target)
-  return result
+  this.work(this.orignalBuild, target, Config.defaultRange)
+}
+Creep.prototype.orignalRepair = Creep.prototype.repair
+Creep.prototype.repair = function(target) {
+  this.work(this.orignalRepair, target, Config.defaultRange)
+}
+Creep.prototype.work = function(method, target, range, options = []) {
+  if(this.pos.inRangeTo(target.pos.x, target.pos.y, range)) {
+    let start = Game.cpu.getUsed();
+    let value = method.apply(this, _.flatten([target, options]))
+    Storage.addStat('account-cpu-work', Game.cpu.getUsed() - start)
+    return value
+  } else {
+    return this.goTo(target)
+  }
+}
+Creep.prototype.originalMoveTo = Creep.prototype.moveTo
+Creep.prototype.moveTo = function(firstArg, secondArg, opts) {
+  if(this.fatigue > 0) return ERR_TIRED
+  return this.originalMoveTo(firstArg, secondArg, opts)
+}
+
+Creep.prototype.originalMove = Creep.prototype.move
+Creep.prototype.move = function(direction) {
+  let things = this.pos.look()
+  _.each(things, t => {
+    if(t.type === 'structure' && t.structure.structureType === STRUCTURE_ROAD) this.repair(t.structure)
+    if(this.pos.x > this.room.memory.right || this.pos.x < this.room.memory.left || this.pos.y > this.room.memory.bottom || this.pos.y < this.room.memory.top) return false
+    if(Finder.findConstructionSites(this.room.name).length < Config.maxConstructionSites && (t.type === 'terrain' && t.terrain === 'plain' || t.type === 'terrain' && t.terrain === 'swamp')) this.room.createConstructionSite(this.pos, STRUCTURE_ROAD)
+  })
+  let start = Game.cpu.getUsed();
+  this.originalMove(direction)
+  Storage.addStat('account-cpu-move', Game.cpu.getUsed() - start)
+}
+Creep.prototype.orignalAttack = Creep.prototype.attack
+Creep.prototype.attack = function(target) {
+  let start = Game.cpu.getUsed();
+  this.orignalAttack(target)
+  Storage.addStat('account-cpu-attack', Game.cpu.getUsed() - start)
 }

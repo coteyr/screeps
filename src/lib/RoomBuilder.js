@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-10 22:17:29
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 11:42:17
+* @Last Modified time: 2017-04-01 23:41:07
 */
 
 'use strict';
@@ -148,30 +148,16 @@ class RoomBuilder {
     let room = Game.rooms[roomName]
     let spots = Storage.read(room.name + '-wall-spots', [])
     let prune = []
-    let exitTop = room.controller.pos.findClosestByRange(FIND_EXIT_TOP)
-    //let exitBottom = room.controller.pos.findClosestByRange(FIND_EXIT_BOTTOM)
-    //let exitRight = room.controller.pos.findClosestByRange(FIND_EXIT_RIGHT)
-    //let exitLeft = room.controller.pos.findClosestByRange(FIND_EXIT_LEFT)
     //Log.error(exitTop)
+    spots = _.uniq(spots, s => {
+      return "x" + s.x + "y" + s.y
+    })
 
     _.each(spots, s => {
-        let pos = new RoomPosition(s.x, s.y, roomName)
-        let path = room.findPath(exitTop, pos, {costCallback: function(roomNam, costMatrix) {
-          _.each(Storage.read(room.name + '-wall-spots', []), w =>{
-            costMatrix.set(w.x, w.y, 255)
-          })
-        }})
-        //check if path crosses wall
-        let crossed = false
-        _.each(path, p => {
-          _.each(Storage.read(room.name + '-wall-spots', []), w => {
-            if(p.x == w.x && p.y == w.y) crossed = true
-          })
-        })
-        if(!crossed) {
-          Log.error(['Cant reach', s.x, s.y, 'without crossing walls'])
-          room.visual.rect(s.x - 0.5, s.y - 0.5, 1, 1, { fill: Config.colors.yellow })
-          prune.push({ 'x': s.x, 'y': s.y })
+         // is there a natural wall here
+        if(_.filter(room.lookForAt(LOOK_TERRAIN, s.x, s.y), t => { return t === 'wall' }).length > 0) {
+          Log.error(['Natural Wall at', s.x, s.y])
+          prune.push({ 'x': s.x, 'y': s.y})
         }
     })
 
@@ -182,6 +168,15 @@ class RoomBuilder {
     Storage.write(room.name + '-wall-spots', spots)
     return true
   }
+  static removeWallSpot(roomName, x, y) {
+    let room = Game.rooms[roomName]
+    let spots = Storage.read(room.name + '-wall-spots', [])
+    _.remove(spots, s=> { return s.x === x && s.y === y })
+    Storage.write(room.name + '-wall-spots', spots)
+
+
+  }
+
 
   static addRamps(roomName) {
     let room = Game.rooms[roomName]
@@ -224,14 +219,22 @@ class RoomBuilder {
     })
   }
   static addConstructionSite(roomName, mem, structure) {
+    Log.error(['Adding Construction to', roomName])
     let spots = Storage.read(roomName + '-' + mem, [])
     if(spots.length === 0) {
       return true
     }
     let room = Game.rooms[roomName]
-    return _.some(spots, s => {
-      return room.createConstructionSite(s.x, s.y, structure) === OK
+    _.some(spots, s => {
+      if(room.lookForAt(LOOK_STRUCTURES, s.x, s.y).length == 0) {
+        Log.error(['Trying at', s.x, s.y], roomName)
+        return room.createConstructionSite(s.x, s.y, structure) ===  OK
+
+      } else {
+        return false
+      }
     })
+    return true
   }
 }
 

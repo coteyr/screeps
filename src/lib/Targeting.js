@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-11 07:26:32
+* @Last Modified time: 2017-03-28 05:59:46
 */
 
 'use strict';
@@ -22,11 +22,13 @@ class Targeting {
     return result
   }
   static findExclusiveEnergy(roomName) {
-    let energies = Finder.findDroppedEnergy(roomName)
-    let biggest = 0
+    let energies = Finder.findEnergy(roomName)
+    Log.warn(energies.length)
+    let result = Scalar.largest(energies, 'energyAmount()')
+    /*let biggest = 0
     let result = null
     let most = 99999
-     _.each(energies, e =>{
+     (_.each(energies, e =>{
       if(e && e.id && Finder.findCreepsWithTarget(e.id).length <= 1) {
         most = Finder.findCreepsWithTarget(e.id).length
         if(e.store && e.store[RESOURCE_ENERGY] > biggest) {
@@ -38,10 +40,10 @@ class Targeting {
           result = e
         }
         if(e.isFull && e.isFull()) {
-          return e
+          result = e
         }
       }
-    })
+    })*/
     return result
   }
   static findNearestTarget(pos) {
@@ -59,6 +61,7 @@ class Targeting {
     if(towers.length > 0) return pos.findClosestByRange(towers)
     let spawns = _.filter(Finder.findObjects(pos.roomName, FIND_STRUCTURES), s => { return s.structureType === STRUCTURE_SPAWN && s.my === false })
     if(spawns.length > 0) return pos.findClosestByRange(spawns)
+    return pos.findClosestByRange(_.filter(Finder.findObjects(pos.roomName, FIND_HOSTILE_STRUCTURES), s => { return s.structureType != STRUCTURE_CONTROLLER }))
 
   }
   static findRepairTarget(pos) {
