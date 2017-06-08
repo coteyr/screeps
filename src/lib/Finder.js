@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:12:59
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-04-03 23:19:14
+* @Last Modified time: 2017-05-23 14:47:09
 */
 
 'use strict';
@@ -109,10 +109,10 @@ class Finder {
     let towers = _.filter(Finder.findMyTowers(roomName), t => { return t.hasRoom() })
     let criticalTower = null
     _.each(towers, t => { if(t.critical()) criticalTower = t })
-    if(criticalTower) return [criticalTower]
+    //if(criticalTower) return [criticalTower]
     if(spawns.length > 0) return spawns
     let extensions = _.filter(Finder.findExtensions(roomName), e => { return e.hasRoom() })
-    if(towers.length > 0  && Game.time % 5 == 0) return towers
+    //if(towers.length > 0  && Game.time % 5 == 0) return towers
     if(extensions.length > 0) return extensions
     if(towers.length > 0) return towers
     return [Game.rooms[roomName].storage]

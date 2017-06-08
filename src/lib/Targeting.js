@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-28 05:59:46
+* @Last Modified time: 2017-05-23 15:08:24
 */
 
 'use strict';
@@ -52,6 +52,10 @@ class Targeting {
   static findClosestEnergyStoreInNeed(pos) {
     let storages = Finder.findEnergyStoreInNeed(pos.roomName)
     return pos.findClosestByRange(storages)
+  }
+  static findCloseEmptyExtension(pos) {
+    let extensions = _.filter(pos.findInRange(FIND_STRUCTURES, 1), s => {return s.structureType == STRUCTURE_EXTENSION})
+    if(extensions.length > 0) return extensions[0]
   }
   static findAttackTarget(pos) {
     let room = Game.rooms[pos.roomName]

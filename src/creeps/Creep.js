@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-31 05:27:01
+* @Last Modified time: 2017-05-23 15:06:41
 */
 
 'use strict';
@@ -130,6 +130,10 @@ Creep.prototype.work = function(method, target, range, options = []) {
 Creep.prototype.originalMoveTo = Creep.prototype.moveTo
 Creep.prototype.moveTo = function(firstArg, secondArg, opts) {
   if(this.fatigue > 0) return ERR_TIRED
+  let empty = Targeting.findCloseEmptyExtension(this.pos)
+  if(empty) {
+    this.transfer(empty, RESOURCE_ENERGY)
+  }
   return this.originalMoveTo(firstArg, secondArg, opts)
 }
 

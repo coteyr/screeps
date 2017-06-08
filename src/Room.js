@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-31 23:49:24
+* @Last Modified time: 2017-05-24 01:03:52
 */
 
 'use strict';
@@ -65,12 +65,12 @@ Room.prototype.assignTask = function(task) {
 Room.prototype.assignCreeps = function() {
     if(this.needMiners()) this.assignTask('mine')
     if(this.needHaulers()) this.assignTask('haul')
-    if(_.isUndefined(this.memory.attack)) {
-      if(this.needBuilders()) this.assignTask("build")
-      if(this.needUpgraders()) this.assignTask("upgrade")
+    //if(_.isUndefined(this.memory.attack)) {
+    if(this.needBuilders()) this.assignTask("build")
+    if(this.needUpgraders()) this.assignTask("upgrade")
 
-      if(this.needRepairers()) this.assignTask("repair")
-    }
+    if(this.needRepairers()) this.assignTask("repair")
+    //}
 }
 Room.prototype.tickChildren = function() {
   _.each(Finder.findCreeps(this.name), c => { c.tick() })
@@ -79,7 +79,7 @@ Room.prototype.tickChildren = function() {
   if(this.controller) this.controller.tick()
 }
 Room.prototype.spawnCreep = function() {
-  Log.info('Spawing a Creep')
+  Log.info('Spawning a Creep')
   let spawn = Finder.findIdleSpawn(this.name)
   if(spawn) {
     spawn.spawn()
@@ -92,7 +92,8 @@ Room.prototype.needCreep = function(task, part, partCount, max = 2) {
   let creeps = Finder.findCreepsWithTask(this.name, task)
   if(creeps.length >= max) return false
   let works = 0
-  _.each(creeps, c => { works += c.partCount(WORK) })
+  _.each(creeps, c => { works += c.partCount(part) })
+  Log.info(["Need", task, "is", works < partCount])
   return works < partCount
 }
 Room.prototype.needMiners = function() {
@@ -101,13 +102,13 @@ Room.prototype.needMiners = function() {
 }
 Room.prototype.needHaulers = function() {
   let needCarries = (this.energyCapacityAvailable / 2) / 50
-  return this.needCreep('haul', CARRY, needCarries, 3)
+  return this.needCreep('haul', CARRY, needCarries, 4)
 }
 Room.prototype.needBuilders = function() {
   return this.needCreep('build', WORK, Finder.findConstructionSites(this.name).length, 3)
 }
 Room.prototype.needUpgraders = function() {
-  return this.needCreep('upgrade', WORK, 20, 4)
+  return this.needCreep('upgrade', WORK, 20, 2)
 }
 Room.prototype.needRepairers = function() {
   return this.needCreep('repair', WORK, 10)
