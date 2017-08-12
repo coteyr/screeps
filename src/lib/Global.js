@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-19 13:50:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-04-03 23:23:35
+* @Last Modified time: 2017-06-28 22:39:13
 */
 
 'use strict';
@@ -71,5 +71,15 @@ global.displayCpuAccounting = function() {
   _.each(Object.keys(STATS), key => {
     Log.print([key, ':', STATS[key]])
   })
+}
+global.toggleHud = function() {
+  let config = new Configurator()
+  let value = config.getValue('showHud', Config.showHud)
+  if(value === true){
+    value = false
+  } else {
+    value = true
+  }
+  Log.feedback(['Set the HUD to', config.setValue('showHud', value)])
 }
 

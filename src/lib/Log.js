@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 09:51:44
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-04 01:45:28
+* @Last Modified time: 2017-06-28 22:39:58
 */
 
 'use strict';
@@ -22,6 +22,9 @@ class Log {
   }
   static print(message, name = null) {
     if (Config.logLevel >= 0) Log.output(Config.colors.white, message, name)
+  }
+  static feedback(message, name = null) {
+    Log.output(Config.colors.blue, message, name)
   }
   static tick(){
     console.log(Formatter.build([Formatter.color(Config.colors.purple, "Tick:"),  Formatter.color(Config.colors.green, Game.time)]))

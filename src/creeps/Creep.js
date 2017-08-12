@@ -2,11 +2,11 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-05-23 15:06:41
+* @Last Modified time: 2017-07-03 16:00:05
 */
 
 'use strict';
-
+Creep.prototype.type = 'creep'
 Creep.prototype.partCount = function(part) {
   return _.filter(this.body, {type: part}).length
 }
@@ -18,48 +18,26 @@ Creep.prototype.setTask = function(task) {
   Log.debug(task)
   return true
 }
-Creep.prototype.tick = function() {
-  // if(Game.cpu.getUsed() > (Game.cpu.tickLimit * 0.5)) return false
-  if(this.spawning) return false
-  if(this.taskIs('mine')) {
-    _.merge(Creep.prototype, MinerCreep.prototype)
-  } else if(this.taskIs('upgrade')) {
-    _.merge(Creep.prototype, UpgraderCreep.prototype)
-  } else if(this.taskIs('build')) {
-    _.merge(Creep.prototype, BuilderCreep.prototype)
-  } else if(this.taskIs('haul')) {
-    _.merge(Creep.prototype, HaulingCreep.prototype)
-  } else if(this.taskIs('repair')) {
-    _.merge(Creep.prototype, RepairCreep.prototype)
-  } else if(this.taskIs('claim')) {
-    _.merge(Creep.prototype, ClaimCreep.prototype)
-  } else if(this.taskIs('remote_build')) {
-    _.merge(Creep.prototype, RemoteBuildCreep.prototype)
-  } else if(this.taskIs('attack')) {
-    return true
-  } else {
-    _.merge(Creep.prototype, NullCreep.prototype)
-  }
-  this.superTick()
-  Storage.addStat('creep-proc')
+Creep.prototype.tick = function(kernel) {
+  kernel.register(this, 'unknown')
 }
-Creep.prototype.targetIs = function(id) {
-  return this.memory.target === id
+Creep.prototype.targetIs = function(id, key = 'target') {
+  return this.memory["target-" + key] === id
 }
-Creep.prototype.setTarget = function(target) {
+Creep.prototype.setTarget = function(target, key = 'target') {
   if(_.isNull(target) || _.isUndefined(target)) return false
   if(_.isUndefined(target.id)) return false
-  this.memory.target = target.id
+  this.memory["target-" + key] = target.id
   return true
 }
-Creep.prototype.hasTarget = function() {
-  return !_.isUndefined(this.memory.target) && !_.isNull(this.memory.target) && !_.isNull(Game.getObjectById(this.memory.target)) && Game.getObjectById(this.memory.target).room.name === this.room.name
+Creep.prototype.hasTarget = function(key = 'target') {
+  return !_.isUndefined(this.memory["target-" + key]) && !_.isNull(this.memory["target-" + key]) && !_.isNull(Game.getObjectById(this.memory["target-" + key])) && Game.getObjectById(this.memory["target-" + key]).room.name === this.room.name
 }
-Creep.prototype.needsTarget = function() {
-  return !this.hasTarget()
+Creep.prototype.needsTarget = function( key = 'target') {
+  return !this.hasTarget(key)
 }
-Creep.prototype.target = function() {
-  return Game.getObjectById(this.memory.target)
+Creep.prototype.target = function(key = 'target') {
+  return Game.getObjectById(this.memory["target-" + key])
 }
 Creep.prototype.isEmpty = function() {
   return _.sum(this.carry) === 0
@@ -70,17 +48,17 @@ Creep.prototype.isFull = function() {
 Creep.prototype.hasSome = function() {
   return !this.isEmpty()
 }
-Creep.prototype.clearTarget = function() {
-  delete this.memory.target
+Creep.prototype.clearTarget = function(key = 'target') {
+  delete this.memory["target-" + key]
   return true
 }
-Creep.prototype.validateTarget = function(validTargets) {
+Creep.prototype.validateTarget = function(validTargets, key = 'target') {
   let valid = false
   _.each(validTargets, t => {
     if(t.structureType && t.structureType === t) valid = true
     if(t.resourceType && t.resourceType === t) valid = true
   })
-  if(!valid) this.clearTarget()
+  if(!valid) this.clearTarget(key)
   return valid
 }
 
@@ -109,49 +87,25 @@ Creep.prototype.goTo = function(pos) {
   return this.moveTo(pos, opts)
 }
 
-Creep.prototype.orignalBuild = Creep.prototype.build
-Creep.prototype.build = function(target) {
-  this.work(this.orignalBuild, target, Config.defaultRange)
-}
+
 Creep.prototype.orignalRepair = Creep.prototype.repair
 Creep.prototype.repair = function(target) {
   this.work(this.orignalRepair, target, Config.defaultRange)
 }
-Creep.prototype.work = function(method, target, range, options = []) {
-  if(this.pos.inRangeTo(target.pos.x, target.pos.y, range)) {
-    let start = Game.cpu.getUsed();
-    let value = method.apply(this, _.flatten([target, options]))
-    Storage.addStat('account-cpu-work', Game.cpu.getUsed() - start)
-    return value
-  } else {
-    return this.goTo(target)
-  }
-}
-Creep.prototype.originalMoveTo = Creep.prototype.moveTo
-Creep.prototype.moveTo = function(firstArg, secondArg, opts) {
-  if(this.fatigue > 0) return ERR_TIRED
-  let empty = Targeting.findCloseEmptyExtension(this.pos)
-  if(empty) {
-    this.transfer(empty, RESOURCE_ENERGY)
-  }
-  return this.originalMoveTo(firstArg, secondArg, opts)
-}
 
-Creep.prototype.originalMove = Creep.prototype.move
-Creep.prototype.move = function(direction) {
-  let things = this.pos.look()
-  _.each(things, t => {
-    if(t.type === 'structure' && t.structure.structureType === STRUCTURE_ROAD) this.repair(t.structure)
-    if(this.pos.x > this.room.memory.right || this.pos.x < this.room.memory.left || this.pos.y > this.room.memory.bottom || this.pos.y < this.room.memory.top) return false
-    if(Finder.findConstructionSites(this.room.name).length < Config.maxConstructionSites && (t.type === 'terrain' && t.terrain === 'plain' || t.type === 'terrain' && t.terrain === 'swamp')) this.room.createConstructionSite(this.pos, STRUCTURE_ROAD)
-  })
-  let start = Game.cpu.getUsed();
-  this.originalMove(direction)
-  Storage.addStat('account-cpu-move', Game.cpu.getUsed() - start)
-}
 Creep.prototype.orignalAttack = Creep.prototype.attack
 Creep.prototype.attack = function(target) {
   let start = Game.cpu.getUsed();
   this.orignalAttack(target)
   Storage.addStat('account-cpu-attack', Game.cpu.getUsed() - start)
+}
+Creep.prototype.needEnergy = function() {
+  if(this.isEmpty()) {
+    this.memory.status = 'fill'
+  }
+  if(this.isFull()) {
+    this.memory.status = 'empty'
+    this.clearTarget()
+  }
+  return this.memory.status === 'fill'
 }

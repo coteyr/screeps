@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:12:59
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-05-23 14:47:09
+* @Last Modified time: 2017-08-08 14:58:32
 */
 
 'use strict';
@@ -32,8 +32,11 @@ class Finder {
     let room = Game.rooms[roomName]
     return room.find(FIND_MINERALS)
   }
+  static findCreepsInArea(roomName, top, left, bottom, right) {
+    return _.filter(Game.creeps, c => { return c.room.name === roomName  && c.pos.y >= top && c.pos.y <= bottom && c.pos.x >= left && c.pos.x <= right} )
+  }
   static findCreepsWithTask(room_name, task){
-    return _.filter(Game.creeps, c => {return c.my && c.room.name === room_name && c.taskIs(task)})
+    return _.filter(Game.creeps, c => {return c.my && c.memory.home === room_name && c.taskIs(task)})
   }
   static findCreepsWithTarget(id) {
     return _.filter(Game.creeps, c => {return c.my && c.targetIs(id)})
@@ -64,7 +67,7 @@ class Finder {
     let minEnergy = Config.minEnergy[room.controller.level]
     let containers = _.filter(Finder.findObjects(roomName, FIND_STRUCTURES), s => { return s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > minEnergy})
      //if(containers.length > 0) return containers
-    let drops =  _.filter(Finder.findObjects(roomName, FIND_DROPPED_ENERGY), r => { return r.resourceType === RESOURCE_ENERGY && r.amount >= (minEnergy * 2) && r.pos.x > room.memory.left && r.pos.x < room.memory.right && r.pos.y > room.memory.top && r.pos.y < room.memory.bottom})
+    let drops =  _.filter(Finder.findObjects(roomName, FIND_DROPPED_RESOURCES), r => { return r.resourceType === RESOURCE_ENERGY && r.amount >= (minEnergy * 2) && r.pos.x > room.memory.left && r.pos.x < room.memory.right && r.pos.y > room.memory.top && r.pos.y < room.memory.bottom})
     // if(drops.length > 0) return drops
     if((room.storage && !room.storage.critical) || room.memory.attack) return [room.storage].concat(containers, drops)
     return containers.concat(drops)
@@ -75,7 +78,7 @@ class Finder {
     let containers = _.filter(Finder.findObjects(roomName, FIND_STRUCTURES), s => { return s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > minEnergy})
     let storage = room.storage
     if(storage && storage.critical()) storage = undefined
-    let drops = _.filter(Finder.findObjects(roomName, FIND_DROPPED_ENERGY), r => { return r.resourceType === RESOURCE_ENERGY && r.amount >= (minEnergy * 2) && Scalar.inBounds(r.pos, roomName)})
+    let drops = _.filter(Finder.findObjects(roomName, FIND_DROPPED_RESOURCES), r => { return r.resourceType === RESOURCE_ENERGY && r.amount >= (minEnergy * 2) && Scalar.inBounds(r.pos, roomName)})
     return [].concat(containers, storage, drops)
   }
   static findExtensions(roomName){
@@ -109,7 +112,7 @@ class Finder {
     let towers = _.filter(Finder.findMyTowers(roomName), t => { return t.hasRoom() })
     let criticalTower = null
     _.each(towers, t => { if(t.critical()) criticalTower = t })
-    //if(criticalTower) return [criticalTower]
+    if(criticalTower) return [criticalTower]
     if(spawns.length > 0) return spawns
     let extensions = _.filter(Finder.findExtensions(roomName), e => { return e.hasRoom() })
     //if(towers.length > 0  && Game.time % 5 == 0) return towers

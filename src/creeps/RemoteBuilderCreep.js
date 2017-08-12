@@ -2,13 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:37:33
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-09 08:58:28
+* @Last Modified time: 2017-08-08 10:08:54
 */
 
 'use strict';
 
-let RemoteBuildCreep = function() {}
-RemoteBuildCreep.prototype.superTick = function() {
+let RemoteBuilderCreep = function() {}
+/*RemoteBuilderCreep.prototype.superTick = function() {
   if(this.room.name === this.memory.home && this.isEmpty()) {
     if(this.withdraw(this.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
      this.moveTo(this.room.storage);
@@ -39,13 +39,36 @@ RemoteBuildCreep.prototype.superTick = function() {
     this.setTask('idle')
     delete Game.rooms[this.memory.home].memory.build
   }
+}*/
+RemoteBuilderCreep.prototype.remoteBuilder = function() {
+  if(this.room.name === this.memory.targetRoom && this.pos.x > 1 && this.pos.y > 1) {
+    // build stuff
+    if(this.isEmpty()) {
+      this.memory.status = 'fill'
+    }
+    if(this.isFull()) {
+      this.memory.status = 'empty'
+      this.clearTarget()
+    }
+    if(this.memory.status === 'fill') {
+      if(this.hasTarget()) {
+        this.harvest(this.target())
+      } else {
+        this.setTarget(Targeting.findOpenSourceSpot(this.room.name))
+      }
+    } else {
+      this.buildThings()
+    }
+  } else {
+    let pos = new RoomPosition(25, 25, this.memory.targetRoom)
+    this.moveTo(pos)
+  }
 }
 
-RemoteBuildCreep.prototype.orignalHarvest = Creep.prototype.harvest
-
-RemoteBuildCreep.prototype.harvest = function(target) {
-  let result = this.orignalHarvest(target)
-  if(result === ERR_INVALID_TARGET) this.clearTarget()
-  if(result === ERR_NOT_IN_RANGE) this.goTo(target)
-  return result
+RemoteBuilderCreep.prototype.buildThings = function() {
+  if(this.needsTarget('build')) this.setTarget(_.first(Finder.findConstructionSites(this.room.name)), 'build')
+  if(this.hasTarget('build')) this.build(this.target('build'))
 }
+
+
+

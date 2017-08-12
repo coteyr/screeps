@@ -2,13 +2,13 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:37:33
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-27 18:33:21
+* @Last Modified time: 2017-08-06 21:43:54
 */
 
 'use strict';
 
-let ClaimCreep = function() {}
-ClaimCreep.prototype.superTick = function() {
+let ClaimerCreep = function() {}
+ClaimerCreep.prototype.superTick = function() {
   if(this.room.name !== this.memory.targetRoom) {
     let pos = new RoomPosition(25, 25, this.memory.targetRoom)
     this.moveTo(pos)
@@ -19,5 +19,14 @@ ClaimCreep.prototype.superTick = function() {
         this.moveTo(this.room.controller);
       }
     }
+  }
+}
+ClaimerCreep.prototype.claimer = function() {
+  if(this.room.name === this.memory.target) {
+    this.claimController();
+    // claim controller
+  } else {
+    let pos = new RoomPosition(25, 25, this.memory.target)
+    this.moveTo(pos)
   }
 }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-03-30 22:55:47
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-03-31 15:25:49
+* @Last Modified time: 2017-06-28 22:25:45
 */
 
 'use strict';
@@ -15,6 +15,7 @@ class Hud {
     this.lines.push({name: title, value: value, total: total, color: color})
   }
   display() {
+
     let position = 0
     let visual = new RoomVisual()
     visual.rect(0, 0, 18, _.size(this.lines) + 1, {fill: '#000000', opacity: 1})

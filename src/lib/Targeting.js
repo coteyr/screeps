@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-05-23 15:08:24
+* @Last Modified time: 2017-08-08 10:39:56
 */
 
 'use strict';
@@ -23,7 +23,7 @@ class Targeting {
   }
   static findExclusiveEnergy(roomName) {
     let energies = Finder.findEnergy(roomName)
-    Log.warn(energies.length)
+    // Log.warn(energies.length)
     let result = Scalar.largest(energies, 'energyAmount()')
     /*let biggest = 0
     let result = null
