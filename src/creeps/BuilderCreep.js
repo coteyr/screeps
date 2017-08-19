@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 19:38:18
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-07-03 15:58:20
+* @Last Modified time: 2017-08-19 07:30:39
 */
 
 'use strict';
@@ -17,11 +17,7 @@ BuilderCreep.prototype.builder = function() {
         this.setTarget(Targeting.findExclusiveEnergy(this.room.name))
       }
   } else {
-    this.buildThings()
+    this.build()
   }
 }
 
-BuilderCreep.prototype.buildThings = function() {
-  if(this.needsTarget('build')) this.setTarget(_.first(Finder.findConstructionSites(this.room.name)), 'build')
-  if(this.hasTarget('build')) this.build(this.target('build'))
-}

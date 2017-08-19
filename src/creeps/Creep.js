@@ -2,11 +2,22 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-11 23:03:02
+* @Last Modified time: 2017-08-19 07:35:01
 */
 
 'use strict';
 Creep.prototype.type = 'creep'
+Creep.prototype.chooseFillStatus = function() {
+  if(this.isEmpty()) {
+    this.memory.status = 'fill'
+    this.clearTarget('drop')
+  }
+  if(this.isFull()) {
+    this.memory.status = 'empty'
+    this.clearTarget()
+  }
+
+}
 Creep.prototype.partCount = function(part) {
   return _.filter(this.body, {type: part}).length
 }

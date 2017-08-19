@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:37:33
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-14 22:08:08
+* @Last Modified time: 2017-08-19 07:39:02
 */
 
 'use strict';
@@ -10,6 +10,7 @@
 let DumperCreep = function() {}
 
 DumperCreep.prototype.dumper = function() {
+  this.chooseFillStatus()
   if(this.memory.status === 'fill') {
     if(this.room.name === this.memory.home) {
       // fill up
@@ -21,22 +22,10 @@ DumperCreep.prototype.dumper = function() {
       this.moveTo(pos)
     }
   } else {
-    if(this.room.name === this.memory.targetRoom) {
+    if(this.gotoTargetRoom()) {
       this.upgradeController()
-    } else {
-      let pos = new RoomPosition(25, 25, this.memory.targetRoom)
-      this.moveTo(pos)
     }
   }
-
-    if(this.isEmpty()) {
-      this.memory.status = 'fill'
-    }
-    if(this.isFull()) {
-      this.memory.status = 'empty'
-      this.clearTarget()
-    }
-
 }
 
 

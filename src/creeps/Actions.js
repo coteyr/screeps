@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-07-03 15:12:45
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-19 03:12:00
+* @Last Modified time: 2017-08-19 07:39:40
 */
 
 'use strict';
@@ -15,6 +15,7 @@ Creep.prototype.originalMoveTo = Creep.prototype.moveTo
 Creep.prototype.originalMove = Creep.prototype.move
 Creep.prototype.orignalBuild = Creep.prototype.build
 Creep.prototype.originalAttack = Creep.prototype.attack
+Creep.prototype.orignalClaimController = Creep.prototype.claimController
 
 Creep.prototype.pickup = function(target) {
   let result = null
@@ -40,6 +41,10 @@ Creep.prototype.harvest = function(target) {
   return result
 }
 Creep.prototype.build = function(target) {
+  if(!target) {
+    if(this.needsTarget('build')) this.setTarget(_.first(Finder.findConstructionSites(this.room.name)), 'build')
+    if(this.hasTarget('build')) target = this.target('build')
+  }
   return this.work(this.orignalBuild, target, Config.defaultRange)
 }
 Creep.prototype.attack = function(target) {
@@ -109,8 +114,17 @@ Creep.prototype.move = function(direction) {
   let start = Game.cpu.getUsed();
   this.originalMove(direction)
 }
-Creep.prototype.orignalClaimController = Creep.prototype.claimController
+
 Creep.prototype.claimController = function() {
   let result = this.work(this.orignalClaimController, this.room.controller, Config.defaultRange)
   return result
+}
+Creep.prototype.gotoTargetRoom = function() {
+  if(this.room.name === this.memory.targetRoom) {
+    return true
+  } else {
+    let pos = new RoomPosition(25, 25, this.memory.targetRoom)
+    this.moveTo(pos)
+    return false
+  }
 }
