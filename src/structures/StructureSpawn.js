@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:42:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-08 10:25:29
+* @Last Modified time: 2017-08-15 04:33:02
 */
 
 'use strict';
@@ -44,7 +44,7 @@ StructureSpawn.prototype.spawnAClaimCreep = function() {
 }
 StructureSpawn.prototype.spawnARemoteCreep = function(task, target) {
   let body = []
-  body = Config.bodies[task][this.room.energyCapacityAvailable]
+  body = this.getBody(task)
   if(!body) {
     Log.error(["No body for", task, "for energy level", this.room.energyCapacityAvailable])
     return false
@@ -56,6 +56,20 @@ StructureSpawn.prototype.spawnARemoteCreep = function(task, target) {
   } else {
     Log.error(["Can't build", task, 'creep.', this.room.energyAvailable,"of", this.room.energyCapacityAvailable], this.room.name)
   }
+}
+StructureSpawn.prototype.getBody = function(task) {
+  let body = false
+  let e = this.room.energyCapacityAvailable
+
+  while(e >= 300 && !body) {
+    try {
+      body = Config.bodies[task][e]
+    } catch(e) {
+      Log.error("Could not fetch top level for", task)
+    }
+    e = e - 50
+  }
+  return body
 }
 /*StructureSpawn.prototype.startSpawn = function(body, targetRoom, task) {
   this.cleanCreepsMemory()

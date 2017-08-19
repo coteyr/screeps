@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-08 17:33:26
+* @Last Modified time: 2017-08-15 04:14:04
 */
 
 'use strict';
@@ -69,9 +69,38 @@ Room.prototype.spawnCreep = function() {
   }
 }
 
+Room.prototype.needDumpers = function() {
+  if(!this.memory.dump) return false
+  if(Finder.findCreepsWithTask(this.name, 'attacker').length <= 8) return true
+  return false
+}
 Room.prototype.needAttackers = function() {
   if(!this.memory.attack) return false
   if(Finder.findCreepsWithTask(this.name, 'attacker').length <= 4) return true
+  return false
+}
+Room.prototype.needDancers = function() {
+  if(!this.memory.attack) return false
+  if(Finder.findCreepsWithTask(this.name, 'dancer').length <= 4) return true
+  return false
+}
+Room.prototype.needSwarmers = function() {
+  if(!this.memory.attack) return false
+  return true
+}
+Room.prototype.needBait = function() {
+  if(!this.memory.attack) return false
+  if(Finder.findCreepsWithTask(this.name, 'bait').length <= 4) return true
+  return false
+}
+Room.prototype.needGuard = function() {
+  if(!this.memory.attack) return false
+  if(Finder.findCreepsWithTask(this.name, 'guard').length <= 12) return true
+  return false
+}
+Room.prototype.needMedic = function() {
+  if(!this.memory.attack) return false
+  if(Finder.findCreepsWithTask(this.name, 'medic').length <= 0) return true
   return false
 }
 Room.prototype.needRecovery = function() {
@@ -117,6 +146,9 @@ Room.prototype.needRemoteBuilders = function() {
 }
 Room.prototype.isFull = function() {
   return this.energyAvailable >= this.energyCapacityAvailable
+}
+Room.prototype.dump = function(roomName) {
+  this.memory.dump = roomName
 }
 Room.prototype.build = function(roomName) {
   this.memory.build = roomName

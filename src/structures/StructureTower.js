@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-07 18:01:40
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-07-07 04:25:56
+* @Last Modified time: 2017-08-17 02:30:31
 */
 
 'use strict';
@@ -22,14 +22,12 @@ StructureTower.prototype.danger = function() {
 
 
 StructureTower.prototype.tower = function(){
-  this.doAttack() || this.doRepair()
-
-  this.doHeal()
+  this.doAttack() || this.doRepair() || this.doHeal()
 }
 
 StructureTower.prototype.doAttack = function() {
   let target = Targeting.findNearestTarget(this.pos)
-  if(target) {
+  if(target){//} && target.pos.inRangeTo(this, 10)) {
     Log.warn('attacking')
     this.attack(target)
     return true
@@ -37,6 +35,11 @@ StructureTower.prototype.doAttack = function() {
   return false
 }
 StructureTower.prototype.doHeal = function() {
+  let target = Scalar.smallest(_.filter(Game.creeps, c => c.room.name === this.room.name && c.hits < c.hitsMax), 'hits')
+  if(target && target.hits < target.hitsMax * 0.50) {
+    this.heal(target)
+    return true
+  }
   return false
 }
 StructureTower.prototype.doRepair = function() {

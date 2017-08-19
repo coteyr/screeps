@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-07-03 15:12:45
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-08 19:46:49
+* @Last Modified time: 2017-08-14 22:28:37
 */
 
 'use strict';
@@ -35,7 +35,7 @@ Creep.prototype.build = function(target) {
   return this.work(this.orignalBuild, target, Config.defaultRange)
 }
 Creep.prototype.attack = function(target) {
-  return this.work(this.originalAttack, target, 1)
+  return this.work(this.originalAttack, target, 1, {preWalk: true})
 }
 
 Creep.prototype.upgradeController = function() {
@@ -55,7 +55,9 @@ Creep.prototype.work = function(method, target, range, options = []) {
     Storage.addStat('account-cpu-work', Game.cpu.getUsed() - start)
     if(value === ERR_NOT_IN_RANGE) delete this.memory.inRange
   } else {
-    value = this.goTo(target)
+    if(!options.preWalk) {
+      value = this.goTo(target)
+    }
     Storage.addStat('account-cpu-move', Game.cpu.getUsed() - start)
   }
   return value
@@ -65,8 +67,8 @@ Creep.prototype.moveTo = function(firstArg, secondArg, opts) {
   if(this.fatigue > 0) return ERR_TIRED
   if(this.room.name === "E3N24" && this.pos.x >= 17 && this.pos.x <= 24 && this.pos.y >= 33 && this.pos.y <= 39) {
     opts = { ignoreCreeps: true}
-    Log.info(firstArg)
-    Log.info(Finder.findCreepsInArea(this.room.name, 33, 19, 38, 23).length)
+    // Log.info(firstArg)
+    // Log.info(Finder.findCreepsInArea(this.room.name, 33, 19, 38, 23).length)
     if(Finder.findCreepsInArea(this.room.name, 33, 19, 38, 23).length > 0) {
       if(Storage.read("moveOne" + this.room.name, true)) {
         Storage.write("moveOne" + this.room.name, false)

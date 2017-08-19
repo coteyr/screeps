@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-19 13:50:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-06-28 22:39:13
+* @Last Modified time: 2017-08-11 22:46:52
 */
 
 'use strict';
@@ -59,7 +59,7 @@ global.resetTarget = function(roomName) {
 }
 global.reAttack = function(source, destination) {
   _.each(Game.creeps, c => {
-    if(c.memory.task === 'attack' && c.memory.targetRoom === source) {
+    if(c.memory.task === 'attacker' && c.memory.targetRoom === source) {
       c.memory.targetRoom = destination
     }
   })
