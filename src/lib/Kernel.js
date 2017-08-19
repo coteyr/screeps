@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-06-28 21:58:44
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-15 07:06:37
+* @Last Modified time: 2017-08-19 05:32:00
 */
 
 'use strict';
@@ -48,20 +48,20 @@ class Kernel {
   }
   processEntites() {
     this.processSpawns()
-    this.processRecovery()
-    this.processMiners()
-    this.processHaulers()
-    this.processBuilders()
-    this.processUpgraders()
+    this.processCreeps('recovery', RecoveryCreep, 'recover')
+    this.processCreeps('miner', MinerCreep, 'mine')
+    this.processCreeps('hauler', HaulerCreep, 'haul')
+    this.processCreeps('builder', BuilderCreep, 'builder')
+    this.processCreeps('upgrader', UpgraderCreep, 'upgrade')
     this.processTowers()
-    this.processAttackers()
-    this.processDancers()
-    this.processGuards()
+    this.processCreeps('attacker', AttackCreep, 'attacker')
+    this.processCreeps('dancer', DancerCreep, 'dancer')
+    this.processCreeps('guard', GaurdCreep,'gaurd')
     this.processBaitSquad()
-    this.processSwarmers()
-    this.processClaimers()
-    this.processRemoteBuilders()
-    this.processDumpers()
+    this.processCreeps('swarmer', AttackCreep, 'attacker')
+    this.processCreeps('claimer', ClaimerCreep, 'claimer')
+    this.processCreeps('remote-builder', RemoteBuilderCreep, 'remoteBuilder')
+    this.processCreeps('dumper', DumperCreep, 'dumper')
     this.clearSpots()
   }
   processSpawns() {
@@ -98,86 +98,11 @@ class Kernel {
       }
     })
   }
-  processRecovery() {
-    let creeps = _.filter(this.entities, e => { return !e.processed && e.type === 'creep' && e.thing.memory.task === 'recovery' })
+  processCreeps(task, klass, method) {
+    let creeps = _.filter(this.entities, e => { return !e.processed && e.type === 'creep' && e.thing.memory.task === task })
     _.each(creeps, c => {
-      _.merge(Creep.prototype, RecoveryCreep.prototype)
-      c.thing.recover()
-    })
-  }
-  processMiners() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'miner'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, MinerCreep.prototype)
-      c.thing.mine()
-    })
-  }
-  processHaulers() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'hauler'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, HaulerCreep.prototype)
-      c.thing.haul()
-    })
-  }
-  processUpgraders() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'upgrader'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, UpgraderCreep.prototype)
-      c.thing.upgrade()
-    })
-  }
-  processBuilders() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'builder'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, BuilderCreep.prototype)
-      c.thing.builder()
-    })
-  }
-  processClaimers() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'claimer'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, ClaimerCreep.prototype)
-      c.thing.claimer()
-    })
-  }
-  processRemoteBuilders() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'remote-builder'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, RemoteBuilderCreep.prototype)
-      c.thing.remoteBuilder()
-    })
-  }
-  processDumpers() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'dumper'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, DumperCreep.prototype)
-      c.thing.dumper()
-    })
-  }
-  processAttackers() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'attacker'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, AttackCreep.prototype)
-      c.thing.attacker()
-    })
-     creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'medic'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, MedicCreep.prototype)
-      //c.thing.medic()
-    })
-  }
-  processGuards() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'guard'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, GaurdCreep.prototype)
-      c.thing.gaurd()
-    })
-  }
-  processDancers() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'dancer'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, DancerCreep.prototype)
-      c.thing.dancer()
+      _.merge(Creep.prototype, klass.prototype)
+      c.thing[method]()
     })
   }
   processBaitSquad() {
@@ -185,13 +110,6 @@ class Kernel {
     if(creeps.length >= 4) {
       BaitTactic.doAttack(creeps[0].thing.memory.home)
     }
-  }
-  processSwarmers() {
-    let creeps = _.filter(this.entities, e => {return !e.processed && e.type === 'creep' && e.thing.memory.task === 'swarmer'})
-    _.each(creeps, c =>{
-      _.merge(Creep.prototype, AttackCreep.prototype)
-      c.thing.attacker()
-    })
   }
   processTowers() {
     _.each(Game.rooms, r=> {

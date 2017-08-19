@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-03-17 17:21:41
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-14 22:25:44
+* @Last Modified time: 2017-08-19 02:58:33
 */
 
 'use strict';
@@ -37,18 +37,7 @@ class NormalTactic {
     })
     if(!_.isNull(wall)) creep.attack(wall)
     if(creep.needsTarget()) {
-      creep.moveTo(NormalTactic.getRally(creep))
-    }
-  }
-  static getRally(creep) {
-    let rally = _.filter(Game.flags, f => {return f.color === COLOR_PURPLE && f.room.name == creep.room.name})
-    Log.info(rally)
-    if(rally.length > 0) {
-      return rally[0]
-    } else  if(creep.room.controller){
-      return creep.room.controller
-    } else {
-      return new RoomPosition(25, 25, creep.room.name)
+      creep.moveTo(Targeting.getRally(creep))
     }
   }
 }

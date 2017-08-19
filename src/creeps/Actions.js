@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-07-03 15:12:45
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-14 22:28:37
+* @Last Modified time: 2017-08-19 03:12:00
 */
 
 'use strict';
@@ -28,6 +28,14 @@ Creep.prototype.pickup = function(target) {
   return result
 }
 Creep.prototype.harvest = function(target) {
+  if(!target) {
+    if(this.hasTarget()) {
+      target = this.target()
+    } else {
+      this.setTarget(Targeting.findOpenSourceSpot(this.room.name))
+      target = this.target()
+    }
+  }
   let result = this.work(this.orignalHarvest, target, Config.defaultRange)
   return result
 }
