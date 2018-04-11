@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 10:05:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-15 04:31:55
+* @Last Modified time: 2017-08-26 14:36:34
 */
 
 'use strict';
@@ -36,14 +36,30 @@ var Config = {
     2: 4,
     3: 3,
     4: 2,
-    5: 2
+    5: 2,
+    6: 2,
+    7: 2,
+    8: 2
   },
   builders: {
     1: 1,
     2: 1,
     3: 2,
     4: 2,
-    5: 2
+    5: 2,
+    6: 2,
+    7: 2,
+    8: 2
+  },
+  wallers: {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 2,
+    5: 2,
+    6: 2,
+    7: 2,
+    8: 2
   },
   bodies: {
     small: {body: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK], size: 5},
@@ -151,6 +167,10 @@ var Config = {
       1700: [CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE],
       1750: [CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE],
       1800: [CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE],
+    },
+    waller: {
+      1200: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE],
+      1700: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, WORK, WORK, WORK, WORK, WORK,  WORK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
     },
     builder: {
       300: [CARRY, CARRY, WORK, MOVE, MOVE],

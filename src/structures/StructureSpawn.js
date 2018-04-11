@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-02 22:42:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-15 04:33:02
+* @Last Modified time: 2017-08-21 22:53:22
 */
 
 'use strict';
@@ -21,7 +21,7 @@ StructureSpawn.prototype.spawnACreep = function(task) {
   if(task === 'recovery') {
     body = Config.bodies.recovery
   } else {
-    body = Config.bodies[task][this.room.energyCapacityAvailable]
+    body = this.getBody(task)
   }
   if(!body) {
     body = Config.bodies.default

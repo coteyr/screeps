@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:48:53
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-19 02:57:57
+* @Last Modified time: 2017-08-21 23:07:07
 */
 
 'use strict';
@@ -69,11 +69,15 @@ class Targeting {
 
   }
   static findRepairTarget(pos) {
-    Log.info(JSON.stringify(pos))
     let room = Game.rooms[pos.roomName]
     let targets = _.filter(Finder.findObjects(pos.roomName, FIND_STRUCTURES), s => { return s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL && s.structureType != STRUCTURE_RAMPART})
     Log.error(targets.length)
     return pos.findClosestByRange(targets)
+  }
+  static findWeakestWall(pos) {
+    let room = Game.rooms[pos.roomName]
+    let targets = _.filter(Finder.findObjects(pos.roomName, FIND_STRUCTURES), s => { return s.hits < s.hitsMax && (s.structureType === STRUCTURE_WALL || s.structureType === STRUCTURE_RAMPART)})
+    return(Scalar.smallest(targets, 'hits'))
   }
   static getRally(creep, color=COLOR_PURPLE) {
     let rally = _.filter(Game.flags, f => {return f.color === color && f.room.name == creep.room.name})

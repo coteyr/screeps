@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-02-03 18:14:00
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-19 07:35:01
+* @Last Modified time: 2017-08-26 14:41:13
 */
 
 'use strict';
@@ -89,7 +89,7 @@ Creep.prototype.goTo = function(pos) {
     //})
     },
   reusePath: 5,
-  ignoreCreeps: Game.time % 10 === 0,  //false,
+  ignoreCreeps: Game.time % 5 !== 0,  //false,
   visualizePathStyle: {opacity: 0.75, stroke: Config.colors.blue},
   maxRooms: 1
   }

@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-06-28 21:58:44
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-19 05:32:00
+* @Last Modified time: 2017-08-21 22:41:13
 */
 
 'use strict';
@@ -62,6 +62,7 @@ class Kernel {
     this.processCreeps('claimer', ClaimerCreep, 'claimer')
     this.processCreeps('remote-builder', RemoteBuilderCreep, 'remoteBuilder')
     this.processCreeps('dumper', DumperCreep, 'dumper')
+    this.processCreeps('waller', WallerCreep, 'waller')
     this.clearSpots()
   }
   processSpawns() {
@@ -93,6 +94,8 @@ class Kernel {
         s.thing.spawnAClaimCreep();
       } else if(s.room.needRemoteBuilders()) {
         s.thing.spawnARemoteCreep('remote-builder', s.room.memory.build)
+      } else if(s.room.needWaller()) {
+        s.thing.spawnACreep('waller')
       } else if(s.room.needDumpers()) {
         s.thing.spawnARemoteCreep('dumper', s.room.memory.dump)
       }

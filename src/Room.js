@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-15 04:14:04
+* @Last Modified time: 2017-08-21 22:43:00
 */
 
 'use strict';
@@ -11,50 +11,11 @@ Room.prototype.tick = function() {
   global[this.name] = this; // makes it easy
   Storage.write("moveOne" + this.name, true)
 }
-/*Room.prototype.buildOut = function() {
-  RoomBuilder.buildPlan(this.name)
-  //if(this.needWalls()) Log.error('I need Walls')
-  switch(Game.time % 10) {
-    case 1:
-      if(this.needExtensions()) this.addExtension()
-      break
-    case 2:
-      if(this.needWalls()) this.addWalls()
-      break
-    case 3:
-      if(this.needRamps()) this.addRamps()
-      break
-    case 4:
-      if(this.needTowers()) this.addTowers()
-      break
-    case 5:
-      if(this.needStorage()) this.addStorage()
-      break
-    case 6:
-      if(this.needExtractor()) this.addExtractor()
-      break
-    case 7:
-      if(this.needTerminal()) this.addTerminal()
-      break
-    case 8:
-      if(this.needLab()) this.addLab()
-      break
-  }
-}*/
+
 Room.prototype.assignTask = function(task) {
   let creep = _.first(Finder.findIdleCreeps(this.name))
   if(creep) creep.setTask(task)
 }
-/*Room.prototype.assignCreeps = function() {
-    if(this.needMiners()) this.assignTask('mine')
-    if(this.needHaulers()) this.assignTask('haul')
-    //if(_.isUndefined(this.memory.attack)) {
-    if(this.needBuilders()) this.assignTask("build")
-    if(this.needUpgraders()) this.assignTask("upgrade")
-
-    if(this.needRepairers()) this.assignTask("repair")
-    //}
-}*/
 Room.prototype.tickChildren = function() {
   _.each(Finder.findCreeps(this.name), c => { c.tick() })
   _.each(Finder.findMyTowers(this.name), t => { t.tick() })
@@ -111,7 +72,7 @@ Room.prototype.needRecovery = function() {
 Room.prototype.needHaulers = function() {
   if(Finder.findCreepsWithTask(this.name, 'miner').length <= 0) return false
   let creeps = Finder.findCreepsWithTask(this.name, 'hauler')
-  return creeps.length < Finder.findSources(this.name).length
+  return creeps.length < Finder.findSources(this.name).length * 2
 }
 Room.prototype.needMiners = function() {
   let sources = Finder.findSources(this.name).length
@@ -133,6 +94,13 @@ Room.prototype.needBuilders = function() {
   if(Finder.findConstructionSites(this.name).length <= 0) return false
   let creeps = Finder.findCreepsWithTask(this.name, 'builder')
   return creeps.length < Config.builders[this.rcl()]
+}
+Room.prototype.needWaller = function() {
+  let creeps = Finder.findCreepsWithTask(this.name, 'waller')
+  if(creeps.length < Config.wallers[this.rcl()]) {
+    return true
+  }
+  return false
 }
 Room.prototype.needClaimer = function() {
   if(Finder.findCreepsWithTask(this.name, 'claimer').length >= 1) return false

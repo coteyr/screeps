@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-07-03 15:12:45
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-19 07:39:40
+* @Last Modified time: 2017-08-21 22:43:53
 */
 
 'use strict';
@@ -60,6 +60,7 @@ Creep.prototype.transfer = function(target) {
   return result
 }
 Creep.prototype.work = function(method, target, range, options = []) {
+  if(!target) return false
   let start = Game.cpu.getUsed();
   let value = null;
   if(this.memory.inRange || this.pos.inRangeTo(target.pos.x, target.pos.y, range)) {
@@ -77,6 +78,7 @@ Creep.prototype.work = function(method, target, range, options = []) {
 }
 
 Creep.prototype.moveTo = function(firstArg, secondArg, opts) {
+
   if(this.fatigue > 0) return ERR_TIRED
   if(this.room.name === "E3N24" && this.pos.x >= 17 && this.pos.x <= 24 && this.pos.y >= 33 && this.pos.y <= 39) {
     opts = { ignoreCreeps: true}
@@ -94,6 +96,9 @@ Creep.prototype.moveTo = function(firstArg, secondArg, opts) {
   if(this.pos.x === 25 && this.pos.y === 39) delete this.memory.evac
   if(this.memory.evac === true) {
     return this.originalMoveTo(new RoomPosition(25, 39, this.room.name), opts)
+  }
+  if(this.room.name === "W44S9" && this.pos.x >= 34 && this.pos.x <= 42 && this.pos.y >= 40 && this.pos.y <= 42) {
+    opts = { ignoreCreeps: true, reusePath: 0}
   }
 
   let empty = Targeting.findCloseEmptyExtension(this.pos)
