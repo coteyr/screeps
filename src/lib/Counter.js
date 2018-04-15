@@ -1,12 +1,11 @@
 /*
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
-* @Date:   2017-02-02 22:46:08
+* @Date:   2018-04-12 02:59:04
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-02-02 22:47:46
+* @Last Modified time: 2018-04-12 02:59:22
 */
 
 'use strict';
-
 class Counter {
   static number() {
     let oldNumber = Storage.read('unique-id', 0)

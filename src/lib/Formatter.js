@@ -1,8 +1,8 @@
 /*
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
-* @Date:   2017-01-14 09:51:44
+* @Date:   2018-04-10 20:35:32
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-01-15 09:44:38
+* @Last Modified time: 2018-04-12 02:38:53
 */
 
 'use strict';
@@ -24,6 +24,7 @@ class Formatter {
     return messages.join(' ')
   }
   static jsonSyntaxHighlight(json) {
+    try {
     if (typeof json != 'string') {
          json = JSON.stringify(json, undefined, 2);
     }
@@ -42,6 +43,9 @@ class Formatter {
       }
       return Formatter.wrap(['color', color], match)//'<span class="' + cls + '">' + match + '</span>';
     });
+    } catch(e) {
+      return json;
+    }
   }
   static toFixed(value){
     let attempt = parseFloat(value)

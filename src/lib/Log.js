@@ -1,12 +1,11 @@
 /*
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
-* @Date:   2017-01-14 09:51:44
+* @Date:   2018-04-10 20:34:36
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-06-28 22:39:58
+* @Last Modified time: 2018-04-12 02:36:51
 */
 
 'use strict';
-
 class Log {
   static info(message, object = null) {
     if (Config.logLevel >= 4) Log.output(Config.colors.white, message, object)
@@ -39,6 +38,7 @@ class Log {
       }
     }
     if (_.isArray(message)) message = Formatter.build(message)
+    if (!_.isString(message)) message = Formatter.jsonSyntaxHighlight(message)
     if (name) message = Formatter.build([Formatter.color(Config.colors.blue, name), Formatter.color(Config.colors.gray, '::'), message])
     console.log(Formatter.size(Config.fonts.size, Formatter.font(Config.fonts.mono, Formatter.color(color, message))))
     // console.log("<span style=' font-family: " + Config.fonts.mono + "; font-size: " + Config.fonts.size + "; color: " + color + "'>" + message + '</span>')

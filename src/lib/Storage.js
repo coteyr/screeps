@@ -1,8 +1,8 @@
 /*
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
-* @Date:   2017-01-15 08:49:10
+* @Date:   2018-04-12 02:59:31
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-06-28 22:38:20
+* @Last Modified time: 2018-04-12 02:59:57
 */
 
 'use strict';
@@ -18,22 +18,4 @@ class Storage {
     if(Memory.globals[key] === null) return defaultValue
     return Memory.globals[key]
   }
-  static readStat(key, defaultValue) {
-    if(_.isUndefined(STATS)) STATS = {}
-    if(_.isUndefined(STATS[key])) STATS[key] = defaultValue
-    return STATS[key]
-  }
-  static writeStat(key, value) {
-    if(_.isUndefined(STATS)) STATS = {}
-    STATS[key] = value
-    return value
-  }
-  static addStat(key, amount = 1) {
-    Storage.writeStat(key, Storage.readStat(key, 0) + amount)
-    return Storage.readStat(key, amount)
-  }
-  static clearStat(key) {
-    return delete STATS[key]
-  }
-
 }

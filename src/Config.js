@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 10:05:37
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2017-08-26 14:36:34
+* @Last Modified time: 2018-04-14 07:05:31
 */
 
 'use strict';
@@ -30,6 +30,20 @@ var Config = {
   },
   l10n: {
     timeZoneOffset: -300
+  },
+  miners: {
+    1: 2,
+    2: 2,
+    3: 2,
+    4: 1,
+    5: 1
+  },
+  haulers: {
+    1: 0,
+    2: 2,
+    3: 2,
+    4: 2,
+    5: 2
   },
   upgraders: {
     1: 4,
