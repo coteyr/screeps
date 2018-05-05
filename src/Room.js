@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-29 19:24:01
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2018-04-13 00:34:40
+* @Last Modified time: 2018-05-02 01:51:26
 */
 
 'use strict';
@@ -44,15 +44,27 @@ Room.prototype.createNeeds = function() {
   } else if(this.needBuilders()) {
     Log.warn("I need builders", this)
     this.spawnBuilder()
+  } else if(this.needClaimers()) {
+    Log.warn("Need Claimers")
+    this.spawnClaimer()
+  } else if (this.needRemoteRecovery()) {
+    Log.warn("Need Remote Recovery")
+    this.spawnRemoteRecovery()
+  } else if(this.needWallers()) {
+    Log.warn("I need Wallers")
+    this.spawnWaller()
   } else {
     Log.info("All needs met.", this)
   }
+}
+Room.prototype.needWallers = function() {
+  return Math.count(Finder.wallers(this)) < Config.wallers[this.level()]
 }
 Room.prototype.needBuilders = function() {
   return Math.count(Finder.builders(this)) < Config.builders[this.level()] && Math.count(Finder.buildSites(this)) > 0
 }
 Room.prototype.needRecovery = function() {
-  return Math.count(Finder.recovery(this)) < 1
+  return Math.count(Finder.recovery(this)) < this.level()
 }
 Room.prototype.needMiners = function() {
   return Math.count(Finder.miners(this)) < Config.miners[this.level()] * Math.count(Finder.sources(this))
@@ -61,9 +73,21 @@ Room.prototype.needHaulers = function() {
   return Math.count(Finder.haulers(this)) < Config.haulers[this.level()]
 }
 Room.prototype.needUpgraders = function() {
-  return Math.count(Finder.upgraders(this)) < Config.upgraders[this.level()]
+  if(this.storage && this.storage.hasBuffer()) {
+    return Math.count(Finder.upgraders(this)) < Config.upgraders[this.level()] * 3
+  } else {
+    return Math.count(Finder.upgraders(this)) < Config.upgraders[this.level()]
+  }
 }
-
+Room.prototype.needClaimers = function() {
+  return Math.count(Finder.flag('Claim')) >= 1 && Math.count(Finder.claimers()) === 0
+}
+Room.prototype.needRemoteRecovery = function() {
+  let flag = _.first(Finder.flag('Claim'))
+  if(!flag) return false
+  let room = Game.rooms[flag.pos.roomName]
+  return room && Math.count(Finder.recovery(room)) < 2 && Math.count(Finder.remoteRecovery(room)) < 10
+}
 Room.prototype.level = function() {
   if(this.isMine()) {
     return this.controller.level
@@ -71,10 +95,16 @@ Room.prototype.level = function() {
     return 0
   }
 }
+Room.prototype.spawnWaller = function() {
+  let spawner = Finder.findIdleSpawner(this)
+  if(spawner) {
+    spawner.spawnACreep('waller', Math.getBody(Config.bodies.waller, this.energyCapacityAvailable))
+  }
+}
 Room.prototype.spawnBuilder = function() {
   let spawner = Finder.findIdleSpawner(this)
   if(spawner) {
-    spawner.spawnACreep('builder', Config.bodies.builder[this.energyCapacityAvailable])
+    spawner.spawnACreep('builder', Math.getBody(Config.bodies.builder, this.energyCapacityAvailable))
   }
 }
 Room.prototype.spawnRecovery = function() {
@@ -86,20 +116,35 @@ Room.prototype.spawnRecovery = function() {
 Room.prototype.spawnMiner = function() {
   let spawner = Finder.findIdleSpawner(this)
   if(spawner) {
-    spawner.spawnACreep('miner', Config.bodies.miner[this.energyCapacityAvailable])
+    spawner.spawnACreep('miner', Math.getBody(Config.bodies.miner, this.energyCapacityAvailable))
   }
 }
 
 Room.prototype.spawnUpgrader = function() {
   let spawner = Finder.findIdleSpawner(this)
   if(spawner) {
-    spawner.spawnACreep('upgrader', Config.bodies.upgrader[this.energyCapacityAvailable])
+    spawner.spawnACreep('upgrader', Math.getBody(Config.bodies.upgrader, this.energyCapacityAvailable))
   }
 }
 
 Room.prototype.spawnHauler = function() {
   let spawner = Finder.findIdleSpawner(this)
   if(spawner) {
-    spawner.spawnACreep('hauler', Config.bodies.hauler[this.energyCapacityAvailable])
+    spawner.spawnACreep('hauler', Math.getBody(Config.bodies.hauler, this.energyCapacityAvailable))
+  }
+}
+Room.prototype.spawnClaimer = function() {
+  let spawner = Finder.findIdleSpawner(this)
+  let flag = _.first(Finder.flag('Claim'))
+  if(flag && spawner) {
+    spawner.spawnACreep('claimer', Config.bodies.claimer, flag.pos.roomName)
+  }
+}
+Room.prototype.spawnRemoteRecovery = function() {
+  let spawner = Finder.findIdleSpawner(this)
+  let flag = _.first(Finder.flag('Claim'))
+  if(flag && spawner) {
+    Log.debug(flag.pos.roomName)
+    spawner.spawnACreep('recovery', Config.bodies.recovery, flag.pos.roomName)
   }
 }

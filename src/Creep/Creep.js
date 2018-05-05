@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2018-04-12 03:32:39
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2018-04-14 18:17:48
+* @Last Modified time: 2018-05-02 10:38:49
 */
 
 'use strict';
@@ -21,6 +21,10 @@ Creep.prototype.tick = function() {
     this.recoveryTick();
   } else if(this.task() === 'builder') {
     this.builderTick();
+  } else if(this.task() === 'waller') {
+    this.wallerTick();
+  }else if(this.task() === 'claimer') {
+    this.claimerTick()
   } else {
     Log.error("I have no code to run", this)
   }
@@ -29,7 +33,7 @@ Creep.prototype.work = function(method, target, range, options = []) {
   if(!target) return false
   let value = method.apply(this, _.flatten([target, options]))
   if(value === ERR_NOT_IN_RANGE) {
-    this.moveTo(target)
+    this.moveTo(target, {maxRooms: 1})
   }
   return value
 }
@@ -59,5 +63,9 @@ Creep.prototype.isFull = function() {
   return this.carry[RESOURCE_ENERGY] >= this.carryCapacity
 }
 Creep.prototype.grab = function(target) {
-  this.work(this.pickup, target, 1)
+  if(target.structureType) {
+    this.work(this.withdraw, target, 1, [RESOURCE_ENERGY])
+  } else {
+    Log.info(this.work(this.pickup, target, 1))
+  }
 }

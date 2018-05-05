@@ -2,33 +2,36 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2018-04-15 04:44:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2018-04-15 04:59:56
+* @Last Modified time: 2018-04-22 14:51:46
 */
 
 'use strict';
 
 StructureTower.prototype.tick = function() {
-  Log.info("Ticking Tower", this)
   if(this.hasNearbyHostle()) {
     this.defend()
   } else {
-    this.repair()
+    this.doRepair()
   }
 }
 
 StructureTower.prototype.defend = function() {
-  Log.error("Need to implement", this)
+  let target = Targeting.findNearestHostal(this.room, this.pos)
+  if(target) {
+    this.attack(target)
+  }
 }
 
-StructureTower.prototype.repair = function() {
+StructureTower.prototype.doRepair = function() {
   if(this.hasTarget('repair')) {
     let target = this.getTarget('repair')
     this.repair(target)
     if(target.hits >= target.hitsMax) this.clearTarget('repair')
+    if((target.structureType === STRUCTURE_RAMPART && target.hits > 1000) || (target.structureType === STRUCTURE_WALL && target.hits > 1000)) this.clearTarget('repair')
   } else if (this.hasTarget('heal')) {
     let target = this.getTarget('heal')
     this.heal(target)
-    if(target.hits >= targets.hitsMax) this.clearTarget('heal')
+    if(target.hits >= target.hitsMax) this.clearTarget('heal')
   } else {
     this.findRepairTarget()
   }
@@ -42,7 +45,7 @@ StructureTower.prototype.findRepairTarget = function() {
   }
 }
 StructureTower.prototype.hasNearbyHostle = function() {
-  return false
+  return Finder.hostals(this.room).length > 0
 }
 StructureTower.prototype.clearTarget = function(key = 'target') {
   delete this.memory["target-" + key]
@@ -63,3 +66,17 @@ StructureTower.prototype.setTarget = function(key, target) {
   this.memory["target-" + key] = target.id
   return true
 }
+
+
+StructureTower.prototype.setupMemory = function() {
+  if(!Memory.memory_structures) Memory.memory_structures = {}
+  if(!Memory.memory_structures[this.id]) {
+    Memory.memory_structures[this.id] = {}
+    this.memory = Memory.memory_structures[this.id]
+  } else {
+    this.memory = Memory.memory_structures[this.id]
+  }
+}
+
+
+//StructureTower.prototype.memory = undefined;
