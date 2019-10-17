@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2018-04-15 15:31:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2018-04-15 15:49:08
+* @Last Modified time: 2018-05-06 16:51:45
 */
 
 'use strict';
@@ -17,7 +17,8 @@ Creep.prototype.wallerTick = function() {
       this.grab(this.getTarget('source'))
     } else {
       if(!this.setTarget('source', Targeting.unclaimedEnergy(this.room))) {
-        Log.error("Failed to set source energy Target!", this)
+        Visualizer.circle(this, Config.colors.yellow)
+        this.move(Maths.randomDirection())
       }
     }
   }

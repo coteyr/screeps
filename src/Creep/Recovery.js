@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2018-04-12 21:02:38
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2018-04-17 04:03:52
+* @Last Modified time: 2018-05-21 12:44:34
 */
 
 'use strict';
@@ -12,11 +12,12 @@ Creep.prototype.recoveryTick = function(){
   // rather or not the room is running. When the room is not running it bootstraps
   // the rest of the time it runs around like an idiot, trying to help
   if(this.travel()) {
-    if(Math.count(Finder.miners(this.room)) < 1) {
+    if(Maths.count(Finder.miners(this.room)) < 1) {
       this.recoverTick()
-    } else if(Math.count(Finder.haulers(this.room)) <= 1) {
+    } else if(Maths.count(Finder.haulers(this.room)) <= 1) {
+      this.clearTarget('mine')
       this.haulerTick()
-    } else if(Math.count(Finder.buildSites(this.room)) > 0) {
+    } else if(Maths.count(Finder.buildSites(this.room)) > 0) {
       this.builderTick()
     } else {
       this.upgradeTick()
@@ -26,11 +27,12 @@ Creep.prototype.recoveryTick = function(){
 
 Creep.prototype.recoverTick = function() {
   if(this.hasEnergy() && !this.getTarget('mine')) {
-    if(Math.count(Finder.buildSites(this.room)) > 0 && Math.count(Finder.haulers(this.room)) > 0) {
+    if(Maths.count(Finder.buildSites(this.room)) > 0 && Maths.count(Finder.haulers(this.room)) > 1) {
       this.buildUp()
-    } else if(Math.count(Finder.spawns(this.room)) <= 0) {
+    } else if(Maths.count(Finder.spawns(this.room)) <= 0) {
       this.buildUp()
-    }else {
+    } else {
+      this.clearTarget('mine')
       this.haul()
     }
   } else {
@@ -40,13 +42,13 @@ Creep.prototype.recoverTick = function() {
     } else  {
       if(this.hasTarget('mine')) {
         if(!this.isFull()) {
-          this.mine(this.getTarget('mine'))
+          this.work(this.harvest, this.getTarget('mine'), 1)
         } else {
           this.clearTarget('mine')
         }
       } else if(!this.isFull()) {
         if(!this.setTarget('mine', Targeting.openSource(this.room))){
-          Log.error("Failed to set mining Target!", this)
+          Visualizer.circle(this, Config.colors.red)
         }
       }
     }

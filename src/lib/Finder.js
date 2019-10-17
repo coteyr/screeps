@@ -2,7 +2,7 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2018-04-12 02:20:06
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2018-05-02 15:15:26
+* @Last Modified time: 2018-07-03 02:19:44
 */
 
 'use strict';
@@ -19,6 +19,29 @@ class Finder {
     })
     return result
   }
+  static minerals(room) {
+    return _.first(room.find(FIND_MINERALS))
+  }
+  static extractors(room) {
+   return _.filter(Game.creeps, function(creep) {
+      return creep.memory.task === 'extractor' && creep.room.name === room.name
+    })
+  }
+  static linkers(room) {
+    return _.filter(Game.creeps, function(creep) {
+      return creep.memory.task === 'linker' && creep.room.name === room.name
+    })
+  }
+  static links(room) {
+    return _.filter(room.find(FIND_STRUCTURES), function(s){
+      return (s.structureType === STRUCTURE_LINK)
+    })
+  }
+  static receivingLink(room) {
+    return _.first(_.filter(room.find(FIND_STRUCTURES), function(s){
+      return (s.structureType === STRUCTURE_LINK && s.pos.inRangeTo(room.storage, 5))
+    }))
+  }
   static claimers() {
    return _.filter(Game.creeps, function(creep) {
       return creep.memory.task === 'claimer'
@@ -34,9 +57,19 @@ class Finder {
       return creep.room.name === room.name && creep.memory.task === 'builder'
     })
   }
+  static creep(room) {
+    return _.filter(Game.creeps, function(creep) {
+      return creep.room.name === room.name
+    })
+  }
   static remoteRecovery(room) {
     return _.filter(Game.creeps, function(creep) {
       return creep.memory.dest === room.name && creep.memory.task === 'recovery'
+    })
+  }
+  static defender(room) {
+    return _.filter(Game.creeps, function(creep) {
+      return creep.room.name === room.name && creep.memory.task === 'defender'
     })
   }
   static recovery(room) {
@@ -46,7 +79,7 @@ class Finder {
   }
   static miners(room) {
     return _.filter(Game.creeps, function(creep) {
-      return creep.room.name === room.name && creep.memory.task === 'miner'
+      return creep.room.name === room.name && creep.memory.task === 'miner' && creep.ticksToLive > 100
     })
   }
   static haulers(room) {
@@ -142,14 +175,22 @@ class Finder {
       })
     return spots
   }
-  static hostals(room){
+  static hostals(room, all = false){
+    if(all) {
+      return room.find(FIND_HOSTILE_CREEPS)
+    } else {
     return _.filter(room.find(FIND_HOSTILE_CREEPS), function(h) {
-      return Math.count(_.filter(h.body, function(b){
+      return Maths.count(_.filter(h.body, function(b){
         b = b.type
         return b == ATTACK || b == HEAL || b == RANGED_ATTACK || b == CLAIM
-      })) >= 1 || Math.count(_.filter(h.body, function(b){
+      })) >= 1 || Maths.count(_.filter(h.body, function(b){
         return b == WORK
       })) >= 3
     })
+  }
+  }
+  static findObjects(roomName, objectType) {
+    let room = Game.rooms[roomName]
+    return room.find(objectType)
   }
 }

@@ -2,13 +2,15 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2018-04-15 04:44:24
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2018-04-22 14:51:46
+* @Last Modified time: 2018-05-19 23:13:10
 */
 
 'use strict';
 
 StructureTower.prototype.tick = function() {
-  if(this.hasNearbyHostle()) {
+  if(this.hasDefenders()) {
+    this.doHeal()
+  } else if(this.hasNearbyHostle()) {
     this.defend()
   } else {
     this.doRepair()
@@ -21,7 +23,16 @@ StructureTower.prototype.defend = function() {
     this.attack(target)
   }
 }
-
+StructureTower.prototype.doHeal = function() {
+  if (this.hasTarget('heal')) {
+    let target = this.getTarget('heal')
+    this.heal(target)
+    if(target.hits >= target.hitsMax) this.clearTarget('heal')
+  } else {
+    this.setTarget('heal', Targeting.findHealTarget(this.room, this.pos))
+    if(this.hasTarget('heal')) this.heal(this.getTarget('heal'))
+  }
+}
 StructureTower.prototype.doRepair = function() {
   if(this.hasTarget('repair')) {
     let target = this.getTarget('repair')
@@ -44,8 +55,11 @@ StructureTower.prototype.findRepairTarget = function() {
     this.setTarget('heal', target)
   }
 }
+StructureTower.prototype.hasDefenders = function() {
+  return Finder.defender(this.room).length > 0
+}
 StructureTower.prototype.hasNearbyHostle = function() {
-  return Finder.hostals(this.room).length > 0
+  return Finder.hostals(this.room).length > 0 && Finder.defender(this.room).length < 1
 }
 StructureTower.prototype.clearTarget = function(key = 'target') {
   delete this.memory["target-" + key]

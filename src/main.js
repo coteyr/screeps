@@ -2,16 +2,18 @@
 * @Author: Robert D. Cotey II <coteyr@coteyr.net>
 * @Date:   2017-01-14 09:43:31
 * @Last Modified by:   Robert D. Cotey II <coteyr@coteyr.net>
-* @Last Modified time: 2018-04-27 05:14:34
+* @Last Modified time: 2018-05-19 23:13:52
 */
 
 'use strict';
 
 let STATS = {}
+var Traveler = require('Traveler');
+
 module.exports.loop = function () {
   Log.info("Tick Start")
   _.forEach(Game.structures, function(building) {
-    if(building.structureType === STRUCTURE_TOWER || building.structureType === STRUCTURE_STORAGE){
+    if(building.structureType === STRUCTURE_LINK || building.structureType === STRUCTURE_TOWER || building.structureType === STRUCTURE_STORAGE){
       building.setupMemory()
       building.tick()
     }
